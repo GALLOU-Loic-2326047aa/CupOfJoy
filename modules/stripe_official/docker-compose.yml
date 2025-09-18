@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+    prestashop:
+        build: $PWD/202/docker
+        environment:
+            PS_DOMAIN: "172.20.0.2"
+            RUN_USER: clotaire
+        ports:
+            - 2180:80
+        volumes:
+            - $PWD:/var/www/html/modules/stripe_official
+volumes:
+  data:
+

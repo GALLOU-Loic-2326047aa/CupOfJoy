@@ -1,0 +1,34 @@
+services:
+  _defaults:
+    public: true
+
+  ##############
+  # Your Module
+
+  stripe_official.module:
+    class: stripe_official
+    factory: ['Module', 'getInstanceByName']
+    arguments:
+      - 'stripe_official'
+
+  stripe_official.context:
+    class: Context
+    factory: ['Context', 'getContext']
+
+  #####################
+  # PrestaShop Account
+  stripe_official.ps_accounts_installer:
+    class: 'PrestaShop\PsAccountsInstaller\Installer\Installer'
+    arguments:
+      - '^7.0.9'
+
+  stripe_official.ps_accounts_facade:
+    class: 'PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts'
+    arguments:
+      - '@stripe_official.ps_accounts_installer'
+
+  StripeOfficial\Controllers\admin\SkipCloudSyncDependenciesController:
+    class: 'StripeOfficial\Controllers\admin\SkipCloudSyncDependenciesController'
+    tags: ['controller.service_arguments']
+    arguments:
+      - '@service_container'

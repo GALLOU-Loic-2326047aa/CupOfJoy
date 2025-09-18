@@ -1,0 +1,53 @@
+{
+    "name": "202-ecommerce/stripe_official",
+    "description": "PrestaShop module Stripe Official",
+    "homepage": "https://stripe.com/",
+    "license": "OSL-3.0",
+    "authors": [
+        {
+            "name": "PrestaShop SA",
+            "email": "contact@prestashop.com"
+        }
+    ],
+    "config": {
+        "preferred-install": "dist",
+        "classmap-authoritative": true,
+        "optimize-autoloader": true,
+        "prepend-autoloader": false,
+        "platform": {
+            "php": "7.4"
+        }
+    },
+    "require": {
+        "php": ">=7.1",
+        "stripe/stripe-php": "15.7.*",
+        "prestashop/module-lib-mbo-installer": "^3.0",
+        "prestashop/module-lib-service-container": "^2.0",
+        "prestashop/module-lib-cache-directory-provider": "^1.0",
+        "prestashop/prestashop-accounts-installer": "^1.0",
+        "symfony/lock": "> 3.4"
+    },
+    "require-dev": {
+        "prestashop/php-dev-tools": "^4.3",
+        "phpunit/phpunit": "^9.5",
+        "friendsofphp/php-cs-fixer": "^3.15",
+        "prestashop/autoindex": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Stripe_officialClasslib\\": "vendor/totpsclasslib/src/",
+            "StripeOfficial\\Controllers\\": "controllers/",
+            "StripeOfficial\\Classes\\": "classes/",
+            "StripeOfficial\\Controllers\\Traits\\": "controllers/Traits/"
+        },
+        "classmap": [
+            "classes/",
+            "controllers/",
+            "stripe_official.php"
+        ],
+        "files": [],
+        "exclude-from-classmap": []
+    },
+    "type": "prestashop-module",
+    "author": "PrestaShop"
+}

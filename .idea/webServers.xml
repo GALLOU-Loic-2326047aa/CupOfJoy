@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="5f86b644-26e4-4372-bbbe-c4f7b1e4f24d" name="always data">
+        <fileTransfer rootFolder="/home/loic/Desktop/Fichier/Docker/ProjetSae/SiteLoic" accessType="SFTP" host="82.67.161.42" port="22" sshConfigId="0a689613-847a-45ad-b2c8-887b377c7182" sshConfig="loic@82.67.161.42:22 agent" authAgent="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

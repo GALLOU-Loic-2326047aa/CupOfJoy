@@ -1,0 +1,56 @@
+<?php
+/**
+ * 2007-2022 PrestaShop SA and Contributors
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/AFL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2022 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
+
+use PrestaShop\Module\Doofinder\Src\Entity\DoofinderApiSingleScript;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+/**
+ * Upgrade the module to version 4.8.2.
+ *
+ * This upgrade:
+ * - Uses existing installation credentials (installation ID, region, API key)
+ *   to initialize DoofinderApiSingleScript.
+ * - Calls `setSingleScriptFlag()` to mark that the single-script is enabled.
+ * - Stores DF_UNIQUE_SCRIPT = true in configuration.
+ *
+ * @param Doofinder $module the module instance being upgraded
+ *
+ * @return bool true if the flag is set successfully, false otherwise
+ */
+function upgrade_module_4_8_2($module)
+{
+    $installationId = Configuration::get('DF_INSTALLATION_ID');
+    $region = Configuration::get('DF_REGION');
+    $apiKey = Configuration::get('DF_API_KEY');
+
+    $apiModule = new DoofinderApiSingleScript($installationId, $region, $apiKey);
+    $apiModule->setSingleScriptFlag();
+
+    return Configuration::updateValue('DF_UNIQUE_SCRIPT', true);
+}

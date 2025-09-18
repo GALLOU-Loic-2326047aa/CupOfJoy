@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>laposteproexpeditions</name>
+    <displayName><![CDATA[La Poste Pro Exp&eacute;ditions]]></displayName>
+    <version><![CDATA[1.1.0]]></version>
+    <description><![CDATA[Vos commandes sont synchronis&eacute;es avec votre compte La Poste Pro Exp&eacute;ditions, o&ugrave; vous pouvez automatiser vos r&egrave;gles d&rsquo;exp&eacute;dition pour g&eacute;n&eacute;rer vos bordereaux.]]></description>
+    <author><![CDATA[La Poste]]></author>
+    <tab><![CDATA[shipping_logistics]]></tab>
+	<confirmUninstall><![CDATA[Êtes-vous sûr de vouloir désinstaller ?]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>

@@ -1,0 +1,17 @@
+stripe_official_skip_cloudsync_dependencies:
+  path: stripe_official/skip-cloudsync-dependencies
+  methods: [POST]
+  defaults:
+    _controller: 'StripeOfficial\Controllers\admin\SkipCloudSyncDependenciesController::skipAction'
+
+stripe_official_get_cloudsync_dependencies:
+  path: stripe_official/get-cloudsync-dependencies
+  methods: [POST]
+  defaults:
+    _controller: 'StripeOfficial\Controllers\admin\SkipCloudSyncDependenciesController::getAction'
+
+stripe_official_cloudsync_clear_cache:
+  path: stripe_official/clear-cache-for-cloudsync
+  methods: [POST]
+  defaults:
+    _controller: 'StripeOfficial\Controllers\admin\SkipCloudSyncDependenciesController::clearCacheAction'

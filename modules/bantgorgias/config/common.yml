@@ -1,0 +1,25 @@
+services:
+  _defaults:
+    public: true
+
+  bantgorgias.module:
+    class: bantgorgias
+    factory: ['Module', 'getInstanceByName']
+    arguments:
+      - 'bantgorgias'
+
+  bantgorgias.context:
+    class: Context
+    factory: ['Context', 'getContext']
+
+  #####################
+  # PrestaShop Account
+  bantgorgias.ps_accounts_installer:
+    class: 'PrestaShop\PsAccountsInstaller\Installer\Installer'
+    arguments:
+      - '5.0'
+
+  bantgorgias.ps_accounts_facade:
+    class: 'PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts'
+    arguments:
+      - '@bantgorgias.ps_accounts_installer'

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>bantgorgias</name>
+    <displayName><![CDATA[Int&eacute;gration Officielle de Gorgias - Helpdesk]]></displayName>
+    <version><![CDATA[2.0.2]]></version>
+    <description><![CDATA[Synchronisez vos commandes de magasin Prestashop avec Gorgias, un logiciel d&#039;assistance tout-en-un pour le commerce &eacute;lectronique. Il vous permet d&#039;acc&eacute;der &agrave; toutes vos donn&eacute;es client, de g&eacute;rer les remboursements et de cr&eacute;er des r&egrave;gles / macros pour un support client efficace]]></description>
+    <author><![CDATA[Blueant Solutions]]></author>
+    <tab><![CDATA[administration]]></tab>
+	<confirmUninstall><![CDATA[Êtes-vous sûr de vouloir désinstaller ce module?]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>
