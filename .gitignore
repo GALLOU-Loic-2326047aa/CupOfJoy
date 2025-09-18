@@ -1,0 +1,7 @@
+# Ignore vendor files
+modules/stripe_official/vendor/
+vendor/
+
+# Ignore local config files
+.env
+config.php
