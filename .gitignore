@@ -85,3 +85,6 @@ Thumbs.db
 
 # Autres dossiers spécifiques
 modules/stripe_official/vendor/
+
+#Le .idea
+/.idea/
