@@ -1,0 +1,124 @@
+# PHP
+/vendor/
+/composer.lock
+.env*
+*.log
+
+# Node.js / JavaScript / TypeScript
+node_modules/
+npm-debug.log*
+yarn-error.log*
+dist/
+build/
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+env/
+venv/
+pip-log.txt
+
+# Java / Kotlin / Gradle
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+.gradle/
+out/
+
+# Go
+bin/
+*.exe
+*.test
+*.out
+go.sum
+go.mod
+
+# Ruby / Bundler
+*.gem
+*.rbc
+.bundle/
+vendor/bundle/
+log/
+tmp/
+
+# Rust / Cargo
+target/
+Cargo.lock
+
+# C#
+*.dll
+*.pdb
+*.cache
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vs/
+obj/
+
+# SQL
+*.sqlite3
+*.db
+
+# Vue.js
+/dist/
+*.local
+
+# Configs et fichiers sensibles
+.env
+config.php
+
+# OS spécifiques
+.DS_Store
+Thumbs.db
+
+# Autres dossiers spécifiques
+# A decommenter
+# modules/stripe_official/vendor/
+
+# Dossier a gitignore (a modifier plus tard)
+admin-api/
+admin350e44cybetj2my7gso/
+app/
+cache/
+classes/
+config/
+controllers/
+docs/
+download/
+img/
+js/
+localization/
+mails/
+override/
+pdf/
+src/
+translations/
+upload/
+var/
+webservice
+
+# Fichier a gitignore (a modifier plus tard=
+.htaccess
+1_en_0_sitemap.xml
+1_fr_0_sitemap.xml
+1_index_sitemap.xml
+autoload.php
+error500.html
+index.php
+init.php
+INSTALL.txt
+LICENSES
+Makefile
+phpstan-baseline.neon
+phpstan-disallowed-calls.neon
+phpstan-tmp-legacy-layout-baseline.neon
+phpstan.neon.dist
+rector.php
+robots.txt
