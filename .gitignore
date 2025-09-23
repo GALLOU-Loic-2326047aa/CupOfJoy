@@ -93,7 +93,7 @@ controllers/
 docs/
 download/
 img/
-js/
+/js/
 localization/
 mails/
 override/
@@ -111,7 +111,7 @@ webservice
 1_index_sitemap.xml
 autoload.php
 error500.html
-index.php
+/index.php
 init.php
 INSTALL.txt
 LICENSES
