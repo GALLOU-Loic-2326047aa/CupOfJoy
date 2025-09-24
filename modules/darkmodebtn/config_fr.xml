@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>darkmodebtn</name>
+    <displayName><![CDATA[Dark Mode Button]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Ajoute un bouton centr&eacute; permettant de basculer en mode clair/sombre.]]></description>
+    <author><![CDATA[Maxime A]]></author>
+    <tab><![CDATA[front_office_features]]></tab>
+    <is_configurable>0</is_configurable>
+    <need_instance>1</need_instance>
+</module>

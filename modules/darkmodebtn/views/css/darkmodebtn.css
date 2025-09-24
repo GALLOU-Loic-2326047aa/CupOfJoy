@@ -1,0 +1,27 @@
+/* Quand le darkmode est activé */
+body.darkmode,
+#wrapper.darkmode,
+h2.darkmode {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Liens */
+body.darkmode a,
+#wrapper.darkmode a,
+h2.darkmode a   {
+    color: #90caf9 !important;
+}
+
+/* Boutons */
+body.darkmode .btn,
+#wrapper.darkmode .btn {
+    background-color: #333 !important;
+    color: #fff !important;
+    border-color: #555 !important;
+}
+
+/* Transition fluide */
+body, #wrapper {
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
