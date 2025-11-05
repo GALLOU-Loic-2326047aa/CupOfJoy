@@ -1,0 +1,1 @@
+<div>Affichage depuis Smarty !</div>
