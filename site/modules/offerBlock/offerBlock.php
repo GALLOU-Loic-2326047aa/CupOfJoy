@@ -8,7 +8,7 @@ if(!defined('_PS_VERSION_')){
     exit;
 }
 
-class offerBlock extends Module implements WidgetInterface
+class OfferBlock extends Module implements WidgetInterface
 {
     public function __construct()
     {
@@ -64,8 +64,6 @@ class offerBlock extends Module implements WidgetInterface
         Configuration::updateValue('id_product_2', 0);
         Configuration::updateValue('id_product_3', 0);
         Configuration::updateValue('id_product_4', 0);
-
-        console_log(Configuration::get('id_product_1'));
 
         return parent::install() &&
             $this->registerHook('displayHome');
@@ -237,9 +235,12 @@ class offerBlock extends Module implements WidgetInterface
                 Configuration::updateValue('OFFERBLOCK_NAME', $OFFERBLOCK_NAME, false, 0, $lang['id_lang']);
             }
 
-            $upload_dir = _PS_MODULE_DIR_ . $this->name . '/images';
+            $upload_dir = _PS_MODULE_DIR_ . $this->name . '/img/';
+            if(!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0755, true);
+            }
             foreach ($languages as $lang) {
-                $file_field = 'OFFERBBLOCK_IMG_' . $lang['id_lang'];
+                $file_field = 'OFFERBLOCK_IMG_' . $lang['id_lang'];
                 if (isset($_FILES[$file_field])
                     && !empty($_FILES[$file_field]['name'])) {
                     if ($error = ImageManager::validateUpload($_FILES[$file_field], 5000000)) {
@@ -270,8 +271,8 @@ class offerBlock extends Module implements WidgetInterface
             $table = 'offer_block';
 
             $insertData = [
-                'name' => pSQL(Tools::getValue('OFFERBLOCK_NAME', $this->context->language->id)),
-                'image' => pSQL(Tools::getValue('OFFERBLOCK_IMG', $this->context->language->id) ?? ''), // vide si aucune image uploadée
+                'name' => pSQL(Tools::getValue('OFFERBLOCK_NAME' . $lang['id_lang'])),
+                'image' => pSQL(Tools::getValue('OFFERBLOCK_IMG' . $lang['id_lang']) ?? ''), // vide si aucune image uploadée
                 'product1_id' => $product_ids[1],
                 'product2_id' => $product_ids[2],
                 'product3_id' => $product_ids[3],
