@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>rentalroute</name>
+    <displayName><![CDATA[Rental Route]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Module de location avec dur&eacute;e, d&eacute;p&ocirc;t et frais d&rsquo;installation.]]></description>
+    <author><![CDATA[GURREA.K]]></author>
+    <tab><![CDATA[Rental]]></tab>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>
