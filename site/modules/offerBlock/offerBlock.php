@@ -111,11 +111,13 @@ class OfferBlock extends Module implements WidgetInterface
                         'lang' => true
                     ],
                     [
-                        'type' => 'file_lang',
+                        'type' => 'file',
                         'label' => $this->trans('Offer block image', [], 'Modules.OfferBlock.Admin'),
                         'name' => 'OFFERBLOCK_IMG',
                         'desc' => $this->trans('Upload an image for your offer block. It will be displayed to the left of the selected products.', [], 'Modules.OfferBlock.Admin'),
-                        'lang' => true
+                        'required' => true,
+                        'lang' => true,
+                        'accept' => 'image/png, image/jpeg, image/jpg, image/gif, image/webp'
                     ],
                     [
                         'type' => 'select',
@@ -204,7 +206,7 @@ class OfferBlock extends Module implements WidgetInterface
 
         foreach ($languages as $lang) {
             $name_values[$lang['id_lang']] = Configuration::get('OFFERBLOCK_NAME_' . $lang['id_lang']);
-            $img_values[$lang['id_lang']] = Configuration::get('OFFERBLOCK_IMG', $lang['id_lang']);
+            $img_values[$lang['id_lang']] = Configuration::get('OFFERBLOCK_IMG_', $lang['id_lang']);
         }
 
         return [
@@ -224,7 +226,7 @@ class OfferBlock extends Module implements WidgetInterface
             $languages = Language::getLanguages(false);
 
             foreach($languages as $lang) {
-                $OFFERBLOCK_NAME = Tools::getValue('OFFERBLOCK_NAME', $lang['id_lang']);
+                $OFFERBLOCK_NAME = Tools::getValue('OFFERBLOCK_NAME_', $lang['id_lang']);
                 if (empty($OFFERBLOCK_NAME)) {
                     $this->context->controller->errors[] = $this->trans("Please chose a name.");
                     return;
@@ -238,8 +240,20 @@ class OfferBlock extends Module implements WidgetInterface
             }
             foreach ($languages as $lang) {
                 $file_field = 'OFFERBLOCK_IMG_' . $lang['id_lang'];
+
                 if (isset($_FILES[$file_field])
                     && !empty($_FILES[$file_field]['name'])) {
+
+                    // Vérification de l'extension (images seulement)
+                    $allowedExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
+                    $fileExtension = strtolower(pathinfo($_FILES[$file_field]['name'], PATHINFO_EXTENSION));
+                    if(!in_array($fileExtension, $allowedExtensions))
+                    {
+                        $this->context->controller->errors[] = $this->trans('Only ".png", ".jpg", ".jpeg", ".gif" or ".webp" images are allowed.',
+                            [],
+                            'Modules.OfferBlock.Admin');
+                    }
+
                     if ($error = ImageManager::validateUpload($_FILES[$file_field], 5000000)) {
                         return $this->displayError($error);
                     }
@@ -268,7 +282,7 @@ class OfferBlock extends Module implements WidgetInterface
             $table = 'offer_block';
 
             $insertData = [
-                'name' => pSQL(Tools::getValue('OFFERBLOCK_NAME' . $lang['id_lang'])),
+                'name' => pSQL(Tools::getValue('OFFERBLOCK_NAME_' . $lang['id_lang'])),
                 'image' => pSQL(Tools::getValue('OFFERBLOCK_IMG' . $lang['id_lang']) ?? ''), // vide si aucune image uploadée
                 'product1_id' => $product_ids[1],
                 'product2_id' => $product_ids[2],
