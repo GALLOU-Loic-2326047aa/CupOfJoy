@@ -5,6 +5,7 @@ if (!defined('_PS_VERSION_')) {
 
 class RateLimiter extends Module
 {
+    const BANNED_IP_TABLE = 'ratelimiter_banned_ips';
     public function __construct()
     {
         $this->name = 'ratelimiter';
@@ -23,18 +24,42 @@ class RateLimiter extends Module
 
     public function install()
     {
-        return parent::install() && $this->registerHook('actionFrontControllerInitBefore');
+        return parent::install() && $this->registerHook('actionFrontControllerInitBefore') && $this->installDatabase();
+
     }
 
     public function uninstall()
     {
-        return parent::uninstall() && $this->unregisterHook('actionFrontControllerInitBefore');
+        return parent::uninstall() && $this->unregisterHook('actionFrontControllerInitBefore') && $this->uninstallDatabase();
+    }
+
+    private function installDatabase()
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . self::BANNED_IP_TABLE . "` (
+            `id_banned_ip` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `ip_address` VARCHAR(45) NOT NULL,
+            `ban_expires_at` DATETIME NOT NULL,
+            PRIMARY KEY (`id_banned_ip`),
+            INDEX `ip_address` (`ip_address`)
+        ) ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8;";
+
+        // On exécute la requête et on retourne son résultat (true si succès, false si échec)
+        return Db::getInstance()->execute($sql);
+    }
+
+    private function uninstallDatabase()
+    {
+        $sql = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . self::BANNED_IP_TABLE . "`;";
+        return Db::getInstance()->execute($sql);
     }
 
     public function hookActionFrontControllerInitBefore($params)
     {
+        if ($this->context->controller->controller_type != 'front') {
+            return;
+        }
 
-        // Protection pour éviter que le code se refresh trop rapidement et fasse une boucle infini de chargement
+        // Protection contre les boucles infini
         if (Tools::getValue('module') == $this->name && Tools::getValue('controller') == 'banned') {
             return;
         }
@@ -43,22 +68,42 @@ class RateLimiter extends Module
             session_start();
         }
 
-        $limitAttempts = 20;
-        $timeFrameSeconds = 60;
+        $userIp = Tools::getRemoteAddr();
 
-        // Créer ou réinitialise la variable de session si elle n'existe pas ou a expiré
-        if (!isset($_SESSION['rate_limiter']) || (time() - $_SESSION['rate_limiter']['timestamp'] > $timeFrameSeconds)) {
+        $sql = new DbQuery();
+        $sql->select('ban_expires_at');
+        $sql->from(self::BANNED_IP_TABLE);
+        $sql->where('ip_address = \'' . pSQL($userIp) . '\' AND ban_expires_at > UTC_TIMESTAMP()');
+
+        if (Db::getInstance()->getValue($sql)) {
+            Tools::redirect($this->context->link->getModuleLink($this->name, 'banned', [], true));
+            exit;
+        }
+
+        $limitAttempts = 50;
+        $timeFrameSeconds = 60;
+        $banDurationMinutes = 15;
+
+        // Créer la variable session si elle n'existe pas ou est expiré.
+        if (!isset($_SESSION['rate_limiter']) || !is_array($_SESSION['rate_limiter']) || (time() - $_SESSION['rate_limiter']['timestamp'] > $timeFrameSeconds)) {
             $_SESSION['rate_limiter'] = [
                 'count' => 1,
                 'timestamp' => time(),
             ];
         } else {
-            // Augmente le compteur si la variable de session existe déjà
             $_SESSION['rate_limiter']['count']++;
         }
 
-        // Vérfie si le compteur depasse la limite d'attempts et lance le ban
         if ($_SESSION['rate_limiter']['count'] > $limitAttempts) {
+            $banExpiresAt = gmdate('Y-m-d H:i:s', strtotime("+$banDurationMinutes minutes"));
+
+            Db::getInstance()->insert(self::BANNED_IP_TABLE, [
+                'ip_address' => pSQL($userIp),
+                'ban_expires_at' => $banExpiresAt,
+            ]);
+
+            unset($_SESSION['rate_limiter']);
+
             Tools::redirect($this->context->link->getModuleLink($this->name, 'banned', [], true));
             exit;
         }
