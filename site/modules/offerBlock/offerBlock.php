@@ -4,6 +4,7 @@ use PrestaShop\PrestaShop\Core\Language\LanguageRepository;
 use PrestaShop\PrestaShop\Core\Module\ConfigurationInterface;
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 
+// Empêche l'exécution du code si la version de Prestashop n'est pas définie
 if(!defined('_PS_VERSION_')){
     exit;
 }
@@ -89,9 +90,9 @@ class OfferBlock extends Module implements WidgetInterface
         // Récupérer la liste des produits contenus dans la BD avec la langue actuelle.
         $products = Db::getInstance()->executeS('SELECT id_product, name 
                                                     FROM '._DB_PREFIX_.'product_lang 
-                                                    WHERE id_lang = '.(int)$this->context->language->id);
+                                                    WHERE id_lang = '.$this->context->language->id);
 
-        // Préparer les options des produits pour les menu déroulant
+        // Préparer les options pour les menu déroulant avec les produits
         $product_options = array_map(fn($product) => ['id' => $product['id_product'], 'name' => $product['name']], $products);
 
         $fields_form = [
@@ -114,7 +115,6 @@ class OfferBlock extends Module implements WidgetInterface
                         'label' => $this->trans('Offer block image', [], 'Modules.OfferBlock.Admin'),
                         'name' => 'OFFERBLOCK_IMG',
                         'desc' => $this->trans('Upload an image for your offer block. It will be displayed to the left of the selected products.', [], 'Modules.OfferBlock.Admin'),
-                        'required' => false,
                         'lang' => true
                     ],
                     [
@@ -128,7 +128,6 @@ class OfferBlock extends Module implements WidgetInterface
                         ],
                         'desc' => $this->trans('Select which of your products will be shown in the up left corner of the offer block.', [], 'Modules.OfferBlock.Admin'),
                         'required' => true,
-                        'lang' => false
                     ],
                     [
                         'type' => 'select',
@@ -141,7 +140,6 @@ class OfferBlock extends Module implements WidgetInterface
                         ],
                         'desc' => $this->trans('Select which of your products will be shown in the down left corner of the offer block.', [], 'Modules.OfferBlock.Admin'),
                         'required' => true,
-                        'lang' => false
                     ],
                     [
                         'type' => 'select',
@@ -154,7 +152,6 @@ class OfferBlock extends Module implements WidgetInterface
                         ],
                         'desc' => $this->trans('Select which of your products will be shown in the up right corner of the offer block.', [], 'Modules.OfferBlock.Admin'),
                         'required' => true,
-                        'lang' => false
                     ],
                     [
                         'type' => 'select',
@@ -167,7 +164,6 @@ class OfferBlock extends Module implements WidgetInterface
                         ],
                         'desc' => $this->trans('Select which of your products will be shown in the down right corner of the offer block.', [], 'Modules.OfferBlock.Admin'),
                         'required' => true,
-                        'lang' => false
                     ],
                 ],
                 'submit' => [
@@ -190,8 +186,9 @@ class OfferBlock extends Module implements WidgetInterface
         $helper->submit_action = 'btnSubmitOfferBlock';
         $helper->enctype = true;
 
-        $helper->field_values = $this->getConfigFieldsValues();
         $helper->tpl_vars = [
+            'uri' => $this->getPathUri(),
+            'fields_value' => $this->getConfigFieldsValues(),
             'languages' => $this->context->controller->getLanguages(),
             'id_language' => $this->context->language->id,
         ];
