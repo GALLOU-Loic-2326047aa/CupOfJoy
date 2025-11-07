@@ -9,6 +9,8 @@ if(!defined('_PS_VERSION_')){
     exit;
 }
 
+require_once __DIR__ .'/classes/offerBlockItem.php';
+
 class OfferBlock extends Module implements WidgetInterface
 {
     public function __construct()
@@ -38,6 +40,8 @@ class OfferBlock extends Module implements WidgetInterface
         }
 
         $this->templateFile = 'module:offerBlock/views/templates/hook/offerblock.tpl';
+
+        $this->offerBlockId = 0;
     }
 
     public function install()
@@ -307,9 +311,28 @@ class OfferBlock extends Module implements WidgetInterface
 
     public function getWidgetVariables($hookName, array $params)
     {
-        return([
-            'test' => 'test1 var',
-            'test2' => 'test2 var'
-        ]);
+        $this->offerBlockId = isset($params['offer_block_id']) ? (int) $params['offer_block_id'] : null;
+
+        if ($this->offerBlockId) {
+            $offerBlock = $this->getOfferBlockById($this->offerBlockId);
+        } else {
+            // Cas par défaut, chargement de la première bannière ou une bannière "par défaut"
+            $offerBlocks = $this->getOfferBlocks();
+            $offerBlock = !empty($offerBlocks) ? $offerBlocks[0] : null;
+        }
+
+        return [
+            'offerBlock' => $offerBlock,
+        ];
+    }
+
+    public function getOfferBlockById($id)
+    {
+        return (offerBlockItem::getOfferBlockById($id));
+    }
+
+    public function getOfferBlocks()
+    {
+        return (offerBlockItem::getOfferBlocks());
     }
 }
