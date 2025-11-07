@@ -17,10 +17,10 @@ class offerBlockItem extends ObjectModel
             'id_offer_block'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
             'name'              => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'required' => true, 'size' => 255],
             'image'             => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'required' => true, 'size' => 255],
-            'product1_id'       => ['type' => self::TYPE_INT, 'validate' => 'isString', 'required' => true, 'size' => 10],
-            'product2_id'       => ['type' => self::TYPE_INT, 'validate' => 'isString', 'required' => true, 'size' => 10],
-            'product3_id'       => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true, 'size' => 10],
-            'product4_id'       => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true, 'size' => 10],
+            'product1_id'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
+            'product2_id'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
+            'product3_id'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
+            'product4_id'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
         ],
     ];
 
@@ -32,7 +32,7 @@ class offerBlockItem extends ObjectModel
         $offerBlocks = [];
         if ($ids) {
             foreach ($ids as $row) {
-                $offerBlock = new self($row['id_ps_banner_item']);
+                $offerBlock = new self($row['id_offer_block']);
                 if (Validate::isLoadedObject($offerBlock)) {
                     $offerBlocks[] = $offerBlock;
                 }
