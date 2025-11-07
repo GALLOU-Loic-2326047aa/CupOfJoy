@@ -1,7 +1,7 @@
 # PHP
 /vendor/
 /composer.lock
-.env
+.env*
 *.log
 
 # Node.js / JavaScript / TypeScript
@@ -29,9 +29,7 @@ pip-log.txt
 *.ear
 *.iml
 .gradle/
-build/
 out/
-*.log
 
 # Go
 bin/
@@ -48,14 +46,12 @@ go.mod
 vendor/bundle/
 log/
 tmp/
-*.log
 
 # Rust / Cargo
 target/
 Cargo.lock
 
 # C#
-*.exe
 *.dll
 *.pdb
 *.cache
@@ -64,7 +60,6 @@ Cargo.lock
 *.userosscache
 *.sln.docstates
 *.vs/
-bin/
 obj/
 
 # SQL
@@ -166,3 +161,46 @@ modules/statsregistrations/
 modules/statssales/
 modules/statssearch/
 modules/statsstock/
+# A decommenter
+# modules/stripe_official/vendor/
+
+# Dossier a gitignore (a modifier plus tard)
+admin-api/
+admin350e44cybetj2my7gso/
+app/
+cache/
+classes/
+config/
+controllers/
+docs/
+download/
+img/
+/js/
+localization/
+mails/
+override/
+pdf/
+src/
+translations/
+upload/
+var/
+webservice
+
+# Fichier a gitignore (a modifier plus tard=
+.htaccess
+1_en_0_sitemap.xml
+1_fr_0_sitemap.xml
+1_index_sitemap.xml
+autoload.php
+error500.html
+/index.php
+init.php
+INSTALL.txt
+LICENSES
+Makefile
+phpstan-baseline.neon
+phpstan-disallowed-calls.neon
+phpstan-tmp-legacy-layout-baseline.neon
+phpstan.neon.dist
+rector.php
+robots.txt
