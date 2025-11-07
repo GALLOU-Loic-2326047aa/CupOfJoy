@@ -323,7 +323,7 @@ class OfferBlock extends Module implements WidgetInterface
             $offerBlock = $this->getOfferBlockById($this->offerBlockId);
         } else {
             // Cas par défaut, chargement de la première bannière ou une bannière "par défaut"
-            $offerBlocks = $this->getOfferBlocks();
+            $offerBlocks = $this->getOfferBlocks($this->context->language->id);
             $offerBlock = !empty($offerBlocks) ? $offerBlocks[0] : null;
         }
 
@@ -337,8 +337,8 @@ class OfferBlock extends Module implements WidgetInterface
         return (offerBlockItem::getOfferBlockById($id));
     }
 
-    public function getOfferBlocks()
+    public function getOfferBlocks($id_lang)
     {
-        return (offerBlockItem::getOfferBlocks());
+        return (offerBlockItem::getOfferBlocks($id_lang));
     }
 }
