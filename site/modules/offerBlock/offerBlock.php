@@ -190,7 +190,7 @@ class OfferBlock extends Module implements WidgetInterface
         $helper->show_cancel_button = false;
         $helper->identifier = $this->identifier;
         $helper->submit_action = 'btnSubmitOfferBlock';
-        $helper->enctype = true;
+        $helper->form_enctype = 'multipart/form-data';
 
         $helper->tpl_vars = [
             'uri' => $this->getPathUri(),
@@ -210,7 +210,7 @@ class OfferBlock extends Module implements WidgetInterface
 
         foreach ($languages as $lang) {
             $name_values[$lang['id_lang']] = Configuration::get('OFFERBLOCK_NAME_' . $lang['id_lang']);
-            $img_values[$lang['id_lang']] = Configuration::get('OFFERBLOCK_IMG_', $lang['id_lang']);
+            $img_values[$lang['id_lang']] = Configuration::get('OFFERBLOCK_IMG_'. $lang['id_lang']);
         }
 
         return [
@@ -242,11 +242,14 @@ class OfferBlock extends Module implements WidgetInterface
             if(!file_exists($upload_dir)) {
                 mkdir($upload_dir, 0755, true);
             }
+
             foreach ($languages as $lang) {
                 $file_field = 'OFFERBLOCK_IMG_' . $lang['id_lang'];
 
                 if (isset($_FILES[$file_field])
-                    && !empty($_FILES[$file_field]['name'])) {
+                    && isset($_FILES[$file_field]['name'])
+                    && !empty($_FILES[$file_field]['name'])
+                    && $_FILES[$file_field]['error'] === UPLOAD_ERR_OK) {
 
                     // Vérification de l'extension (images seulement)
                     $allowedExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
@@ -256,12 +259,13 @@ class OfferBlock extends Module implements WidgetInterface
                         $this->context->controller->errors[] = $this->trans('Only ".png", ".jpg", ".jpeg", ".gif" or ".webp" images are allowed.',
                             [],
                             'Modules.OfferBlock.Admin');
+                        continue;
                     }
 
                     if ($error = ImageManager::validateUpload($_FILES[$file_field], 5000000)) {
                         return $this->displayError($error);
                     }
-                    $file_name = md5($_FILES[$file_field]['name']) . '.' . pathinfo($_FILES[$file_field]['name'], PATHINFO_EXTENSION);
+                    $file_name = md5($_FILES[$file_field]['name'] . time()) . '.' . $fileExtension;
 
                     if (!move_uploaded_file($_FILES[$file_field]['tmp_name'], $upload_dir . $file_name)) {
                         return $this->displayError($this->trans('An error occurred while attempting to upload the file.', [], 'Admin.Notifications.Error'));
@@ -283,15 +287,17 @@ class OfferBlock extends Module implements WidgetInterface
                 Configuration::updateValue('id_product_'.$i, $product_id);
             }
 
+            $default_lang = Configuration::get('PS_LANG_DEFAULT');
+
             $table = 'offer_block';
 
             $insertData = [
-                'name' => pSQL(Tools::getValue('OFFERBLOCK_NAME_' . $lang['id_lang'])),
-                'image' => pSQL(Tools::getValue('OFFERBLOCK_IMG' . $lang['id_lang']) ?? ''), // vide si aucune image uploadée
-                'product1_id' => $product_ids[1],
-                'product2_id' => $product_ids[2],
-                'product3_id' => $product_ids[3],
-                'product4_id' => $product_ids[4],
+                'name' => pSQL(Tools::getValue('OFFERBLOCK_NAME_' . $default_lang)),
+                'image' => pSQL(Configuration::get('OFFERBLOCK_IMG', $default_lang) ?? ''), // vide si aucune image uploadée
+                'product1_id' => (int)$product_ids[1],
+                'product2_id' => (int)$product_ids[2],
+                'product3_id' => (int)$product_ids[3],
+                'product4_id' => (int)$product_ids[4],
             ];
 
             if(Db::getInstance()->insert($table, $insertData)) {
