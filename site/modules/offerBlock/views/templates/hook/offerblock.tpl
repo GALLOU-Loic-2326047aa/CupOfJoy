@@ -1,6 +1,5 @@
-<div>
+<section class="offer_block">
     {if isset($offerBlock)}
-        <div class="offer_block">
             <div>
                 <h3>{$offerBlock->name}</h3>
             {if $offerBlock->image}
@@ -8,15 +7,26 @@
             {/if}
             </div>
 
-            <div class="products">
+            <section class="offer_block_products">
                 {* Vous pouvez accéder aux Images des produits *}
-                <img src="{$offerBlock->productImages[1]}" alt="Product 1 Image">
-                <img src="{$offerBlock->productImages[2]}" alt="Product 2 Image">
-                <img src="{$offerBlock->productImages[3]}" alt="Product 3 Image">
-                <img src="{$offerBlock->productImages[4]}" alt="Product 4 Image">
-            </div>
-        </div>
+                <div class="offer_block_row1">
+                    <div>
+                        <img src="{$offerBlock->productImages[1]}" alt="Product 1 Image">
+                    </div>
+                    <div>
+                        <img src="{$offerBlock->productImages[2]}" alt="Product 2 Image">
+                    </div>
+                </div>
+                <div class="offer_block_row2">
+                    <div>
+                        <img src="{$offerBlock->productImages[3]}" alt="Product 3 Image">
+                    </div>
+                    <div>
+                        <img src="{$offerBlock->productImages[4]}" alt="Product 4 Image">
+                    </div>
+                </div>
+            </section>
     {else}
         erreur
     {/if}
-</div>
+</section>
