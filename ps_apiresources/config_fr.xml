@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>ps_apiresources</name>
+    <displayName><![CDATA[Ressources API PrestaShop]]></displayName>
+    <version><![CDATA[0.1.0]]></version>
+    <description><![CDATA[Inclut les ressources permettant d&#039;utiliser l&#039;API pour le domaine PrestaShop, tous les endpoints sont bas&eacute;s sur les commandes/requ&ecirc;tes CQRS du Core et le framework APIPlatform est utilis&eacute; comme base.]]></description>
+    <author><![CDATA[PrestaShop]]></author>
+    <tab><![CDATA[administration]]></tab>
+    <is_configurable>0</is_configurable>
+    <need_instance>0</need_instance>
+</module>
