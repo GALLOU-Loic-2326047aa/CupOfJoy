@@ -1,0 +1,73 @@
+/*-------------------*/
+/* Gestion du bouton de connexion dans le header */
+/*-------------------*/
+
+
+#_desktop_user_info .user-info{
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 5px;
+    border: 2px solid black;
+    margin-top: 4px !important;
+}
+
+/*-------------------*/
+/* Gestion du bouton du panier dans le header */
+/*-------------------*/
+
+#_desktop_cart .blockcart.cart-preview.inactive{
+    background: red !important;
+}
+
+/*-------------------*/
+/* Gestion du bouton 'Nous contacter' dans le header */
+/*-------------------*/
+
+#hidden-sm-down .col-md-5.col-xs-12 {
+
+}
+
+/*-------------------*/
+/* Gestion de la barre de recherche */
+/*-------------------*/
+
+#search_widget .ui-autocomplete-input{
+
+}
+
+/*-------------------*/
+/* Gestion du Logo */
+/*-------------------*/
+#row .col-md-2._desktop_logo {
+
+}
+
+/*-------------------*/
+/* Gestion du menu de selection */
+/*-------------------*/
+
+#top_sub_menu_66036 .category-5{
+ color: red !important;
+}
+#top-menu .category-6{
+
+}
+#top-menu .category-9{
+
+}
+#top-menu .category-4{
+
+}
+#top-menu .category-5{
+
+}
+
+/*-------------------*/
+/* Gestion du block de text Newsletter dans le footer */
+/*-------------------*/
+
+#block-newsletter-label {
+    color: red !important;
+}
