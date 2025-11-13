@@ -1,4 +1,36 @@
 /*-------------------*/
+/* Gestion du header de Contactez-nous au panier*/
+/*-------------------*/
+
+#header .header-nav .container{
+    background-color: greenyellow;
+}
+
+/*-------------------*/
+/* Gestion du header qui fait toute la longueur de l'écran */
+/*-------------------*/
+
+#header .header-nav {
+    background-color: darkorange;
+}
+
+/*-------------------*/
+/* Gestion de menu dans le header */
+/*-------------------*/
+
+#header .header-top {
+    background-color: deeppink;
+}
+
+/*-------------------*/
+/* Gestion du sous-menu des propositions */
+/*-------------------*/
+
+.popover.sub-menu.js-sub-menu {
+    background-color: darkmagenta;
+}
+
+/*-------------------*/
 /* Gestion du bouton de connexion dans le header */
 /*-------------------*/
 
@@ -46,6 +78,7 @@
 
 /*-------------------*/
 /* Gestion du menu de selection */
+/* A vérifier  */
 /*-------------------*/
 
 #top_sub_menu_66036 .category-5{
@@ -65,9 +98,65 @@
 }
 
 /*-------------------*/
+/* Gestion des conteneurs de prix et description des produits */
+/*-------------------*/
+
+.product-miniature .product-description {
+    background-color: #3dff00 !important;
+}
+
+/*-------------------*/
+/* Gestion des étiquettes réduction et neuf */
+/*-------------------*/
+
+.product-flags .product-flag.discount {
+    background-color: gold;
+}
+
+/*-------------------*/
 /* Gestion du block de text Newsletter dans le footer */
 /*-------------------*/
 
 #block-newsletter-label {
     color: red !important;
+}
+
+/*-------------------*/
+/* Gestion de la barre d'email du footer pour la Newsletter*/
+/*-------------------*/
+
+#input-wrapper {
+
+}
+
+/*-------------------*/
+/* Gestion du bouton 'S'abonner' du footer */
+/*-------------------*/
+
+#blockEmailSubscription_displayFooterBefore .btn.btn-primary[type="submit"] {
+    background-color: #ff00ea !important;
+}
+
+/*-------------------*/
+/* Gestion du bouton 'S'abonner' du footer au survol */
+/*-------------------*/
+
+#blockEmailSubscription_displayFooterBefore .btn.btn-primary[type="submit"]:hover {
+    background-color: #ffffff !important;
+}
+
+/*-------------------*/
+/* Gestion du footer */
+/*-------------------*/
+
+#footer {
+    background-color: #00ffc4;
+}
+
+/*-------------------*/
+/* Gestion du bloc regroupant la phrase Newsletter, abonner, email */
+/*-------------------*/
+
+#blockEmailSubscription_displayFooterBefore .row {
+    background-color: #ffea00;
 }
