@@ -27,7 +27,7 @@ class Pro_Account extends Module
             || !$this->installDatabase()
             || !$this->registerHook('actionCustomerAccountAdd')
             || !$this->registerHook('additionalCustomerFormFields')
-            || !$this->registerHook('actionFrontControllerSetMedia')
+            || !$this->registerHook('displayHeader')
         ) {
             return false;
         }
@@ -57,29 +57,8 @@ class Pro_Account extends Module
         return Db::getInstance()->execute("DROP TABLE IF EXISTS `"._DB_PREFIX_."customer_pro_data`");
     }
 
-    public function hookAdditionalCustomerFormFields($params)
-    {
-        return [
-            (new FormField)
-                ->setName('is_pro')
-                ->setType('checkbox')
-                ->setLabel($this->l('Je suis un professionnel')),
 
-            (new FormField)
-                ->setName('company_name')
-                ->setType('text')
-                ->setLabel($this->l('Nom de l\'entreprise'))
-                ->addAvailableValue('css-class', 'pro-field')
-                ->setRequired(true),
-
-            (new FormField)
-                ->setName('siret')
-                ->setType('text')
-                ->setLabel($this->l('Numéro de SIRET'))
-                ->addAvailableValue('css-class', 'pro-field'),
-        ];
-    }
-
+    // BACK-END //
     public function hookActionCustomerAccountAdd($params)
     {
         if (!Tools::isSubmit('is_pro')) {
@@ -101,14 +80,49 @@ class Pro_Account extends Module
         }
     }
 
-    public function hookActionFrontControllerSetMedia()
+    // FRONT-END //
+    public function hookDisplayHeader()
     {
-        if ('authentication' === $this->context->controller->php_self) {
-            $this->context->controller->registerJavascript(
-                'module-pro_account-front-js', // un identifiant unique
-                'modules/' . $this->name . '/views/js/front.js', // le chemin relatif
-                ['position' => 'bottom', 'priority' => 150] // options
-            );
+        $this->context->controller->addJS($this->_path . 'views/js/front.js');
+
+        $js_vars = [];
+
+        if ($this->context->customer->isLogged()) {
+            $is_pro = (bool)Db::getInstance()->getValue('SELECT 1 FROM `'._DB_PREFIX_.'customer_pro_data` WHERE `id_customer` = '.(int)$this->context->customer->id);
+            if ($is_pro) {
+                $js_vars['customerIsPro'] = true;
+            }
         }
+
+        if ($this->context->controller->php_self == 'authentication') {
+            $js_vars['proAccountAjaxUrl'] = $this->context->link->getModuleLink('pro_account', 'ajax');
+        }
+
+        if (!empty($js_vars)) {
+            Media::addJsDef($js_vars);
+        }
+    }
+
+    public function hookAdditionalCustomerFormFields($params)
+    {
+        return [
+            (new FormField)
+                ->setName('is_pro')
+                ->setType('checkbox')
+                ->setLabel($this->l('Je suis un professionnel')),
+
+            (new FormField)
+                ->setName('company_name')
+                ->setType('text')
+                ->setLabel($this->l('Nom de l\'entreprise'))
+                ->addAvailableValue('css-class', 'pro-field')
+                ->setRequired(true),
+
+            (new FormField)
+                ->setName('siret')
+                ->setType('text')
+                ->setLabel($this->l('Numéro de SIRET'))
+                ->addAvailableValue('css-class', 'pro-field'),
+        ];
     }
 }
