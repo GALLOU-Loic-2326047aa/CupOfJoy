@@ -109,8 +109,36 @@
 /* Gestion des étiquettes réduction et neuf */
 /*-------------------*/
 
-.product-flags .product-flag.discount {
-    background-color: gold;
+.product-miniature .product-flags li.product-flag.discount {
+    background-color: gold !important;
+}
+
+.product-miniature .product-flags li.product-flag {
+    background-color: hotpink !important;
+}
+
+/*-------------------*/
+/* Gestion du block d'aperçu des aricles */
+/*-------------------*/
+
+.product-miniature .highlighted-informations {
+    background-color: #0dcc13;
+}
+
+/*-------------------*/
+/* Gestion de fond du body */
+/*-------------------*/
+
+#wrapper {
+    background-color: lightskyblue !important;
+}
+
+/*-------------------*/
+/* Gestion du block Custom Text juste avant "En Promo" */
+/*-------------------*/
+
+#custom-text {
+    background-color: #0074d9;
 }
 
 /*-------------------*/
@@ -159,4 +187,52 @@
 
 #blockEmailSubscription_displayFooterBefore .row {
     background-color: #ffea00;
+}
+
+/*-------------------*/
+/* Page Vêtements - Gestion du block Accueil */
+/*-------------------*/
+
+.block-categories {
+    background-color: coral;
+}
+
+/*-------------------*/
+/* Page Vêtements - Gestion du block Fournisseurs */
+/*-------------------*/
+
+#search_filters_suppliers {
+    background-color: aquamarine;
+}
+
+/*-------------------*/
+/* Page Vêtements - Gestion du block Marques */
+/*-------------------*/
+
+#search_filters_brands {
+    background-color: lightcyan;
+}
+
+/*-------------------*/
+/* Page Vêtements - Gestion du block des filtres  */
+/*-------------------*/
+
+#search_filters {
+    background-color: cyan;
+}
+
+/*-------------------*/
+/* Page Vêtements - Gestion du block de description */
+/*-------------------*/
+
+.card-block {
+    background-color: orangered;
+}
+
+/*-------------------*/
+/* Page Vêtements - Gestion du block des sous-catégories */
+/*-------------------*/
+
+#subcategories {
+    background-color: coral;
 }
