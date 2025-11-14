@@ -1,0 +1,43 @@
+/*-------------------*/
+/* Gestion des conteneurs de prix et description des produits */
+/*-------------------*/
+
+.product-miniature .product-description {
+    background-color: #3dff00 !important;
+}
+
+/*-------------------*/
+/* Gestion des étiquettes réduction et neuf */
+/*-------------------*/
+
+.product-miniature .product-flags li.product-flag.discount {
+    background-color: gold !important;
+}
+
+.product-miniature .product-flags li.product-flag {
+    background-color: hotpink !important;
+}
+
+/*-------------------*/
+/* Gestion du block d'aperçu des aricles */
+/*-------------------*/
+
+.product-miniature .highlighted-informations {
+    background-color: #0dcc13;
+}
+
+/*-------------------*/
+/* Gestion de fond du body */
+/*-------------------*/
+
+#wrapper {
+    background-color: lightskyblue !important;
+}
+
+/*-------------------*/
+/* Gestion du block Custom Text juste avant "En Promo" */
+/*-------------------*/
+
+#custom-text {
+    background-color: #0074d9;
+}

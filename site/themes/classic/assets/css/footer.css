@@ -1,0 +1,47 @@
+/*-------------------*/
+/* Gestion du block de text Newsletter dans le footer */
+/*-------------------*/
+
+#block-newsletter-label {
+    color: red !important;
+}
+
+/*-------------------*/
+/* Gestion de la barre d'email du footer pour la Newsletter*/
+/*-------------------*/
+
+#input-wrapper {
+
+}
+
+/*-------------------*/
+/* Gestion du bouton 'S'abonner' du footer */
+/*-------------------*/
+
+#blockEmailSubscription_displayFooterBefore .btn.btn-primary[type="submit"] {
+    background-color: #ff00ea !important;
+}
+
+/*-------------------*/
+/* Gestion du bouton 'S'abonner' du footer au survol */
+/*-------------------*/
+
+#blockEmailSubscription_displayFooterBefore .btn.btn-primary[type="submit"]:hover {
+    background-color: #ffffff !important;
+}
+
+/*-------------------*/
+/* Gestion du footer */
+/*-------------------*/
+
+#footer {
+    background-color: #00ffc4;
+}
+
+/*-------------------*/
+/* Gestion du bloc regroupant la phrase Newsletter, abonner, email */
+/*-------------------*/
+
+#blockEmailSubscription_displayFooterBefore .row {
+    background-color: #ffea00;
+}
