@@ -5,6 +5,8 @@ if (!defined('_PS_VERSION_')) {
 }
 class RecaptchaFree extends Module
 {
+    private $pubKey;
+    private $priKey;
     public function __construct()
     {
         $this->name = 'recaptchafree';
@@ -22,6 +24,10 @@ class RecaptchaFree extends Module
 
         $this->displayName = $this->l('Version de reCaptcha gratuite');
         $this->description = $this->l('Ajoute Google reCAPTCHA aux formulaires.');
+
+        $this->pubKey = $_ENV['PUBLIC_KEY_RECAPTCHA'];
+        $this->priKey = $_ENV['SECRET_KEY_RECAPTCHA'];
+
     }
 
     public function install()
@@ -41,7 +47,7 @@ class RecaptchaFree extends Module
 
     public function hookDisplayHeader()
     {
-        // Appel de l'api google
+        // Appel des différentes api
         $this->context->controller->registerJavascript(
             'google-recaptcha-api',
             'https://www.google.com/recaptcha/api.js',
@@ -53,6 +59,12 @@ class RecaptchaFree extends Module
             $this->_path.'views/css/front.css',
             ['media' => 'all', 'priority' => 150]
         );
+
+        $this->context->controller->registerJavascript(
+            'recaptchafree-front-js',
+            $this->_path.'views/js/front.js',
+            ['position' => 'bottom', 'priority' => 150]
+        );
     }
 
     public function hookDisplayCustomerAccountForm()
@@ -60,7 +72,7 @@ class RecaptchaFree extends Module
         // Gère l'envoie de la clé publique à google
         $this->context->smarty->assign(
             'recaptcha_site_key',
-            '6LfLOwUsAAAAAFymTYIjxqP6Cky9gjqaDDzz-_SG' // Clé publique de google
+            $this->pubKey // Clé publique de google
         );
 
         return $this->display(__FILE__, 'views/templates/hook/recaptcha.tpl');
@@ -68,7 +80,11 @@ class RecaptchaFree extends Module
 
     public function hookDisplayCustomerLoginFormAfter()
     {
-        return $this->hookDisplayCustomerAccountForm();
+        // On récupère le code HTML du captcha
+        $captchaHtml = $this->hookDisplayCustomerAccountForm();
+
+        // On l'enveloppe dans un conteneur avec un ID unique
+        return '<div id="recaptcha-container-for-login">' . $captchaHtml . '</div>';
     }
 
     public function hookActionSubmitAccountBefore($params)
@@ -76,9 +92,7 @@ class RecaptchaFree extends Module
 
         $recaptchaResponse = Tools::getValue('g-recaptcha-response'); // Recupère la réponse du captcha donnée par google
 
-        $secretKey = '6LfLOwUsAAAAACBNM0mfbup56hapuUFRyCVBUYss'; // La clé secrète privée de google
-
-        $validationResult = $this->isRecaptchaValid($recaptchaResponse, $secretKey);
+        $validationResult = $this->isRecaptchaValid($recaptchaResponse, $this->priKey);
 
         // La partie où la validation échoue
         if (isset($validationResult['success']) && $validationResult['success'] === false) {
@@ -94,10 +108,7 @@ class RecaptchaFree extends Module
 
         $recaptchaResponse = Tools::getValue('g-recaptcha-response'); // Recupère la réponse du captcha donnée par google
 
-
-        $secretKey = '6LfLOwUsAAAAACBNM0mfbup56hapuUFRyCVBUYss'; // La clé secrète privée de google
-
-        $validationResult = $this->isRecaptchaValid($recaptchaResponse, $secretKey);
+        $validationResult = $this->isRecaptchaValid($recaptchaResponse, $this->priKey);
 
         // La partie où la validation échoue
         if (isset($validationResult['success']) && $validationResult['success'] === false) {
