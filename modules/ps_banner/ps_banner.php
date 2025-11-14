@@ -29,8 +29,6 @@ if (!defined('_PS_VERSION_')) {
 
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 
-require_once __DIR__ .'/classes/PsBannerItem.php';
-
 class Ps_Banner extends Module implements WidgetInterface
 {
     /**
@@ -57,27 +55,12 @@ class Ps_Banner extends Module implements WidgetInterface
         $this->ps_versions_compliancy = ['min' => '1.7.1.0', 'max' => _PS_VERSION_];
 
         $this->templateFile = 'module:ps_banner/ps_banner.tpl';
-
-        $bannerId = 0;
     }
 
     public function install()
     {
-        $sql = "CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . 'ps_banner_item` (
-        `id_ps_banner_item` INT NOT NULL AUTO_INCREMENT,
-        `image` VARCHAR(255),
-        `link` VARCHAR(255),
-        `description` VARCHAR(255),
-        PRIMARY KEY (`id_ps_banner_item`)
-        ) ENGINE='. _MYSQL_ENGINE_ . 'DEFAULT CHARSET=utf8;';
-
-        $createTable = Db::getInstance()->execute($sql);
-
-        if (!$createTable) {
-            return false;
-        }
-
         return parent::install() &&
+            $this->registerHook('displayHome') &&
             $this->registerHook('actionObjectLanguageAddAfter') &&
             $this->installFixtures() &&
             $this->uninstallPrestaShop16Module() &&
@@ -135,10 +118,6 @@ class Ps_Banner extends Module implements WidgetInterface
 
     public function uninstall()
     {
-        // Suppression de la table personnalisée lors de la désinstallation
-        $sql = 'DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'ps_banner_item`';
-        Db::getInstance()->execute($sql);
-
         Configuration::deleteByName('BANNER_IMG');
         Configuration::deleteByName('BANNER_LINK');
         Configuration::deleteByName('BANNER_DESC');
@@ -199,7 +178,7 @@ class Ps_Banner extends Module implements WidgetInterface
 
     public function getContent()
     {
-        Tools::redirectAdmin($this->context->link->getAdminLink('AdminPsBanner'));
+        return $this->postProcess() . $this->renderForm();
     }
 
     public function renderForm()
@@ -277,36 +256,37 @@ class Ps_Banner extends Module implements WidgetInterface
 
     public function renderWidget($hookName, array $params)
     {
-        $this->smarty->assign($this->getWidgetVariables($hookName, $params));
+        if (!$this->isCached($this->templateFile, $this->getCacheId('ps_banner'))) {
+            $this->smarty->assign($this->getWidgetVariables($hookName, $params));
+        }
 
         return $this->fetch($this->templateFile, $this->getCacheId('ps_banner'));
     }
 
     public function getWidgetVariables($hookName, array $params)
     {
-        $this->bannerId = isset($params['banner_id']) ? (int) $params['banner_id'] : null;
+        $imgname = Configuration::get('BANNER_IMG', $this->context->language->id);
+        $imgDir = _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $imgname;
 
-        if ($this->bannerId) {
-            $banner = $this->getBannerById($this->bannerId);
-        } else {
-            // Cas par défaut, chargement de la première bannière ou une bannière "par défaut"
-            $banners = $this->getBanners();
-            $banner = !empty($banners) ? $banners[0] : null;
+        if ($imgname && file_exists($imgDir)) {
+            $sizes = getimagesize($imgDir);
+
+            $this->smarty->assign([
+                'banner_img' => $this->context->link->protocol_content . Tools::getMediaServer($imgname) . $this->_path . 'img/' . $imgname,
+                'banner_width' => $sizes[0],
+                'banner_height' => $sizes[1],
+            ]);
+        }
+
+        $banner_link = Configuration::get('BANNER_LINK', $this->context->language->id);
+        if (!$banner_link) {
+            $banner_link = $this->context->link->getPageLink('index');
         }
 
         return [
-            'banner' => $banner,
+            'banner_link' => $this->updateUrl($banner_link),
+            'banner_desc' => Configuration::get('BANNER_DESC', $this->context->language->id),
         ];
-    }
-
-    public function getBannerById($bannerId){
-        $banner = PsBannerItem::getBannerById($bannerId);
-        return $banner;
-    }
-
-    public function getBanners(){
-        $banners = PsBannerItem::getBanners();
-        return $banners;
     }
 
     private function updateUrl($link)

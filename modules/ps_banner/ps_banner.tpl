@@ -23,16 +23,15 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 <a class="banner" href="{$banner_link}">
-    {if isset($banner)}
-        <a class="banner" href="{$banner->link|escape:'html':'UTF-8'}">
-            <img
-                    {if isset($module_dir)}
-                        src="{$module_dir}img/{$banner->image|escape:'html':'UTF-8'}"
-                    {else}
-                        src="/modules/ps_banner/img/{$banner->image|escape:'html':'UTF-8'}"
-                    {/if}
-                    alt="{$banner.description|escape:'html':'UTF-8'}"
-            />
-        </a>
-    {/if}
+  {if isset($banner_img)}
+    <img
+      class="img-fluid"
+      src="{$banner_img}"
+      alt="{$banner_desc}"
+      title="{$banner_desc}"
+      width="{$banner_width}"
+      height="{$banner_height}"
+  {else}
+    <span>{$banner_desc}</span>
+  {/if}
 </a>
