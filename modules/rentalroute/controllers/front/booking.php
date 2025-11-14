@@ -12,51 +12,40 @@ class rentalroutebookingModuleFrontController extends ModuleFrontController
 
         $id_product = (int)Tools::getValue('id_product');
         $quantity = (int)Tools::getValue('quantity');
-        $date_start = Tools::getValue('date_start');
-        $date_end = Tools::getValue('date_end');
+        $rental_duration = (int)Tools::getValue('rental_duration');
 
-        if (!$id_product || $quantity <= 0 || !$date_start || !$date_end || strtotime($date_end) < strtotime($date_start)) {
-            $this->errors[] = $this->trans('Veuillez remplir correctement la quantité et les dates.', [], 'Modules.Rentalroute.Shop');
+        if (!$id_product || $quantity <= 0 || !in_array($rental_duration, [12, 36])) {
+            $this->errors[] = $this->trans('Veuillez sélectionner une durée de location valide.', [], 'Modules.Rentalroute.Shop');
             return;
         }
 
-        // Calcul du prix de la location
-        // 1. On récupère la quantité totale disponible depuis le stock de PrestaShop
-        $total_available_quantity = StockAvailable::getQuantityAvailableByProduct($id_product);
+        $date_start = date('Y-m-d');
+        $date_end = date('Y-m-d', strtotime("+$rental_duration months"));
 
-        // 2. On calcule la quantité déjà réservée sur la période demandée
+        $total_available_quantity = StockAvailable::getQuantityAvailableByProduct($id_product);
         $sql = 'SELECT SUM(`quantity`) 
                 FROM `'._DB_PREFIX_.'rentalroute_booking`
                 WHERE `id_product` = '.(int)$id_product.'
                   AND `status` IN ("pending", "confirmed", "ongoing")
                   AND (`date_start` <= "'.pSQL($date_end).'" AND `date_end` >= "'.pSQL($date_start).'")';
-
         $booked_quantity = (int)Db::getInstance()->getValue($sql);
 
-        // 3. On vérifie si la quantité demandée est possible
         if ($quantity > ($total_available_quantity - $booked_quantity)) {
             $this->errors[] = $this->trans('La quantité demandée n\'est pas disponible pour ces dates.', [], 'Modules.Rentalroute.Shop');
             return;
         }
 
-        // 4. On calcule la durée de la location en jours
-        $startTime = strtotime($date_start);
-        $endTime = strtotime($date_end);
-        // On calcule la différence en secondes et on la convertit en jours
-        $duration_days = round(($endTime - $startTime) / (60 * 60 * 24));
-        // Une location pour la même journée doit compter comme 1 jour
-        if ($duration_days < 1) {
-            $duration_days = 1;
+        $rental_data = Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'rental_product` WHERE `id_product` = '.(int)$id_product);
+        $total_price = 0;
+
+        if ($rental_duration == 12) {
+            $total_price = $rental_data['price_per_month_12'] * 12;
+        } elseif ($rental_duration == 36) {
+            $total_price = $rental_data['price_per_month_36'] * 36;
         }
 
-        // 5. On récupère le prix de base du produit (qui sert de tarif journalier)
-        // Le `false` indique qu'on veut le prix HT, le `null` utilise les taxes par défaut.
-        $price_per_day = Product::getPriceStatic($id_product, false, null, 6);
-
-        // 6. On calcule le prix total final
-        $total_price = $duration_days * $price_per_day * $quantity;
-
-        // Fin calcul prix
+        $total_price += $rental_data['installation_fee'];
+        $total_price *= $quantity;
 
         try {
             $booking = new RentalBooking();
@@ -69,10 +58,10 @@ class rentalroutebookingModuleFrontController extends ModuleFrontController
             $booking->status = 'pending';
 
             if ($booking->add()) {
-                $myRentalsUrl = $this->context->link->getModuleLink('rentalroute', 'myrentals');
-                Tools::redirect($myRentalsUrl);
+                $redirect_url = $this->context->link->getModuleLink('rentalroute', 'booking', ['confirmation' => 1]);
+                Tools::redirect($redirect_url);
             } else {
-                $this->errors[] = $this->trans('Une erreur est survenue lors de l\'enregistrement.', [], 'Modules.Rentalroute.Shop');
+                $this->errors[] = $this->trans('Une erreur est survenue lors de l\'enregistrement de votre réservation.', [], 'Modules.Rentalroute.Shop');
             }
         } catch (Exception $e) {
             $this->errors[] = $this->trans('Une erreur technique est survenue.', [], 'Modules.Rentalroute.Shop');
