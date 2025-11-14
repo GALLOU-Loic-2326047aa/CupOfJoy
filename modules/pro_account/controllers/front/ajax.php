@@ -2,102 +2,104 @@
 
 class pro_accountajaxModuleFrontController extends ModuleFrontController
 {
-    /**
-     * @var string Vos clés d'API (à stocker en BDD via un formulaire de configuration idéalement)
-     */
-    private $consumerKey;
-    private $consumerSecret;
-
     public function init()
     {
         parent::init();
 
-        $logFile = _PS_MODULE_DIR_ . 'pro_account/ajax_debug.log';
-        file_put_contents($logFile, "--- " . date('Y-m-d H:i:s') . " ---\n", FILE_APPEND);
-        file_put_contents($logFile, "Contrôleur AJAX atteint.\n", FILE_APPEND);
-
-        $this->consumerKey = $_ENV['PUB_KEY_SIRENE'];
-        $this->consumerSecret = $_ENV['PRIVATE_KEY_SIRENE'];
-
         if (!$this->isXmlHttpRequest()) {
-            die('Accès non autorisé');
+            $this->ajaxResponse(false, 'Accès non autorisé', [], 403);
         }
 
         $action = Tools::getValue('action');
-        if ($action == 'validateSiret') {
+        if ($action === 'validateSiret') {
             $this->ajaxProcessValidateSiret();
         }
 
-        die();
+        $this->ajaxResponse(false, 'Action non reconnue', [], 400);
     }
 
     protected function ajaxProcessValidateSiret()
     {
         $siret = Tools::getValue('siret');
 
-        if (!preg_match('/^[0-9]{14}$/', $siret)) {
-            $this->ajaxDie(json_encode(['valid' => false, 'error' => 'Format invalide']));
+        // 1. Validation du format (14 chiffres)
+        if (strlen($siret) !== 14 || !preg_match('/^[0-9]{14}$/', $siret)) {
+            $this->ajaxResponse(false, 'Format invalide. Un SIRET doit contenir exactement 14 chiffres.');
+            return;
         }
 
-        // 1. Obtenir le jeton d'accès (token)
-        $token = $this->getAccessToken();
-        if (!$token) {
-            $this->ajaxDie(json_encode(['valid' => false, 'error' => 'Erreur d\'authentification API']));
+        $apiKey = $_ENV['API_KEY_SIRENE'] ?? null;
+
+        if (!$apiKey) {
+            $this->ajaxResponse(false, 'La clé API n\'est pas configurée.');
         }
 
-        // 2. Appeler l'API Sirene pour vérifier le SIRET
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => "https://api.insee.fr/entreprises/sirene/V3/siret/" . urlencode($siret),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => [
-                "Accept: application/json",
-                "Authorization: Bearer " . $token
-            ],
+        // 2. CORRECTION URL : On utilise /siret/ car on a 14 chiffres
+        $apiUrl = "https://api.insee.fr/api-sirene/3.11/siret/" . urlencode($siret);
+
+        $curl = curl_init($apiUrl);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        // 3. CORRECTION HEADER : Syntaxe propre sans "--header"
+        // On ajoute aussi "Accept: application/json" pour être sûr du format de retour
+        curl_setopt($curl, CURLOPT_HTTPHEADER, [
+            "X-INSEE-Api-Key-Integration: " . $apiKey,
+            "Accept: application/json"
         ]);
 
         $response = curl_exec($curl);
         $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
 
-        if ($http_code == 200) {
-            $data = json_decode($response, true);
-            $companyName = $data['etablissement']['uniteLegale']['denominationUniteLegale'] ?? '';
-            $this->ajaxDie(json_encode(['valid' => true, 'company_name' => $companyName]));
-        } else {
-            $this->ajaxDie(json_encode(['valid' => false, 'error' => 'SIRET non trouvé']));
+        // Gestion des erreurs cURL (timeout, DNS, etc.)
+        if (curl_errno($curl)) {
+            $error_msg = curl_error($curl);
+            curl_close($curl);
+            $this->ajaxResponse(false, 'Erreur de connexion à l\'API INSEE : ' . $error_msg);
         }
-    }
 
-    /**
-     * S'authentifie auprès de l'API de l'INSEE pour obtenir un jeton d'accès.
-     */
-    private function getAccessToken()
-    {
-        $credentials = base64_encode($this->consumerKey . ':' . $this->consumerSecret);
-
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => "https://api.insee.fr/token",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => "grant_type=client_credentials",
-            CURLOPT_HTTPHEADER => [
-                "Authorization: Basic " . $credentials,
-                "Content-Type: application/x-www-form-urlencoded"
-            ],
-        ]);
-
-        $response = curl_exec($curl);
         curl_close($curl);
 
         $data = json_decode($response, true);
 
-        return $data['access_token'] ?? null;
+        if ($http_code == 200 && isset($data['etablissement'])) {
+            // Récupération intelligente du nom (Entreprise OU Entrepreneur individuel)
+            $uniteLegale = $data['etablissement']['uniteLegale'];
+
+            $companyName = $uniteLegale['denominationUniteLegale'] ?? null;
+
+            // Si pas de dénomination, c'est une personne physique (Nom + Prénom)
+            if (!$companyName) {
+                $nom = $uniteLegale['nomUniteLegale'] ?? '';
+                $prenom = $uniteLegale['prenomUsuelUniteLegale'] ?? '';
+                $companyName = trim($prenom . ' ' . $nom);
+            }
+
+            // Fallback final
+            if (empty($companyName)) {
+                $companyName = 'Nom non disponible';
+            }
+
+            $this->ajaxResponse(true, 'SIRET valide.', ['company_name' => $companyName]);
+
+        } elseif ($http_code == 404) {
+            $this->ajaxResponse(false, 'Ce numéro de SIRET n\'existe pas ou a été fermé.');
+        } elseif ($http_code == 401 || $http_code == 403) {
+            $this->ajaxResponse(false, 'Erreur d\'authentification API (Vérifiez votre clé).');
+        } elseif ($http_code == 429) {
+            $this->ajaxResponse(false, 'Quota d\'appels API dépassé. Réessayez plus tard.');
+        } else {
+            $errorMessage = $data['header']['message'] ?? 'Erreur inconnue lors de la vérification.';
+            $this->ajaxResponse(false, $errorMessage . " (Code: $http_code)");
+        }
+    }
+
+    // Cette fonction reste utile
+    protected function ajaxResponse($success, $message, $data = [], $http_code = 200)
+    {
+        header('Content-Type: application/json');
+        http_response_code($http_code);
+        $response_data = array_merge(['success' => (bool)$success, 'message' => $message], $data);
+        echo json_encode($response_data);
+        die();
     }
 }

@@ -1,0 +1,137 @@
+{* Fichier : /modules/pro_account/views/templates/hook/pro_fields.tpl *}
+
+{* On ajoute un peu de style pour masquer/afficher les champs pro *}
+<style>
+    #pro-fields-container {
+        display: none;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-top: 15px;
+    }
+</style>
+
+{* Champ 1 : La case à cocher pour activer le formulaire pro *}
+<div class="form-group row ">
+    <label class="col-md-3 form-control-label"></label>
+    <div class="col-md-6">
+    <span class="custom-checkbox">
+      <input name="is_pro" id="is_pro_checkbox" type="checkbox">
+      <span><i class="material-icons rtl-no-flip checkbox-checked">check</i></span>
+      <label for="is_pro_checkbox">{l s='Je suis une entreprise' mod='pro_account'}</label>
+    </span>
+    </div>
+</div>
+
+{* Champ 2 : Le conteneur pour tous nos champs pro *}
+<div id="pro-fields-container">
+
+    <div class="form-group row ">
+        <label class="col-md-3 form-control-label required">
+            {l s='Nom de l\'entreprise' mod='pro_account'}
+        </label>
+        <div class="col-md-6">
+            <input class="form-control" name="company_name" id="pro-company-name" type="text">
+        </div>
+    </div>
+
+    <div class="form-group row ">
+        <label class="col-md-3 form-control-label required">
+            {l s='Numéro de SIRET' mod='pro_account'}
+        </label>
+        <div class="col-md-6">
+            <input class="form-control" name="siret" id="pro-siret" type="text" maxlength="14">
+        </div>
+    </div>
+
+    {* Notre bouton personnalisé et la zone de feedback *}
+    <div class="form-group row">
+        <label class="col-md-3 form-control-label"></label>
+        <div class="col-md-6">
+            <button type="button" id="verify-siret-btn" class="btn btn-primary">
+                {l s='Vérifier le Siret' mod='pro_account'}
+            </button>
+            <div id="siret-feedback" style="margin-top: 10px; font-weight: bold;"></div>
+        </div>
+    </div>
+
+    {* Champ caché pour stocker le statut de la validation *}
+    <input type="hidden" name="siret_validated" id="siret-validated" value="0">
+</div>
+
+
+{* Notre JavaScript, directement dans le template *}
+<script>
+    {* Les balises {literal} sont CRUCIALES. Elles disent à Smarty de ne pas interpréter le code JS. *}
+    {literal}
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // --- PARTIE 1 : GESTION DE L'AFFICHAGE ---
+        const isProCheckbox = document.getElementById('is_pro_checkbox');
+        const proFieldsContainer = document.getElementById('pro-fields-container');
+
+        function toggleProFields() {
+            proFieldsContainer.style.display = isProCheckbox.checked ? 'block' : 'none';
+        }
+
+        isProCheckbox.addEventListener('change', toggleProFields);
+        toggleProFields(); // Appel initial
+
+        // --- PARTIE 2 : VÉRIFICATION DU SIRET ---
+        const verifyBtn = document.getElementById('verify-siret-btn');
+        const siretInput = document.getElementById('pro-siret');
+        const companyInput = document.getElementById('pro-company-name');
+        const feedbackDiv = document.getElementById('siret-feedback');
+        const validatedInput = document.getElementById('siret-validated');
+
+        // L'URL est directement injectée par PHP/Smarty dans la balise <script> parente
+        const ajaxUrl = '{/literal}{$pro_account_ajax_url}{literal}';
+
+        // Si l'utilisateur modifie le SIRET, on reset la validation
+        siretInput.addEventListener('input', () => {
+            validatedInput.value = '0';
+            feedbackDiv.innerHTML = '';
+        });
+
+        verifyBtn.addEventListener('click', function() {
+            const siret = siretInput.value.replace(/\s/g, '');
+            validatedInput.value = '0'; // On réinitialise
+
+            if (!/^[0-9]{14}$/.test(siret)) {
+                feedbackDiv.style.color = 'red';
+                feedbackDiv.innerHTML = 'Format invalide (14 chiffres requis).';
+                return;
+            }
+
+            feedbackDiv.style.color = 'orange';
+            feedbackDiv.innerHTML = 'Vérification en cours...';
+
+            fetch(ajaxUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: 'action=validateSiret&siret=' + siret
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        feedbackDiv.style.color = 'green';
+                        feedbackDiv.innerHTML = `✓ Valide : ${data.company_name}`;
+                        companyInput.value = data.company_name;
+                        validatedInput.value = '1'; // On valide !
+                    } else {
+                        feedbackDiv.style.color = 'red';
+                        feedbackDiv.innerHTML = `✗ ${data.message}`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur Fetch:', error);
+                    feedbackDiv.style.color = 'red';
+                    feedbackDiv.innerHTML = '✗ Erreur de communication.';
+                });
+        });
+    });
+    {/literal}
+</script>
