@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>psshipping</name>
+    <displayName><![CDATA[PrestaShop Shipping]]></displayName>
+    <version><![CDATA[1.1.4]]></version>
+    <description><![CDATA[Propuls&eacute; par Mail Boxes Etc., PrestaShop Shipping propose des m&eacute;thodes de livraison internationale standard et express &agrave; vos clients, o&ugrave; qu&#039;ils se trouvent. Acc&eacute;dez &agrave; des tarifs exclusifs pour chaque colis livr&eacute; et retourn&eacute; en utilisant notre vaste r&eacute;seau de partenaires de confiance.]]></description>
+    <author><![CDATA[PrestaShop]]></author>
+    <tab><![CDATA[shipping_logistics]]></tab>
+	<confirmUninstall><![CDATA[Are you sure you want to uninstall PrestaShop Shipping module?]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>
