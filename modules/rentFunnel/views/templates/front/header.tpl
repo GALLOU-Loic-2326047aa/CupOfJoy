@@ -1,4 +1,3 @@
-{extends file="page.tpl"}
 
 {block name="header"}
     <div>

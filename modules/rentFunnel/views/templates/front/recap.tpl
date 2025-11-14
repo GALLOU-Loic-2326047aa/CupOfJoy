@@ -6,5 +6,13 @@
 {/block}
 
 {block name="page_content"}
-    Bonjour !
+    <div>
+        Machine choisie : {$machine_name}
+    </div>
+    <div>
+        Café choisi : {$coffee_name}
+    </div>
+    <div>
+        Accessoire choisi : {$accessory_name}
+    </div>
 {/block}
