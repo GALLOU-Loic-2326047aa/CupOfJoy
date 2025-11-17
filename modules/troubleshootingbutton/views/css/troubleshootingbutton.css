@@ -1,8 +1,0 @@
-#_desktop_contact_link + .support-link,
-#contact-link + .support-link {
-    margin-left: 50px;
-    font-weight: bold;
-    color: #fff;
-    text-transform: uppercase;
-    position: absolute;
-}
