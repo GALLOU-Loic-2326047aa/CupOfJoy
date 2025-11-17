@@ -10,6 +10,11 @@
     background-color: greenyellow;
 }
 
+.row .col-md-5.col-xs-12 {
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
 /*-------------------*/
 /* Gestion du header qui fait toute la longueur de l'écran */
 /*-------------------*/
@@ -40,13 +45,10 @@
 
 
 #_desktop_user_info .user-info{
-    padding-right: 10px;
-    padding-left: 10px;
-    padding-top: 10px;
-    padding-bottom: 10px;
     border-radius: 5px;
     border: 2px solid black;
-    margin-top: 4px !important;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 
 /*-------------------*/
@@ -54,7 +56,8 @@
 /*-------------------*/
 
 #_desktop_cart .blockcart.cart-preview.inactive{
-    background: red !important;
+    border: 2px solid black;
+    border-radius: 5px;
 }
 
 /*-------------------*/

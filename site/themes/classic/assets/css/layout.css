@@ -31,7 +31,7 @@
 /*-------------------*/
 
 #wrapper {
-    background-color: lightskyblue !important;
+    background-color: #F6F3E4 !important;
 }
 
 /*-------------------*/
@@ -40,4 +40,8 @@
 
 #custom-text {
     background-color: #0074d9;
+}
+
+#custom-text .h2 .p {
+    color: #6C5740;
 }
