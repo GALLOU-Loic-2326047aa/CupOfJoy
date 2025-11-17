@@ -1,0 +1,26 @@
+{
+    "customers": {
+        "customer": [
+            {
+                "@attributes": {
+                    "id": "1"
+                }
+            },
+            {
+                "@attributes": {
+                    "id": "2"
+                }
+            },
+            {
+                "@attributes": {
+                    "id": "3"
+                }
+            },
+            {
+                "@attributes": {
+                    "id": "4"
+                }
+            }
+        ]
+    }
+}

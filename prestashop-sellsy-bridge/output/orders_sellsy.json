@@ -1,0 +1,126 @@
+[
+    {
+        "order_reference": "XKBKNABJK",
+        "date": "2025-11-07",
+        "customer_id": 2,
+        "total_ht": 66.8,
+        "total_ttc": 68.2,
+        "shipping_ht": 7,
+        "shipping_ttc": 8.4,
+        "currency": "EUR",
+        "status": "paid",
+        "payment_mode": "Payment by check",
+        "comment": "Test",
+        "products": [
+            {
+                "reference": "demo_1",
+                "name": "Hummingbird printed t-shirt - Color : White, Size : S",
+                "quantity": 1,
+                "price_ht": 23.9,
+                "price_ttc": 23.9
+            },
+            {
+                "reference": "demo_3",
+                "name": "Hummingbird printed sweater - Color : White, Size : S",
+                "quantity": 1,
+                "price_ht": 35.9,
+                "price_ttc": 35.9
+            }
+        ]
+    },
+    {
+        "order_reference": "OHSATSERP",
+        "date": "2025-11-07",
+        "customer_id": 2,
+        "total_ht": 169.9,
+        "total_ttc": 169.9,
+        "shipping_ht": 0,
+        "shipping_ttc": 0,
+        "currency": "EUR",
+        "status": "pending",
+        "payment_mode": "Payment by check",
+        "comment": "",
+        "products": [
+            {
+                "reference": "demo_5",
+                "name": "The adventure begins Framed poster - Size : 80x120cm",
+                "quantity": 2,
+                "price_ht": 79,
+                "price_ttc": 79
+            },
+            {
+                "reference": "demo_13",
+                "name": "Mug Today is a good day",
+                "quantity": 1,
+                "price_ht": 11.9,
+                "price_ttc": 11.9
+            }
+        ]
+    },
+    {
+        "order_reference": "UOYEVOLI",
+        "date": "2025-11-07",
+        "customer_id": 2,
+        "total_ht": 19.9,
+        "total_ttc": 21.3,
+        "shipping_ht": 7,
+        "shipping_ttc": 8.4,
+        "currency": "EUR",
+        "status": "pending",
+        "payment_mode": "Payment by check",
+        "comment": "",
+        "products": [
+            {
+                "reference": "demo_8",
+                "name": "Mountain fox notebook Style : Ruled",
+                "quantity": 1,
+                "price_ht": 12.9,
+                "price_ttc": 12.9
+            }
+        ]
+    },
+    {
+        "order_reference": "FFATNOMMJ",
+        "date": "2025-11-07",
+        "customer_id": 2,
+        "total_ht": 19.9,
+        "total_ttc": 21.3,
+        "shipping_ht": 7,
+        "shipping_ttc": 8.4,
+        "currency": "EUR",
+        "status": "pending",
+        "payment_mode": "Payment by check",
+        "comment": "",
+        "products": [
+            {
+                "reference": "demo_8",
+                "name": "Mountain fox notebook Style : Plain",
+                "quantity": 1,
+                "price_ht": 12.9,
+                "price_ttc": 12.9
+            }
+        ]
+    },
+    {
+        "order_reference": "KHWLILZLL",
+        "date": "2025-11-07",
+        "customer_id": 2,
+        "total_ht": 25.9,
+        "total_ttc": 27.3,
+        "shipping_ht": 7,
+        "shipping_ttc": 8.4,
+        "currency": "EUR",
+        "status": "pending",
+        "payment_mode": "Bank wire",
+        "comment": "",
+        "products": [
+            {
+                "reference": "demo_16",
+                "name": "Brown bear cushion Color : Black",
+                "quantity": 1,
+                "price_ht": 18.9,
+                "price_ttc": 18.9
+            }
+        ]
+    }
+]
