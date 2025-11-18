@@ -3,7 +3,7 @@
 /*-------------------*/
 
 #block-newsletter-label {
-    color: red !important;
+    color: #000000 !important;
 }
 
 /*-------------------*/
@@ -19,7 +19,7 @@
 /*-------------------*/
 
 #blockEmailSubscription_displayFooterBefore .btn.btn-primary[type="submit"] {
-    background-color: #ff00ea !important;
+    background-color: #a81b1b !important;
 }
 
 /*-------------------*/
@@ -35,13 +35,22 @@
 /*-------------------*/
 
 #footer {
-    background-color: #00ffc4;
+    background-color: #f4d0b9;
+
 }
+
+.footer-container {
+    height: 18em;
+    padding: 1px;
+}
+
 
 /*-------------------*/
 /* Gestion du bloc regroupant la phrase Newsletter, abonner, email */
 /*-------------------*/
 
 #blockEmailSubscription_displayFooterBefore .row {
-    background-color: #ffea00;
+    background-color: #dab197;
+    padding: 10px;
+
 }
