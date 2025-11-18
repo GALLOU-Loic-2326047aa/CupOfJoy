@@ -40,7 +40,7 @@
             {l s='Numéro de SIRET' mod='pro_account'}
         </label>
         <div class="col-md-6">
-            <input class="form-control" name="siret" id="pro-siret" type="text" maxlength="14">
+            <input class="form-control" name="siret" id="pro-siret" type="text" maxlength="20">
         </div>
     </div>
 
@@ -57,6 +57,12 @@
 
     {* Champ caché pour stocker le statut de la validation *}
     <input type="hidden" name="siret_validated" id="siret-validated" value="0">
+
+    <div class="form-text text-center" style="margin-top: 15px;">
+        <a href="{$manual_validation_url}">
+            {l s='Mon SIRET n\'est pas reconnu ?' mod='pro_account'}
+        </a>
+    </div>
 </div>
 
 
@@ -87,6 +93,11 @@
         // L'URL est directement injectée par PHP/Smarty dans la balise <script> parente
         const ajaxUrl = '{/literal}{$pro_account_ajax_url}{literal}';
 
+        // Si l'utilisateur met des espaces, les supprime en tant réels
+        siretInput.addEventListener('input', function() {
+            this.value = this.value.replace(/\s/g, '');
+        });
+
         // Si l'utilisateur modifie le SIRET, on reset la validation
         siretInput.addEventListener('input', () => {
             validatedInput.value = '0';
@@ -95,7 +106,7 @@
 
         verifyBtn.addEventListener('click', function() {
             const siret = siretInput.value.replace(/\s/g, '');
-            validatedInput.value = '0'; // On réinitialise
+            validatedInput.value = '0';
 
             if (!/^[0-9]{14}$/.test(siret)) {
                 feedbackDiv.style.color = 'red';

@@ -57,7 +57,8 @@ class Pro_Account extends Module
     {
         // On assigne l'URL de notre contrôleur AJAX à Smarty (le moteur de template)
         $this->context->smarty->assign([
-            'pro_account_ajax_url' => $this->context->link->getModuleLink($this->name, 'ajax', [], true)
+            'pro_account_ajax_url' => $this->context->link->getModuleLink($this->name, 'ajax', [], true),
+            'manual_validation_url' => $this->context->link->getModuleLink($this->name, 'manualvalidation', [], true)
         ]);
 
         // On affiche le contenu du fichier .tpl
