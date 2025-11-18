@@ -7,20 +7,24 @@
 /*-------------------*/
 
 #header .header-nav .container{
-    background-color: greenyellow;
+    background-color: #f6f3e4;
+    height: 50px; /* Ajuste la valeur selon ton besoin */
+
 }
 
 .row .col-md-5.col-xs-12 {
-    border: 2px solid black;
     border-radius: 5px;
+
 }
+
+
 
 /*-------------------*/
 /* Gestion du header qui fait toute la longueur de l'écran */
 /*-------------------*/
 
 #header .header-nav {
-    background-color: darkorange;
+    background-color: #f6f3e4;
 }
 
 /*-------------------*/
@@ -28,15 +32,19 @@
 /*-------------------*/
 
 #header .header-top {
-    background-color: deeppink;
+    background-color: #f4d0b9;
+    height: 5em; /* Ajuste la valeur selon ton besoin */
+
 }
+
 
 /*-------------------*/
 /* Gestion du sous-menu des propositions */
 /*-------------------*/
 
 .popover.sub-menu.js-sub-menu {
-    background-color: darkmagenta;
+    background-color: #dab197;
+
 }
 
 /*-------------------*/
@@ -46,8 +54,6 @@
 
 #_desktop_user_info .user-info{
     border-radius: 5px;
-    border: 2px solid black;
-    padding: 10px;
     margin-bottom: 10px;
 }
 
@@ -56,8 +62,8 @@
 /*-------------------*/
 
 #_desktop_cart .blockcart.cart-preview.inactive{
-    border: 2px solid black;
-    border-radius: 5px;
+    background-color: #f6f3e4;
+
 }
 
 /*-------------------*/
@@ -89,7 +95,6 @@
 /*-------------------*/
 
 #top_sub_menu_66036 .category-5{
-    color: red !important;
 }
 #top-menu .category-6{
 
