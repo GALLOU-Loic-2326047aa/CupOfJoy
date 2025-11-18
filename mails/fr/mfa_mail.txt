@@ -1,0 +1,13 @@
+Bonjour {firstname} {lastname},
+
+Pour finaliser votre connexion sur {shop_name}, voici votre code de vérification unique.
+
+*** {code} ***
+
+Ce code est valable pendant 10 minutes. Pour votre sécurité, ne le partagez avec personne.
+
+Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.
+
+Cordialement,
+L'équipe de {shop_name}
+{shop_url}
