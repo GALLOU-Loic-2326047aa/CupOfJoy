@@ -38,9 +38,11 @@ class MultifacteurAuthentification extends Module
 
         $verificationCode = rand(100000, 999999);
 
-        $this->context->cookie->mfa_mail = $verificationCode;
-        $this->context->cookie->mfa_time = time() + (10 * 60); // expire ds 10 min
-        $this->context->cookie->mfa_id_customer = $customer->id;
+        $cookie = new Cookie('ps-mfa');
+        $cookie->mfa_code = $verificationCode;
+        $cookie->mfa_time = time() + (10 * 60);
+        $cookie->mfa_id_customer = $customer->id;
+        $cookie->write();
 
         Mail::Send(
             (int)$this->context->language->id,

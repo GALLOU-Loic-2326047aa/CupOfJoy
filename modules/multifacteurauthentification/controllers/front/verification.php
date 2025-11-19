@@ -18,25 +18,26 @@ class MultifacteurAuthentificationVerificationModuleFrontController extends Modu
 
     public function postProcess()
     {
-        // On vérifie si le formulaire a été soumis
         if (Tools::isSubmit('submitMfaCode')) {
-            $submittedCode = Tools::getValue('mfa_mail');
-            $storedCode = $this->context->cookie->mfa_mail;
-            $expirationTime = $this->context->cookie->mfa_mail;
-            $customerId = $this->context->cookie->mfa_id_customer;
+            if (Tools::isSubmit('submitMfaCode')) {
+                $cookie = new Cookie('ps-mfa');
 
-            // Vérification : le code soumis est correct ET il n'a pas expiré
-            if ($submittedCode == $storedCode && time() < $expirationTime) {
+                $submittedCode = Tools::getValue('mfa_mail');
 
-                unset($this->context->cookie->mfa_mail, $this->context->cookie->mfa_time, $this->context->cookie->mfa_id_customer);
+                $storedCode = $cookie->mfa_code;
+                $expirationTime = $cookie->mfa_time;
+                $customerId = $cookie->mfa_id_customer;
 
-                // On récupère l'objet Customer et on met à jour le contexte pour le connecter
-                $customer = new Customer((int)$customerId);
-                $this->context->updateCustomer($customer);
+                if ($storedCode && $submittedCode == $storedCode && time() < $expirationTime) {
 
-                Tools::redirect('index.php?controller=my-account');
-            } else {
-                $this->errors[] = $this->trans('Le code de vérification est invalide ou a expiré.', [], 'Modules.Multifacteurauthentification.Shop');
+                    unset($cookie->mfa_code, $cookie->mfa_time, $cookie->mfa_id_customer);
+
+                    $customer = new Customer((int)$customerId);
+                    $this->context->updateCustomer($customer);
+                    Tools::redirect('index.php?controller=my-account');
+                } else {
+                    $this->errors[] = $this->trans('Le code de vérification est invalide ou a expiré.', [], 'Modules.Multifacteurauthentification.Shop');
+                }
             }
         }
     }
