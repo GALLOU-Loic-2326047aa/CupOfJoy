@@ -3,7 +3,7 @@
 /*-------------------*/
 
 .block-categories {
-    background-color: coral;
+    background-color: #d6cbb7;
 }
 
 /*-------------------*/
@@ -11,7 +11,7 @@
 /*-------------------*/
 
 #search_filters_suppliers {
-    background-color: aquamarine;
+    background-color: #d6cbb7;
 }
 
 /*-------------------*/
@@ -19,7 +19,7 @@
 /*-------------------*/
 
 #search_filters_brands {
-    background-color: lightcyan;
+    background-color: #d6cbb7;
 }
 
 /*-------------------*/
@@ -27,7 +27,7 @@
 /*-------------------*/
 
 #search_filters {
-    background-color: cyan;
+    background-color: #d6cbb7;
 }
 
 /*-------------------*/
@@ -35,7 +35,7 @@
 /*-------------------*/
 
 .card-block {
-    background-color: orangered;
+    background-color: #d6cbb7;
 }
 
 /*-------------------*/
@@ -43,5 +43,5 @@
 /*-------------------*/
 
 #subcategories {
-    background-color: coral;
+    background-color: #d6cbb7;
 }

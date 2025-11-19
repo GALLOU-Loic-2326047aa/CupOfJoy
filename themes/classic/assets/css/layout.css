@@ -3,19 +3,20 @@
 /*-------------------*/
 
 .product-miniature .product-description {
-    background-color: #3dff00 !important;
+    background-color: #d6cbb7;
 }
+
 
 /*-------------------*/
 /* Gestion des étiquettes réduction et neuf */
 /*-------------------*/
 
 .product-miniature .product-flags li.product-flag.discount {
-    background-color: gold !important;
+    background-color: #f39d72 !important;
 }
 
 .product-miniature .product-flags li.product-flag {
-    background-color: hotpink !important;
+    background-color: #24b9d7 !important;
 }
 
 /*-------------------*/
@@ -23,8 +24,13 @@
 /*-------------------*/
 
 .product-miniature .highlighted-informations {
-    background-color: #0dcc13;
+    background-color: #dcd2be;
 }
+
+.variant-links {
+    background-color: #dcd2be !important;
+}
+
 
 /*-------------------*/
 /* Gestion de fond du body */
@@ -39,7 +45,7 @@
 /*-------------------*/
 
 #custom-text {
-    background-color: #0074d9;
+    background-color: rgba(250, 194, 161, 0.93);
 }
 
 #custom-text .h2 .p {
