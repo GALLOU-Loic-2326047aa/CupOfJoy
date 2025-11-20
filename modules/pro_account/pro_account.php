@@ -10,22 +10,22 @@ class Pro_Account extends Module
         $this->name = 'pro_account';
         $this->tab = 'administration';
         $this->version = '1.0.0';
-        $this->author = 'Votre Nom';
+        $this->author = 'GURREA Killian';
         $this->need_instance = 0;
         $this->bootstrap = true;
         parent::__construct();
-        $this->displayName = $this->l('Compte Professionnel (avec TPL)');
-        $this->description = $this->l('Ajoute des champs pro au formulaire d\'inscription via un fichier de template.');
+        $this->displayName = $this->l('Compte Professionnel');
+        $this->description = $this->l('Ajoute des champs pro au formulaire d\'inscription.');
     }
 
     public function install()
     {
-        // On enregistre les hooks dont nous avons besoin
         return parent::install()
             && $this->installDatabase()
             && $this->registerHook('displayCustomerAccountForm')
             && $this->registerHook('actionSubmitAccount')
             && $this->registerHook('displayHeader')
+            && $this->installTab()
             && $this->registerHook('actionCustomerAccountAdd');
     }
 
@@ -50,32 +50,46 @@ class Pro_Account extends Module
         return Db::getInstance()->execute("DROP TABLE IF EXISTS `"._DB_PREFIX_."customer_pro_data`");
     }
 
-    /**
-     * Affiche notre template sur le formulaire de création de compte.
-     */
+    public function installTab()
+    {
+        $tab = new Tab();
+        $tab->active = 1;
+        $tab->class_name = 'AdminProAccountBusiness';
+        $tab->name = array();
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = 'Business (Pro)';
+        }
+        $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentCustomer'); // On le met dans le menu "Clients"
+        $tab->module = $this->name;
+        return $tab->add();
+    }
+
+    public function uninstallTab()
+    {
+        $id_tab = (int)Tab::getIdFromClassName('AdminProAccountBusiness');
+        if ($id_tab) {
+            $tab = new Tab($id_tab);
+            return $tab->delete();
+        }
+        return true;
+    }
+
     public function hookDisplayCustomerAccountForm()
     {
-        // On assigne l'URL de notre contrôleur AJAX à Smarty (le moteur de template)
         $this->context->smarty->assign([
             'pro_account_ajax_url' => $this->context->link->getModuleLink($this->name, 'ajax', [], true),
             'manual_validation_url' => $this->context->link->getModuleLink($this->name, 'manualvalidation', [], true)
         ]);
 
-        // On affiche le contenu du fichier .tpl
         return $this->display(__FILE__, 'views/templates/hook/pro_fields.tpl');
     }
 
-    /**
-     * Valide les données AVANT que le compte ne soit créé.
-     */
     public function hookActionSubmitAccount()
     {
-        // Si la case "pro" n'est pas cochée, on ne fait rien.
         if (!Tools::isSubmit('is_pro')) {
             return;
         }
 
-        // On récupère la "preuve" de validation envoyée par le JavaScript
         $siretValidated = Tools::getValue('siret_validated');
 
         if (empty(Tools::getValue('siret'))) {
@@ -87,17 +101,12 @@ class Pro_Account extends Module
         }
     }
 
-    /**
-     * Sauvegarde nos données APRÈS que le compte ait été créé avec succès.
-     */
     public function hookActionCustomerAccountAdd($params)
     {
-        // On vérifie une dernière fois si c'est un compte pro
         if (!Tools::isSubmit('is_pro')) {
             return;
         }
 
-        // $params contient les informations sur le client qui vient d'être créé
         $newCustomer = $params['newCustomer'];
         $id_customer = $newCustomer->id;
 
@@ -115,27 +124,21 @@ class Pro_Account extends Module
 
     public function hookDisplayHeader()
     {
-        // 1. On ne fait rien si le client n'est pas connecté
         if (!$this->context->customer->isLogged()) {
             return;
         }
 
-        // 2. On vérifie si le client est un professionnel
         $id_customer = (int)$this->context->customer->id;
         $sql = new DbQuery();
         $sql->select('id_customer');
         $sql->from('customer_pro_data');
         $sql->where('id_customer = ' . $id_customer);
 
-        // Db::getInstance()->getValue() est parfait pour ça: il retourne la valeur ou false.
         $is_pro = (bool)Db::getInstance()->getValue($sql);
 
-        // 3. Si c'est un pro, on prépare les données pour le JavaScript
         if ($is_pro) {
-            // Media::addJsDef() est la méthode propre à PrestaShop pour créer des variables JS
             Media::addJsDef(['customerIsPro' => true]);
 
-            // 4. On charge nos fichiers CSS et JS qui vont créer le badge
             $this->context->controller->addCSS($this->_path . 'views/css/pro_badge.css');
             $this->context->controller->addJS($this->_path . 'views/js/pro_badge.js');
         }

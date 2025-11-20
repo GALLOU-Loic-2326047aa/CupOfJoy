@@ -1,6 +1,3 @@
-{* Fichier : /modules/pro_account/views/templates/hook/pro_fields.tpl *}
-
-{* On ajoute un peu de style pour masquer/afficher les champs pro *}
 <style>
     #pro-fields-container {
         display: none;
@@ -11,7 +8,6 @@
     }
 </style>
 
-{* Champ 1 : La case à cocher pour activer le formulaire pro *}
 <div class="form-group row ">
     <label class="col-md-3 form-control-label"></label>
     <div class="col-md-6">
@@ -23,7 +19,6 @@
     </div>
 </div>
 
-{* Champ 2 : Le conteneur pour tous nos champs pro *}
 <div id="pro-fields-container">
 
     <div class="form-group row ">
@@ -44,7 +39,6 @@
         </div>
     </div>
 
-    {* Notre bouton personnalisé et la zone de feedback *}
     <div class="form-group row">
         <label class="col-md-3 form-control-label"></label>
         <div class="col-md-6">
@@ -55,7 +49,6 @@
         </div>
     </div>
 
-    {* Champ caché pour stocker le statut de la validation *}
     <input type="hidden" name="siret_validated" id="siret-validated" value="0">
 
     <div class="form-text text-center" style="margin-top: 15px;">
@@ -66,13 +59,10 @@
 </div>
 
 
-{* Notre JavaScript, directement dans le template *}
 <script>
-    {* Les balises {literal} sont CRUCIALES. Elles disent à Smarty de ne pas interpréter le code JS. *}
     {literal}
     document.addEventListener('DOMContentLoaded', function() {
 
-        // --- PARTIE 1 : GESTION DE L'AFFICHAGE ---
         const isProCheckbox = document.getElementById('is_pro_checkbox');
         const proFieldsContainer = document.getElementById('pro-fields-container');
 
@@ -83,7 +73,6 @@
         isProCheckbox.addEventListener('change', toggleProFields);
         toggleProFields(); // Appel initial
 
-        // --- PARTIE 2 : VÉRIFICATION DU SIRET ---
         const verifyBtn = document.getElementById('verify-siret-btn');
         const siretInput = document.getElementById('pro-siret');
         const companyInput = document.getElementById('pro-company-name');

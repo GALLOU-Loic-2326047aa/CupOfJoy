@@ -1,0 +1,15 @@
+Bienvenue {firstname} !
+
+Votre compte professionnel pour l'entreprise {company_name} a été créé avec succès.
+
+Vos identifiants de connexion provisoires :
+-------------------------------------------
+Email : {email}
+Mot de passe : {password}
+-------------------------------------------
+
+Important : Ce mot de passe est provisoire. Nous vous invitons à le modifier dès votre première connexion.
+
+Connectez-vous ici : {shop_url}
+
+L'équipe {shop_name}

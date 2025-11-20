@@ -7,10 +7,8 @@
 {block name='page_content'}
     <div id="manual-siret-validation-page">
 
-        {* Les notifications d'erreurs ou de succès s'afficheront ici *}
         {include file='_partials/notifications.tpl'}
 
-        {* On n'affiche le formulaire que si le message de confirmation n'est pas présent *}
         {if !$confirmation}
             <p>{l s='Votre numéro de SIRET n\'est pas reconnu ? Pas d\'inquiétude. Veuillez remplir le formulaire ci-dessous et nous procéderons à une vérification manuelle.' mod='pro_account'}</p>
 
