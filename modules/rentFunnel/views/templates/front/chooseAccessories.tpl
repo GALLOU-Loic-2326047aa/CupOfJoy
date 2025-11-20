@@ -1,20 +1,19 @@
 {extends file="page.tpl"}
-{include file="module:rentFunnel/views/templates/front/header.tpl"}
 
 {block name="page_title"}
     <h1>{$page_title}</h1>
 {/block}
 {block name="page_content"}
-    <ul>
+    <ul class="rentFunnel-product-list">
         {foreach from=$accessories item=accessory}
-            <li>
+            <li class="rentFunnel-product-item">
                 <img src="{$shop_url}{$accessory.image_url}"
                      alt="{$accessory.name}"
                      style="max-width: 300px; max-height: 300px; width: auto; height: auto;"/>
                 <p>{$accessory.description nofilter}</p>
                 <button class="btn btn-primary" type="button"
-                        onclick="window.location.href='{$link->getModuleLink('rentFunnel', 'saveChoice')}?accessory_id={$accessory.id_product}&accessory_name={$accessory.name|urlencode}'">
-                    Louer cet accessoire
+                        onclick="window.location.href='{$link->getModuleLink('rentFunnel', 'saveChoice')}?accessory_id={$accessory.id_product}&accessory_name={$accessory.name|urlencode}&accessory_name={$accessory.price}'">
+                    Acheter cet accessoire pour {$accessory.price|rtrim: '0'|rtrim: '.'}{$shop_currency}
                 </button>
             </li>
         {/foreach}
