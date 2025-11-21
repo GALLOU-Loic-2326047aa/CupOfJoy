@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>ratelimiter</name>
+    <displayName><![CDATA[Rate Limiter - Limiteur de requ&ecirc;tes]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Affiche une page de blocage si un visiteur effectue trop de requ&ecirc;tes.]]></description>
+    <author><![CDATA[Maxime Allasio]]></author>
+    <tab><![CDATA[Security features]]></tab>
+    <is_configurable>0</is_configurable>
+    <need_instance>0</need_instance>
+</module>
