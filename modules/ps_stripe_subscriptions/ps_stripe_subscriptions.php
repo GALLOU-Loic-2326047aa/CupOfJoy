@@ -11,7 +11,7 @@ class Ps_Stripe_Subscriptions extends Module
         $this->name = 'ps_stripe_subscriptions';
         $this->tab = 'billing_payment';
         $this->version = '1.0.0';
-        $this->author = 'Baptiste Armani';
+        $this->author = 'Armani.B';
         $this->need_instance = 0;
         $this->bootstrap = true;
 
@@ -20,7 +20,6 @@ class Ps_Stripe_Subscriptions extends Module
         $this->displayName = $this->l('Module d\'abonnements Stripe');
         $this->description = $this->l('Module pour gérer les abonnements récurrents via Stripe.');
 
-        // Vérifier si la version de PrestaShop est compatible
         $this->ps_versions_compliancy = [
             'min' => '1.7.0.0',
             'max' => _PS_VERSION_,
@@ -33,10 +32,10 @@ class Ps_Stripe_Subscriptions extends Module
             !$this->registerHook('header') ||
             !$this->registerHook('displayCustomerAccount') ||
             !$this->registerHook('actionFrontControllerSetMedia') ||
-            // Correction 2: actionCustomerAccountAdd est sensible à la casse
             !$this->registerHook('actionCustomerAccountAdd') ||
             !$this->registerHook('actionAuthentication')
         ) {
+             echo "Installation des hooks a échoué.";
             return false;
         }
 
@@ -55,21 +54,21 @@ class Ps_Stripe_Subscriptions extends Module
             `id_product_stripe` VARCHAR(50) NOT NULL,
             UNIQUE KEY `id_price_stripe` (`id_price_stripe`)
         ) ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8;
-    ";
-        if (!Db::getInstance()->execute($sql_price_table)||
-            !Db::getInstance()->execute($sql_customer_table)) {
+        ";
+
+        if (!Db::getInstance()->execute($sql_customer_table) ||
+            !Db::getInstance()->execute($sql_price_table)) {
 
             $this->uninstall();
+             echo "Création des tables a échoué.";
             return false;
         }
 
-        // Les tables sont créées, l'installation a réussi.
         return true;
     }
 
     public function uninstall()
     {
-        // Supprimer les tables lors de la désinstallation
         $sql_drop_customer = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . "stripe_customer_link`";
         $sql_drop_price = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . "stripe_price_link`";
 
@@ -93,9 +92,26 @@ class Ps_Stripe_Subscriptions extends Module
             return null;
         }
 
+        $lines = file($envFile, FILE_IGNORE_EMPTY_LINES | FILE_SKIP_WHITE_SPACE);
+        foreach ($lines as $line) {
+            if (strpos(trim($line), '#') === 0) {
+                continue;
+            }
+
+            list($k, $v) = explode('=', $line, 2);
+            if (trim($k) === $key) {
+                return trim($v, " \n\r\t\v\x00\"'");
+            }
+        }
+        return null;
     }
 
-    protected function initStripeApi() {
+    /**
+     * Configure la clé secrète Stripe pour la librairie en lisant le fichier .env
+     */
+    protected function initStripeApi()
+    {
+        // Utiliser _PS_MODULE_DIR_ pour garantir le chemin correct
         require_once(_PS_MODULE_DIR_ . $this->name . '/vendor/autoload.php');
 
         $secret_key = $this->getEnvVariable('PS_STRIPE_SK');
@@ -103,6 +119,11 @@ class Ps_Stripe_Subscriptions extends Module
         if (!$secret_key) {
             $secret_key = getenv('PS_STRIPE_SK');
         }
+
+        if (!$secret_key) {
+            throw new Exception('La clé secrète PS_STRIPE_SK n\'a pas été trouvée dans le fichier .env à la racine.');
+        }
+
         \Stripe\Stripe::setApiKey($secret_key);
     }
 
@@ -129,17 +150,15 @@ class Ps_Stripe_Subscriptions extends Module
             'subscription_link' => $this->context->link->getModuleLink($this->name, 'default'),
             'subscriptions_icon' => 'card_membership',
         ]);
-        return $this->display(__FILE__, 'views/templates/hook/customer_account.tpl');
+        return $this->display(__FILE__, 'views/templates/customer_account.tpl');
     }
 
     public function createOrGetStripeCustomer($id_customer, $email, $firstname, $lastname)
     {
-        // Nécessite le chargement de StripeCustomerLink.php
         if (!class_exists('StripeCustomerLink')) {
             require_once(_PS_MODULE_DIR_ . $this->name . '/classes/StripeCustomerLink.php');
         }
 
-        // 1. VÉRIFIER si l'ID Stripe existe déjà dans votre base
         $stripe_customer_id = StripeCustomerLink::getStripeIdByPsId($id_customer);
         if ($stripe_customer_id) {
             return $stripe_customer_id;
@@ -189,6 +208,150 @@ class Ps_Stripe_Subscriptions extends Module
             $customer = $params['newCustomer'];
             $this->createOrGetStripeCustomer($customer->id, $customer->email, $customer->firstname, $customer->lastname);
         }
+    }
+
+
+    /**
+     * Récupère l'ID Client PrestaShop à partir de l'ID Client Stripe (cus_XXXXXX)
+     */
+    protected function getIdCustomerPsByStripeId($stripe_customer_id)
+    {
+        if (!class_exists('StripeCustomerLink')) {
+            require_once(_PS_MODULE_DIR_ . $this->name . '/classes/StripeCustomerLink.php');
+        }
+
+        return Db::getInstance()->getValue('
+        SELECT `id_customer_ps`
+        FROM `' . _DB_PREFIX_ . 'stripe_customer_link`
+        WHERE `id_customer_stripe` = "' . pSQL($stripe_customer_id) . '"
+    ');
+    }
+
+    /**
+     * Récupère l'ID Produit PrestaShop à partir de l'ID Prix Stripe (price_YYYYYY)
+     */
+    protected function getIdProductPsByStripePriceId($stripe_price_id)
+    {
+        if (!class_exists('StripePriceLink')) {
+            require_once(_PS_MODULE_DIR_ . $this->name . '/classes/StripePriceLink.php');
+        }
+
+        return Db::getInstance()->getValue('
+        SELECT `id_product_ps`
+        FROM `' . _DB_PREFIX_ . 'stripe_price_link`
+        WHERE `id_price_stripe` = "' . pSQL($stripe_price_id) . '"
+    ');
+    }
+
+    protected function createRecurringOrderCart($id_customer_ps, $invoice) {
+        $customer = new Customer((int)$id_customer_ps);
+        $cart = new Cart();
+
+        // CORRECTION DE L'ERREUR DE FRAPPE DANS Address::getCustomerDefaultID
+        $id_address = Address::getCustomerDefaultID((int)$id_customer_ps);
+
+        if (!$id_address) {
+            PrestaShopLogger::addLog('Client PS #' . $id_customer_ps . ' n\'a pas d\'adresse par défaut.', 3);
+            return false;
+        }
+        $cart->id_shop = (int)$this->context->shop->id;
+        $cart->id_customer = (int)$id_customer_ps;
+        $cart->id_address_delivery = (int)$id_address;
+        $cart->id_address_invoice = (int)$id_address;
+        $cart->id_lang = (int)Configuration::get('PS_LANG_DEFAULT');
+        $cart->id_currency = (int)Configuration::get('PS_CURRENCY_DEFAULT');
+        $cart->id_guest = (int)Guest::getFromCustomer($customer->id);
+
+        $id_carrier = (int)Configuration::get('PS_CARRIER_DEFAULT');
+        $cart->id_carrier = (int)$id_carrier;
+
+        if (!$cart->add()) {
+            PrestaShopLogger::addLog('Impossible de créer le panier pour le client PS.', 3);
+            return false;
+        }
+
+        foreach ($invoice->lines->data as $line) {
+            $stripe_price_id = $line->price->id;
+            $quantity = $line->quantity;
+            $id_product_ps = $this->getIdProductPsByStripePriceId($stripe_price_id);
+            if ($id_product_ps) {
+                $cart->updateQty($quantity, (int)$id_product_ps, null, null, 'up', 0, new Shop((int)$cart->id_shop));
+            }
+            else {
+                PrestaShopLogger::addLog('Produit PS introuvable pour le prix Stripe #' . $stripe_price_id, 3);
+            }
+        }
+
+        $cart->update();
+        $cart->setDeliveryOption(
+            $cart->getCarrierList() ? [$cart->id_address_delivery => $id_carrier . ','] : []
+        );
+        $cart->updateDeliveryOption();
+        return (int)$cart->id;
+    }
+
+    public function processSubscriptionPaymentSuccess($invoice)
+    {
+        $stripe_customer_id = $invoice->customer;
+        $id_customer_ps = $this->getIdCustomerPsByStripeId($stripe_customer_id);
+
+        if (!$id_customer_ps) {
+            PrestaShopLogger::addLog('WebHook Stripe: Client PS non trouvé pour Stripe ID: ' . $stripe_customer_id, 3, null, null, null, true);
+            return false;
+        }
+
+        $cart_id = $this->createRecurringOrderCart($id_customer_ps, $invoice);
+
+        if (!$cart_id) {
+            PrestaShopLogger::addLog('WebHook Stripe: Impossible de créer le panier pour l\'abonnement ID: ' . $invoice->subscription, 3, null, null, $id_customer_ps, true);
+            return false;
+        }
+
+
+        $customer = new Customer((int)$id_customer_ps);
+        $amount_paid = (float)$invoice->amount_paid / 100;
+
+        $this->validateOrder(
+            (int)$cart_id,
+            Configuration::get('PS_OS_PAYMENT'),
+            $amount_paid,
+            $this->displayName,
+            $this->l('Paiement récurrent réussi via Stripe (Facture ID: ') . $invoice->id . ')',
+            [],
+            (int)Configuration::get('PS_CURRENCY_DEFAULT'),
+            false,
+            $customer->secure_key
+        );
+
+        PrestaShopLogger::addLog('Commande PS #' . (int)$this->currentOrder . ' créée via Webhook Stripe.', 1, null, 'Order', (int)$this->currentOrder, true);
+
+        return (int)$this->currentOrder;
+    }
+
+    public function processSubscriptionPaymentFailure($invoice)
+    {
+        $stripe_customer_id = $invoice->customer;
+        $id_customer_ps = $this->getIdCustomerPsByStripeId($stripe_customer_id);
+
+        if ($id_customer_ps) {
+            PrestaShopLogger::addLog('Échec du paiement récurrent pour le client PS #' . $id_customer_ps, 2, null, 'Customer', $id_customer_ps, true);
+
+            // Logique métier : mettre à jour le statut dans la DB locale et notifier le client.
+        }
+        return true;
+    }
+
+    public function processSubscriptionDeletion($subscription)
+    {
+        $stripe_customer_id = $subscription->customer;
+        $id_customer_ps = $this->getIdCustomerPsByStripeId($stripe_customer_id);
+
+        if ($id_customer_ps) {
+            PrestaShopLogger::addLog('Abonnement Stripe annulé pour le client PS #' . $id_customer_ps . ' (Sub ID: ' . $subscription->id . ')', 1, null, 'Customer', $id_customer_ps, true);
+
+            // Logique métier : Mettre à jour le statut dans la DB locale à 'cancelled'.
+        }
+        return true;
     }
 
 }

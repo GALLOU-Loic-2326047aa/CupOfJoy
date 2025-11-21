@@ -28,7 +28,6 @@ class Ps_Stripe_SubscriptionsWebhookModuleFrontController extends ModuleFrontCon
 
         $endpoint_secret = Configuration::get('PS_STRIPE_WEBHOOK_SECRET');
 
-        // 2. VÉRIFICATION DE LA SIGNATURE (Sécurité)
         try {
             $event = \Stripe\Webhook::constructEvent(
                 $payload, $sig_header, $endpoint_secret
