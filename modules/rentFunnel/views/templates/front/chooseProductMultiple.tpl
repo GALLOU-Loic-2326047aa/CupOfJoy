@@ -39,7 +39,6 @@
                         <input type="hidden" name="product_info[{$product.id_product}][name]" value="{$product.name|escape:'html'}" />
                         <input type="hidden" name="product_info[{$product.id_product}][description]" value="{$product.description|strip_tags|escape:'html'}" />
                         <input type="hidden" name="product_info[{$product.id_product}][price]" value="{$product.price}" />
-                        <input type="hidden" name="product_info[{$product.id_product}][image_url]" value="{$product.image_url}" />
                     </div>
                 </div>
             {/foreach}
