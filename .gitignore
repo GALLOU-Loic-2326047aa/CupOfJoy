@@ -164,28 +164,6 @@ modules/statsstock/
 # A decommenter
 # modules/stripe_official/vendor/
 
-# Dossier a gitignore (a modifier plus tard)
-admin-api/
-admin350e44cybetj2my7gso/
-app/
-cache/
-classes/
-config/
-controllers/
-docs/
-download/
-img/
-/js/
-localization/
-mails/
-override/
-pdf/
-src/
-translations/
-upload/
-var/
-webservice
-
 # Fichier a gitignore (a modifier plus tard=
 .htaccess
 1_en_0_sitemap.xml
