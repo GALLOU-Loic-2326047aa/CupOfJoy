@@ -29,13 +29,14 @@ class Ps_Stripe_Subscriptions extends Module
     public function install()
     {
         if (parent::install() == false ||
+            !$this->registerHook('payementOptions') ||
+            !$this->registerHook('paymentReturn') ||
             !$this->registerHook('header') ||
             !$this->registerHook('displayCustomerAccount') ||
             !$this->registerHook('actionFrontControllerSetMedia') ||
             !$this->registerHook('actionCustomerAccountAdd') ||
             !$this->registerHook('actionAuthentication')
         ) {
-             echo "Installation des hooks a échoué.";
             return false;
         }
 
@@ -44,7 +45,7 @@ class Ps_Stripe_Subscriptions extends Module
             `id_customer_ps` INT(10) UNSIGNED NOT NULL PRIMARY KEY,
             `id_customer_stripe` VARCHAR(50) NOT NULL,
             UNIQUE KEY `id_customer_stripe` (`id_customer_stripe`)
-        ) ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8;
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ";
 
         $sql_price_table = "
@@ -53,14 +54,14 @@ class Ps_Stripe_Subscriptions extends Module
             `id_price_stripe` VARCHAR(50) NOT NULL,
             `id_product_stripe` VARCHAR(50) NOT NULL,
             UNIQUE KEY `id_price_stripe` (`id_price_stripe`)
-        ) ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8;
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ";
 
         if (!Db::getInstance()->execute($sql_customer_table) ||
             !Db::getInstance()->execute($sql_price_table)) {
 
+            // En cas d'échec SQL, on annule l'installation complète
             $this->uninstall();
-             echo "Création des tables a échoué.";
             return false;
         }
 
@@ -91,13 +92,15 @@ class Ps_Stripe_Subscriptions extends Module
         if (!file_exists($envFile)) {
             return null;
         }
-
-        $lines = file($envFile, FILE_IGNORE_EMPTY_LINES | FILE_SKIP_WHITE_SPACE);
+        $lines = file($envFile, 4);
+        if (!$lines) {
+            return null;
+        }
         foreach ($lines as $line) {
+            // La logique de trim() ici compense l'omission de FILE_SKIP_WHITE_SPACE
             if (strpos(trim($line), '#') === 0) {
                 continue;
             }
-
             list($k, $v) = explode('=', $line, 2);
             if (trim($k) === $key) {
                 return trim($v, " \n\r\t\v\x00\"'");
@@ -111,7 +114,6 @@ class Ps_Stripe_Subscriptions extends Module
      */
     protected function initStripeApi()
     {
-        // Utiliser _PS_MODULE_DIR_ pour garantir le chemin correct
         require_once(_PS_MODULE_DIR_ . $this->name . '/vendor/autoload.php');
 
         $secret_key = $this->getEnvVariable('PS_STRIPE_SK');
@@ -145,11 +147,18 @@ class Ps_Stripe_Subscriptions extends Module
         );
     }
 
+    public function hookHeader(array $params)
+    {
+        // Méthode requise car le Hook 'header' est enregistré
+        return null;
+    }
+
     public function hookDisplayCustomerAccount(array $params) {
         $this->context->smarty->assign([
             'subscription_link' => $this->context->link->getModuleLink($this->name, 'default'),
             'subscriptions_icon' => 'card_membership',
         ]);
+        // Utilisation du chemin exact que vous avez corrigé
         return $this->display(__FILE__, 'views/templates/customer_account.tpl');
     }
 
@@ -210,11 +219,19 @@ class Ps_Stripe_Subscriptions extends Module
         }
     }
 
+    public function hookPaymentOptions($params) {
+        if (!$this->active || !$this->context->customer->isLogged() || $params['cart']->nbProducts() == 0) {
+            return [];
+        }
+        $newOption = newPaymentOption();
+        $newOption = setModuleName($this->name);
+        $newOption->setCallToActionText($this->l('Payer la Location + Abonnement Stripe'));
+        $newOption->setAction($this->context->link->getModuleLink($this->name, 'payment', [], true));
 
-    /**
-     * Récupère l'ID Client PrestaShop à partir de l'ID Client Stripe (cus_XXXXXX)
-     */
-    protected function getIdCustomerPsByStripeId($stripe_customer_id)
+
+    }
+
+    public function getIdCustomerPsByStripeId($stripe_customer_id)
     {
         if (!class_exists('StripeCustomerLink')) {
             require_once(_PS_MODULE_DIR_ . $this->name . '/classes/StripeCustomerLink.php');
@@ -227,10 +244,7 @@ class Ps_Stripe_Subscriptions extends Module
     ');
     }
 
-    /**
-     * Récupère l'ID Produit PrestaShop à partir de l'ID Prix Stripe (price_YYYYYY)
-     */
-    protected function getIdProductPsByStripePriceId($stripe_price_id)
+    public function getIdProductPsByStripePriceId($stripe_price_id)
     {
         if (!class_exists('StripePriceLink')) {
             require_once(_PS_MODULE_DIR_ . $this->name . '/classes/StripePriceLink.php');
@@ -247,7 +261,6 @@ class Ps_Stripe_Subscriptions extends Module
         $customer = new Customer((int)$id_customer_ps);
         $cart = new Cart();
 
-        // CORRECTION DE L'ERREUR DE FRAPPE DANS Address::getCustomerDefaultID
         $id_address = Address::getCustomerDefaultID((int)$id_customer_ps);
 
         if (!$id_address) {
@@ -335,8 +348,6 @@ class Ps_Stripe_Subscriptions extends Module
 
         if ($id_customer_ps) {
             PrestaShopLogger::addLog('Échec du paiement récurrent pour le client PS #' . $id_customer_ps, 2, null, 'Customer', $id_customer_ps, true);
-
-            // Logique métier : mettre à jour le statut dans la DB locale et notifier le client.
         }
         return true;
     }
@@ -348,10 +359,7 @@ class Ps_Stripe_Subscriptions extends Module
 
         if ($id_customer_ps) {
             PrestaShopLogger::addLog('Abonnement Stripe annulé pour le client PS #' . $id_customer_ps . ' (Sub ID: ' . $subscription->id . ')', 1, null, 'Customer', $id_customer_ps, true);
-
-            // Logique métier : Mettre à jour le statut dans la DB locale à 'cancelled'.
         }
         return true;
     }
-
 }
