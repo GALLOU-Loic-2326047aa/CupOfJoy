@@ -11,6 +11,22 @@
     </div>
 </div>
 <div class="form-group">
+    <label class="control-label col-lg-3">{l s='Prix par mois (12 mois)' mod='rentalroute'}</label>
+    <div class="col-lg-2">
+        {* Assurez-vous que le nom est bien 'price_per_month_12' *}
+        <input type="text" name="price_per_month_12" value="{Tools::ps_round($price_per_month_12, 2)}">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label col-lg-3">{l s='Prix par mois (36 mois)' mod='rentalroute'}</label>
+    <div class="col-lg-2">
+        {* Assurez-vous que le nom est bien 'price_per_month_36' *}
+        <input type="text" name="price_per_month_36" value="{Tools::ps_round($price_per_month_36, 2)}">
+    </div>
+</div>
+
+<div class="form-group">
     <label class="control-label col-lg-3">{l s='Montant du dépôt (€)' mod='rentalroute'}</label>
     <div class="col-lg-2">
         <input type="text" name="deposit_amount" value="{Tools::ps_round($deposit_amount, 2)}">
