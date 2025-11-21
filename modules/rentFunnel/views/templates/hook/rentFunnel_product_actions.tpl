@@ -1,4 +1,9 @@
 <button class="btn btn-primary" type="button"
-        onclick="window.location.href='{$link->getModuleLink('rentFunnel', 'chooseMachine')}'">
-    Louer
+        {if $categoryList[0]['multiselect']==true}
+            onclick="window.location.href='{$link->getModuleLink('rentFunnel', 'chooseProductMultiple')}'"
+        {else}
+            onclick="window.location.href='{$link->getModuleLink('rentFunnel', 'chooseProductSimple')}'"
+        {/if}
+    >
+    Formule
 </button>

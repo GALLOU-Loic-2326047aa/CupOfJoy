@@ -1,27 +1,33 @@
 {extends file="page.tpl"}
 
+{block name="page_title"}
+    <h1>{$page_title}</h1>
+{/block}
 {block name="page_content"}
+    {if $categoryList[0]->skippable == 1}
+        {include file="module:rentFunnel/views/templates/front/chooseProductPass.tpl"}
+    {/if}
     <form method="post" action="{$link->getModuleLink('rentFunnel', 'saveChoice')}">
         <div class="rentFunnel-product-list">
-            {foreach from=$coffees item=coffee}
+            {foreach from=$products item=product}
                 <div class="rentFunnel-product-item">
-                    <img src="{$shop_url}{$coffee.image_url}"
-                         alt="{$coffee.name}"
+                    <img src="{$shop_url}{$product.image_url}"
+                         alt="{$product.name}"
                          style="max-width: 300px; max-height: 300px; width: auto; height: auto;"/>
-                    <p>{$coffee.description nofilter}</p>
+                    <p>{$product.description nofilter}</p>
                     <span>
-                    Acheter ce café pour {$coffee.price|rtrim:'0'|rtrim:'.'}{$shop_currency}
+                    Acheter ce produit pour {$product.price|rtrim:'0'|rtrim:'.'}{$shop_currency} l'unité.
                 </span>
                     <div>
-                        <label for="qty_{$coffee.id_product}">Quantité :</label>
+                        <label for="qty_{$product.id_product}">Quantité :</label>
                         <div class="quantity-button js-quantity-button ">
-                            <div class="input-group flex-nowrap coffee-select-button">
+                            <div class="input-group flex-nowrap product-select-button">
                                 <button role="button" aria-label="decrement" class="btn decrement js-decrement-button" type="button">
                                     <i class="material-icons" aria-hidden="true"></i>
                                     <i class="material-icons confirmation d-none"></i>
                                     <div class="spinner-border spinner-border-sm align-middle d-none"></div>
                                 </button>
-                                <input id="quantity_wanted_{$coffee.id_product}" value="0" min="0" class="form-control" name="qty"
+                                <input id="quantity_wanted_{$product.id_product}" value="0" min="0" class="form-control" name="product_quantities[{$product.id_product}]"
                                        aria-label="Quantité" type="text" inputmode="numeric" pattern="[0-9]*">
                                 <button role="button" aria-label="increment" class="btn increment js-increment-button" type="button">
                                     <i class="material-icons" aria-hidden="true"></i>
@@ -30,6 +36,9 @@
                                 </button>
                             </div>
                         </div>
+                        <input type="hidden" name="product_info[{$product.id_product}][name]" value="{$product.name|escape:'html'}" />
+                        <input type="hidden" name="product_info[{$product.id_product}][description]" value="{$product.description|strip_tags|escape:'html'}" />
+                        <input type="hidden" name="product_info[{$product.id_product}][price]" value="{$product.price}" />
                     </div>
                 </div>
             {/foreach}

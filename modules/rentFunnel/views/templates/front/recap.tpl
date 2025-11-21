@@ -5,24 +5,16 @@
 {/block}
 
 {block name="page_content"}
-    <div>
-        Machine choisie : {$machine_name} -> {$machine_price}{$shop_currency}
-    </div>
-    <div>
-        Cafés choisis :
-        {foreach from=$coffees item=coffee}
-            {$coffee.name} -> {$coffee.price}{$shop_currency}
+    {foreach from=$category_list item=category}
+        <h3>Catégorie {$category}</h3>
+        {foreach from=$product_list item=product}
+            <h4>{$product.name}</h4>
+            <p>{$product.description}</p>
+            <p>Prix du produit : {$product.price}{$shop_currency}</p>
+            {if isset($product.quantity)}
+                <p>Quantité choisie : {$product.quantity}</p>
+                <p>Prix total : {$product.price * $product.quantity}{$shop_currency}</p>
+            {/if}
         {/foreach}
-    </div>
-    <div>
-        Accessoire choisi :
-        {if !is_bool($accessory_name)}
-            {$accessory_name} -> {$accessory_price}{$shop_currency}
-        {else}
-            aucun -> 0{$shop_currency}
-        {/if}
-    </div>
-    <div>
-        Prix total : {$total_price}{$shop_currency}
-    </div>
+    {/foreach}
 {/block}
