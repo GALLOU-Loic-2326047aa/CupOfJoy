@@ -70,6 +70,10 @@ class RentFunnel extends Module
 
     public function hookDisplayProductActions()
     {
+        $id_category = $this->context->controller->getCategory()->id;
+        $category = new Category($id_category, $this->context->language->id);
+        $categoryName = $category->name;
+
         $rentFunnel = RentFunnelObjectModel::getRentFunnel();
         $categoryList = [];
         Configuration::updateValue("RENTFUNNEL_SELECTED_PRODUCTS", json_encode([]));
@@ -78,11 +82,16 @@ class RentFunnel extends Module
         {
             $categoryList[] = $rentFunnelItem;
         }
+        $firstCategoryName = $categoryList[0]['name'];
 
         Configuration::updateValue("RENTFUNNEL_CATEGORYLIST", json_encode($categoryList));
         $this->context->smarty->assign('categoryList', $categoryList);
 
-        return $this->display(__FILE__, 'rentFunnel_product_actions.tpl');
+        if ($categoryName == $firstCategoryName) {
+            return $this->display(__FILE__, 'rentFunnel_product_actions.tpl');
+        }
+
+        return false;
     }
 
     public function hookDisplayNav2($params)
