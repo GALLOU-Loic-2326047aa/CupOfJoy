@@ -1,0 +1,13 @@
+Bonjour,
+    Une nouvelle demande de validation manuelle de SIRET a été soumise.
+
+    Informations du client :
+
+    Prénom :
+    Nom :
+    Email :
+    Entreprise :
+    SIRET :
+
+
+Veuillez vérifier ces informations et contacter le client.
