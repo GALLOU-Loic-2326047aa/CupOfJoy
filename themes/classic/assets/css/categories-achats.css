@@ -1,0 +1,47 @@
+/*-------------------*/
+/* Page Vêtements - Gestion du block Accueil */
+/*-------------------*/
+
+.block-categories {
+    background-color: #d6cbb7;
+}
+
+/*-------------------*/
+/* Page Vêtements - Gestion du block Fournisseurs */
+/*-------------------*/
+
+#search_filters_suppliers {
+    background-color: #d6cbb7;
+}
+
+/*-------------------*/
+/* Page Vêtements - Gestion du block Marques */
+/*-------------------*/
+
+#search_filters_brands {
+    background-color: #d6cbb7;
+}
+
+/*-------------------*/
+/* Page Vêtements - Gestion du block des filtres  */
+/*-------------------*/
+
+#search_filters {
+    background-color: #d6cbb7;
+}
+
+/*-------------------*/
+/* Page Vêtements - Gestion du block de description */
+/*-------------------*/
+
+.card-block {
+    background-color: #d6cbb7;
+}
+
+/*-------------------*/
+/* Page Vêtements - Gestion du block des sous-catégories */
+/*-------------------*/
+
+#subcategories {
+    background-color: #d6cbb7;
+}
