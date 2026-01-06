@@ -11,9 +11,6 @@ class RentFunnelSaveChoiceModuleFrontController extends ModuleFrontController
         $product_id = Tools::getValue('product_id'); // bien nom ‘product’ pour correspondre aux URLs
         $product = RentFunnelObjectModel::getProductById($product_id);
 
-        array_splice($categoryList, 0, 1);
-        Configuration::updateValue("RENTFUNNEL_CATEGORYLIST", json_encode($categoryList));
-
         $totalSelectedProducts = json_decode(Configuration::get("RENTFUNNEL_SELECTED_PRODUCTS"), true);
 
         // Ajout du produit simple s'il existe
@@ -48,6 +45,9 @@ class RentFunnelSaveChoiceModuleFrontController extends ModuleFrontController
                 $totalSelectedProducts[$category->name] = $selected_products;
             }
         }
+
+        array_splice($categoryList, 0, 1);
+        Configuration::updateValue("RENTFUNNEL_CATEGORYLIST", json_encode($categoryList));
 
         // Détermination de la prochaine page selon multiselect
         $nextPage = empty($categoryList) ? 'recap' : ($categoryList[0]->multiselect ? 'chooseProductMultiple' : 'chooseProductSimple');

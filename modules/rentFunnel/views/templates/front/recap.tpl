@@ -21,7 +21,7 @@
                 <p>Prix du produit : {$product.price|rtrim: '0'|rtrim: '.'}{$shop_currency}</p>
                 {if isset($product.quantity)}
                     <p>Quantité choisie : {$product.quantity}</p>
-                    <p>Prix total : {$product.price * $product.quantity}{$shop_currency}</p>
+                    <p style="font-weight: bold">Prix total : {$product.price * $product.quantity}{$shop_currency}</p>
                 {/if}
             {/if}
         {/foreach}
@@ -31,7 +31,7 @@
 
     <hr>
     <div class="total-section">
-        <h3>Prix total : {$total_price|string_format:"%.2f"}{$shop_currency}</h3>
+        <h3>Prix total de la commande : {$total_price|string_format:"%.2f"}{$shop_currency}</h3>
     </div>
 
     <div class="actions-section">

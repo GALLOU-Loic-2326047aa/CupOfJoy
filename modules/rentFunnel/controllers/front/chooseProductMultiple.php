@@ -2,6 +2,21 @@
 
 class rentFunnelChooseProductMultipleModuleFrontController extends ModuleFrontController
 {
+
+    public function setMedia()
+    {
+        parent::setMedia();
+        $this->registerStylesheet(
+            'rentfunnel-header',
+            'modules/rentFunnel/views/css/header.css',
+            ['media' => 'all', 'priority' => 150]
+        );
+        $this->registerStylesheet(
+            'rentfunnel-page',
+            'modules/rentFunnel/views/css/page.css',
+            ['media' => 'all', 'priority' => 150]
+        );
+    }
     public function initContent()
     {
         parent::initContent();

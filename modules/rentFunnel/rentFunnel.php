@@ -100,19 +100,44 @@ class RentFunnel extends Module
     public function hookDisplayNav2($params)
     {
         $current_page = $this->context->controller->getPageName();
-        if($current_page == 'module-rentFunnel-chooseProductSimple'
-            || $current_page == 'module-rentFunnel-chooseProductMultiple') {
-            if ($current_page != 'module-rentFunnel-recap') {
-                return $this->display(__FILE__, 'views/templates/hook/header.tpl');
+        if(str_starts_with($current_page, 'module-rentFunnel-')
+        && $current_page != 'module-rentFunnel-recap') {
+            $categoryList = [];
+            $total_price = 0;
+
+            $totalSelectedProducts = json_decode(Configuration::get("RENTFUNNEL_SELECTED_PRODUCTS"), true);
+
+            foreach ($totalSelectedProducts as $categoryName => $products)
+            {
+                $categoryList[$categoryName] = [
+                    'name' => $categoryName,
+                    'products' => []
+                ];
+
+                foreach ($products as $productId => $product)
+                {
+                    $categoryList[$categoryName]['products'][$productId] = $product;
+
+                    if(isset($product['price']) && isset($product['quantity']))
+                    {
+                        $total_price += floatval($product['price']) * intval($product['quantity']);
+                    }
+                    else if(isset($product['price']))
+                    {
+                        $total_price += floatval($product['price']);
+                    }
+                }
             }
+
+            $this->context->smarty->assign([
+                'category_list' => $categoryList,
+                'total_price' => $total_price,
+                'shop_url' => $this->context->shop->getBaseURL(),
+                'shop_currency' => $this->context->currency->symbol,
+            ]);
+            return $this->display(__FILE__, 'views/templates/hook/header.tpl');
         }
         return false;
-    }
-
-    public function hookDisplayHeader($params)
-    {
-        $this->context->controller->addCSS($this->_path . 'views/css/header.css', 'all');
-        $this->context->controller->addCSS($this->_path . "views/css/page.css", "all");
     }
 
     public function getContent()

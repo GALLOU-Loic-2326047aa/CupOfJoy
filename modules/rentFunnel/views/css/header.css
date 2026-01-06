@@ -24,3 +24,10 @@
     border-radius: 8px;
     height: 70px;
 }
+
+.header-recap-category {
+    letter-spacing: normal !important;
+    overflow-wrap: break-word;
+    font-size: 1.2em;
+    font-weight: bold !important;
+}

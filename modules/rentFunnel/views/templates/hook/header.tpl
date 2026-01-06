@@ -6,28 +6,21 @@
         <i class="material-icons header-block__icon" aria-hidden="true">shopping_cart</i>
     </button>
     <div id="recap-panel" class="recap-details" style="display: none;">
-        <div>
-            <strong class="dark">Machine choisie :</strong>
-            {if isset($machine_id)}
-            <span>{$machine_name}</span>
+        {foreach from=$category_list key=categoryName item=category}
+            {if $category.name == 'Produit loué'}
+            <span class="header-recap-category">{$category.name} : </span>
+            {else}
+            <div>
+                <span class="header-recap-category">{$category.name} choisi(e)(s) : </span>
+            </div>
             {/if}
-        </div>
-        <div>
-            <strong class="dark">Café choisi :</strong>
-            {if isset($coffee_id)}
-            <span>{$coffee_name}</span>
-            {/if}
-        </div>
-        <div>
-            <strong class="dark">Accessoire choisi :</strong>
-            {if isset($accessory_id)}
-                {if !is_bool($accessory_name)}
-                    <span>{$accessory_name}</span>
-                {else}
-                    <span>aucun</span>
+            {foreach from=$category.products item=product}
+                <p class="header-recap-product">{$product.name}</p>
+                {if isset($product.quantity)}
+                    <p>Quantité choisie : {$product.quantity}</p>
                 {/if}
-            {/if}
-        </div>
+            {/foreach}
+        {/foreach}
     </div>
 </div>
 <script>
