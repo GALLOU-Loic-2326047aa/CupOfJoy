@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Nouvelle demande de validation - {shop_name}</title>
+</head>
+<body style="font-family: Arial, sans-serif; font-size: 14px; color: #333;">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center" style="padding: 20px 0;">
+            <table width="600" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse; border: 1px solid #ddd;">
+                <tr>
+                    <td align="center" style="padding: 20px; background-color: #f8f8f8;">
+                        <a href="{shop_url}" title="{shop_name}">
+                            <img src="{shop_logo}" alt="{shop_name}" style="max-height: 70px;">
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 40px 30px;">
+                        <h1 style="font-size: 20px; color: #555;">Nouvelle demande de validation manuelle de SIRET</h1>
+                        <p>Bonjour,</p>
+                        <p>Une nouvelle demande de validation manuelle de SIRET a été soumise sur votre boutique <strong>{shop_name}</strong>.</p>
+                        <p style="margin-top: 25px;"><strong>Informations fournies par le client :</strong></p>
+
+                        <div style="background-color: #f9f9f9; border-left: 3px solid #007bff; padding: 15px; margin: 20px 0;">
+                            <p style="margin: 0 0 10px 0;"><strong>Prénom :</strong> {firstname}</p>
+                            <p style="margin: 0 0 10px 0;"><strong>Nom :</strong> {lastname}</p>
+                            <p style="margin: 0 0 10px 0;"><strong>Email :</strong> {email}</p>
+                            <p style="margin: 0 0 10px 0;"><strong>Entreprise :</strong> {company_name}</p>
+                            <p style="margin: 0;"><strong>SIRET :</strong> {siret}</p>
+                        </div>
+
+                        <p style="margin-top: 25px;">Veuillez vérifier ces informations et contacter le client pour finaliser la création de son compte professionnel.</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center" style="padding: 20px; background-color: #f8f8f8; border-top: 1px solid #ddd;">
+                        <p style="margin: 0;">
+                            <a href="{shop_url}" style="color: #337ab7; text-decoration: none;">{shop_name}</a>
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

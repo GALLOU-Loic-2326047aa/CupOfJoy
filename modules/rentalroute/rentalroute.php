@@ -25,13 +25,11 @@ class rentalroute extends Module
         return parent::install()
             && $this->installDatabase()
             && $this->installTab()
-            && $this->registerHook('moduleRoutes')
             && $this->registerHook('displayCustomerAccount')
             && $this->registerHook('displayAdminProductsExtra')
             && $this->registerHook('actionProductUpdate')
             && $this->registerHook('actionProductAdd')
             && $this->registerHook('displayProductActions')
-            && $this->registerHook('displayHeader')
             && $this->registerHook('actionValidateOrder');
     }
 
@@ -57,15 +55,14 @@ class rentalroute extends Module
     private function installDatabase()
     {
         $sql_queries = [
-            "CREATE TABLE IF NOT EXISTS `"._DB_PREFIX_."rentalroute_product` (
-            `id_rentalroute_product` INT AUTO_INCREMENT PRIMARY KEY,
-            `id_product` INT NOT NULL,
-            `rental_price_day` DECIMAL(20,6) NOT NULL,
-            `rental_price_week` DECIMAL(20,6),
-            `deposit` DECIMAL(20,6),
-            `installation_fee` DECIMAL(20,6),
-            `min_duration` INT,
-            `max_duration` INT
+            "CREATE TABLE IF NOT EXISTS `"._DB_PREFIX_."rental_product` (
+            `id_product` INT(10) UNSIGNED NOT NULL,
+            `is_rental` TINYINT(1) NOT NULL DEFAULT 0,
+            `price_per_month_12` DECIMAL(20, 6) NOT NULL DEFAULT 0.000000,
+            `price_per_month_36` DECIMAL(20, 6) NOT NULL DEFAULT 0.000000,
+            `deposit_amount` DECIMAL(20, 6) NOT NULL DEFAULT 0.000000,
+            `installation_fee` DECIMAL(20, 6) NOT NULL DEFAULT 0.000000,
+            PRIMARY KEY (`id_product`)
         ) ENGINE="._MYSQL_ENGINE_." DEFAULT CHARSET=utf8;",
 
             "CREATE TABLE IF NOT EXISTS `"._DB_PREFIX_."rentalroute_booking` (
@@ -78,14 +75,6 @@ class rentalroute extends Module
             `total_price` DECIMAL(20,6) NOT NULL,
             `status` ENUM('pending','confirmed','ongoing','finished','cancelled') DEFAULT 'pending'
         ) ENGINE="._MYSQL_ENGINE_." DEFAULT CHARSET=utf8;",
-
-            "CREATE TABLE IF NOT EXISTS `"._DB_PREFIX_."rental_product` (
-            `id_product` INT(10) UNSIGNED NOT NULL,
-            `is_rental` TINYINT(1) NOT NULL DEFAULT 0,
-            `deposit_amount` DECIMAL(20, 6) NOT NULL DEFAULT 0.000000,
-            `installation_fee` DECIMAL(20, 6) NOT NULL DEFAULT 0.000000,
-            PRIMARY KEY (`id_product`)
-        ) ENGINE="._MYSQL_ENGINE_." DEFAULT CHARSET=utf8;"
         ];
 
         foreach ($sql_queries as $query) {
@@ -100,7 +89,6 @@ class rentalroute extends Module
     {
         $sql_queries = [
             "DROP TABLE IF EXISTS `"._DB_PREFIX_."rentalroute_booking`",
-            "DROP TABLE IF EXISTS `"._DB_PREFIX_."rentalroute_product`",
             "DROP TABLE IF EXISTS `"._DB_PREFIX_."rental_product`"
         ];
 
@@ -117,15 +105,14 @@ class rentalroute extends Module
     {
         $id_product = (int)$params['id_product'];
         $rental_data = [];
-
         if ($id_product) {
-            $rental_data = Db::getInstance()->getRow(
-                'SELECT * FROM `'._DB_PREFIX_.'rental_product` WHERE `id_product` = '.$id_product
-            );
+            $rental_data = Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'rental_product` WHERE `id_product` = '.$id_product);
         }
 
         $this->context->smarty->assign([
             'is_rental' => isset($rental_data['is_rental']) ? $rental_data['is_rental'] : 0,
+            'price_per_month_12' => isset($rental_data['price_per_month_12']) ? $rental_data['price_per_month_12'] : 0.00,
+            'price_per_month_36' => isset($rental_data['price_per_month_36']) ? $rental_data['price_per_month_36'] : 0.00,
             'deposit_amount' => isset($rental_data['deposit_amount']) ? $rental_data['deposit_amount'] : 0.00,
             'installation_fee' => isset($rental_data['installation_fee']) ? $rental_data['installation_fee'] : 0.00,
         ]);
@@ -154,60 +141,34 @@ class rentalroute extends Module
         }
 
         $is_rental = (int)Tools::getValue('is_rental');
+        $price_per_month_12 = (float)str_replace(',', '.', Tools::getValue('price_per_month_12'));
+        $price_per_month_36 = (float)str_replace(',', '.', Tools::getValue('price_per_month_36'));
         $deposit_amount = (float)str_replace(',', '.', Tools::getValue('deposit_amount'));
         $installation_fee = (float)str_replace(',', '.', Tools::getValue('installation_fee'));
 
-        $sql = "INSERT INTO `"._DB_PREFIX_."rental_product` (id_product, is_rental, deposit_amount, installation_fee)
+        $sql = "INSERT INTO `"._DB_PREFIX_."rental_product` 
+            (id_product, is_rental, price_per_month_12, price_per_month_36, deposit_amount, installation_fee)
             VALUES (
                 ".(int)$id_product.", 
                 ".(int)$is_rental.", 
+                ".(float)$price_per_month_12.", 
+                ".(float)$price_per_month_36.", 
                 ".(float)$deposit_amount.", 
                 ".(float)$installation_fee."
             )
             ON DUPLICATE KEY UPDATE
             is_rental = VALUES(is_rental),
+            price_per_month_12 = VALUES(price_per_month_12),
+            price_per_month_36 = VALUES(price_per_month_36),
             deposit_amount = VALUES(deposit_amount),
             installation_fee = VALUES(installation_fee)";
 
-        Db::getInstance()->execute($sql);
-    }
-
-    public function hookModuleRoutes()
-    {
-        return [
-            'module-rentalroute-booking' => [
-                'rule' => 'module/rentalroute/booking',
-                'keywords' => [],
-                'controller' => 'booking',
-                'params' => [
-                    'fc' => 'module',
-                    'module' => $this->name,
-                ],
-            ],
-        ];
+        if (!Db::getInstance()->execute($sql)) {
+            error_log('Erreur SQL dans updateRentalData: ' . Db::getInstance()->getMsgError());
+        }
     }
 
     // --- HOOKS FRONT-OFFICE ---
-    public function hookDisplayHeader()
-    {
-        if ($this->context->controller->php_self !== 'product') {
-            return;
-        }
-
-        $id_product = (int)Tools::getValue('id_product');
-
-        if ($id_product > 0) {
-            $is_rental = (int)Db::getInstance()->getValue(
-                'SELECT `is_rental` FROM `'._DB_PREFIX_.'rental_product` WHERE `id_product` = '.$id_product
-            );
-
-            if ($is_rental == 1) {
-                $this->context->smarty->assign('hide_add_to_cart_script', true);
-                return $this->display(__FILE__, 'views/templates/hook/header.tpl');
-            }
-        }
-    }
-
     public function hookDisplayProductActions($params)
     {
         $id_product = 0;
@@ -226,24 +187,27 @@ class rentalroute extends Module
         );
 
         if ($rental_data && $rental_data['is_rental'] == 1) {
+
             $currency = $this->context->currency;
 
-            $deposit_formatted = $this->context->getCurrentLocale()->formatPrice(
-                $rental_data['deposit_amount'],
-                $currency->iso_code
-            );
-            $installation_formatted = $this->context->getCurrentLocale()->formatPrice(
-                $rental_data['installation_fee'],
-                $currency->iso_code
-            );
+            $price_12 = $rental_data['price_per_month_12'] ?? 0.00;
+            $price_36 = $rental_data['price_per_month_36'] ?? 0.00;
+            $deposit = $rental_data['deposit_amount'] ?? 0.00;
+            $installation = $rental_data['installation_fee'] ?? 0.00;
 
             $this->context->smarty->assign([
                 'rental_product_id' => $id_product,
-                'booking_url' => $this->context->link->getModuleLink($this->name, 'booking', []),
-                'deposit_amount' => $rental_data['deposit_amount'],
-                'installation_fee' => $rental_data['installation_fee'],
-                'deposit_amount_formatted' => $deposit_formatted,
-                'installation_fee_formatted' => $installation_formatted,
+                'booking_url' => $this->context->link->getModuleLink('rentalroute', 'booking', []),
+
+                'price_per_month_12' => $price_12,
+                'price_per_month_36' => $price_36,
+                'deposit_amount' => $deposit,
+                'installation_fee' => $installation,
+
+                'price_per_month_12_formatted' => $this->context->getCurrentLocale()->formatPrice($price_12, $currency->iso_code),
+                'price_per_month_36_formatted' => $this->context->getCurrentLocale()->formatPrice($price_36, $currency->iso_code),
+                'deposit_amount_formatted' => $this->context->getCurrentLocale()->formatPrice($deposit, $currency->iso_code),
+                'installation_fee_formatted' => $this->context->getCurrentLocale()->formatPrice($installation, $currency->iso_code),
             ]);
 
             return $this->display(__FILE__, 'views/templates/front/rentalform.tpl');
