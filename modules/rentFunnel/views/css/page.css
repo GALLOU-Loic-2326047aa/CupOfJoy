@@ -1,0 +1,22 @@
+.rentFunnel-product-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 0;
+    list-style: none;
+}
+
+.rentFunnel-product-item {
+    background: #fafafa;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 0 8px #17171a0d, 0 2px 8px #17171a14;
+}
+
+body {
+    background: #faf9f8;
+}
+
+.coffee-select-button {
+    left: 25%;
+}
