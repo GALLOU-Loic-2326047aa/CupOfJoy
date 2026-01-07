@@ -10,8 +10,6 @@ class RentFunnel extends Module
         'displayProductListFunctionalButtons',
         'displayProductActions',
         'displayNav2',
-        'displayHeader',
-        'displayBackOfficeHeader',
     ];
 
     public function __construct()
@@ -141,15 +139,10 @@ class RentFunnel extends Module
         return false;
     }
 
-    public function hookDisplayBackOfficeHeader()
-    {
-        if (Tools::getValue('configure') === $this->name) {
-            $this->context->controller->addJS($this->_path . 'views/js/admin.js');
-        }
-    }
-
     public function getContent()
     {
+        $this->context->controller->addJS($this->_path . 'views/js/back_office_form.js');
+
         $this->postProcess();
         return $this->renderForm();
     }
