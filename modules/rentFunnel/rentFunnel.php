@@ -11,6 +11,7 @@ class RentFunnel extends Module
         'displayProductActions',
         'displayNav2',
         'displayHeader',
+        'displayBackOfficeHeader',
     ];
 
     public function __construct()
@@ -140,9 +141,17 @@ class RentFunnel extends Module
         return false;
     }
 
+    public function hookDisplayBackOfficeHeader()
+    {
+        if (Tools::getValue('configure') === $this->name) {
+            $this->context->controller->addJS($this->_path . 'views/js/admin.js');
+        }
+    }
+
     public function getContent()
     {
-        return $this->postProcess() . $this->renderForm();
+        $this->postProcess();
+        return $this->renderForm();
     }
 
     private function postProcess()
@@ -217,7 +226,8 @@ class RentFunnel extends Module
                         'value' => 0,
                         'label' => $this->trans('No', [], 'Admin.Global')
                     ]
-                ]
+                ],
+                'form_group_class' => 'toggle-parent-category-' . $id_field,
             ];
 
             $category_inputs[] = [
@@ -225,7 +235,8 @@ class RentFunnel extends Module
                 'label' => $this->trans('Place de la catégorie dans l\'entonnoir : ', [], 'Admin.Global'),
                 'name' => 'category_order_' . $id_field,
                 'size' => 3,
-                'desc' => $this->trans('Postion de la catégorie dans l\'entonnoir (1 pour la 1ère page, etc...) - La 1ère catégorie sera celle dont les produits permettront d\'accéder à l\'entonnoir', [], 'Admin.Global')
+                'desc' => $this->trans('Postion de la catégorie dans l\'entonnoir (1 pour la 1ère page, etc...) - La 1ère catégorie sera celle dont les produits permettront d\'accéder à l\'entonnoir', [], 'Admin.Global'),
+                'form_group_class' => 'toggle-child-category-' . $id_field,
             ];
 
             $category_inputs[] = [
@@ -246,6 +257,7 @@ class RentFunnel extends Module
                         'label' => $this->trans('No', [], 'Admin.Global')
                     ],
                 ],
+                'form_group_class' => 'toggle-child-category-' . $id_field,
             ];
 
             $category_inputs[] = [
@@ -267,6 +279,7 @@ class RentFunnel extends Module
                         'label' => $this->trans('No', [], 'Admin.Global')
                     ],
                 ],
+                'form_group_class' => 'toggle-child-category-' . $id_field,
             ];
         }
 
@@ -301,19 +314,35 @@ class RentFunnel extends Module
             'languages' => $this->context->controller->getLanguages(),
             'id_language' => $this->context->language->id,
         ];
-
+        
         return $helper->generateForm([$fields_form]);
     }
 
     private function getConfigFieldsValues()
     {
         $fields = [];
+
+        $rentFunnelData = RentFunnelObjectModel::getRentFunnel();
+        $dbCategories = [];
+        foreach ($rentFunnelData as $item) {
+            $dbCategories[$item['id_category']] = $item;
+        }
+
         foreach (RentFunnelObjectModel::getCategories() as $category)
         {
-            $fields['category_' . $category['id_category']] = Tools::getValue('category_' . $category['id_category'], Configuration::get('RENTFUNNEL_CATEGORY_ENABLED_'.$category['id_category'], false) ?? '');
-            $fields['category_order_' . $category['id_category']] = Tools::getValue('category_order_' . $category['id_category'], Configuration::get('RENTFUNNEL_CATEGORY_ORDER_'.$category['id_category'], 0) ?? '');
-            $fields['category_multiselect_' . $category['id_category']] = Tools::getValue('category_multiselect_' . $category['id_category'], Configuration::get('RENTFUNNEL_CATEGORY_ORDER_'.$category['id_category'], 0) ?? '');
-            $fields['category_skippable_' . $category['id_category']] = Tools::getValue('category_skippable_' . $category['id_category'], Configuration::get('RENTFUNNEL_CATEGORY_SKIPPABLE_'.$category['id_category'], 0) ?? '');
+            $id_cat = $category['id_category'];
+
+            if (isset($dbCategories[$id_cat])) {
+                $fields['category_' . $id_cat] = 1;
+                $fields['category_order_' . $id_cat] = $dbCategories[$id_cat]['position'];
+                $fields['category_multiselect_' . $id_cat] = $dbCategories[$id_cat]['multiselect'];
+                $fields['category_skippable_' . $id_cat] = $dbCategories[$id_cat]['skippable'];
+            } else {
+                $fields['category_' . $id_cat] = 0;
+                $fields['category_order_' . $id_cat] = 0;
+                $fields['category_multiselect_' . $id_cat] = 0;
+                $fields['category_skippable_' . $id_cat] = 0;
+            }
         }
         return $fields;
     }
