@@ -3,40 +3,29 @@
 class StripePriceLink extends ObjectModel
 {
     public $id_product_ps;
-    public $id_price_stripe;
+    public $id_product_attribute;
     public $id_product_stripe;
+    public $id_price_stripe;
 
-    public static $definition = [
+    public static $definition = array(
         'table' => 'stripe_price_link',
         'primary' => 'id_product_ps',
-        'fields' => [
-            'id_product_ps' => [
-                'type' => self::TYPE_INT,
-                'validate' => 'isUnsignedId',
-                'required' => true,
-                'db_type' => 'INT(10) UNSIGNED',
-            ],
-            'id_price_stripe' => [
-                'type' => self::TYPE_STRING,
-                'validate' => 'isString',
-                'required' => true,
-                'db_type' => 'VARCHAR(50)',
-            ],
-            'id_product_stripe' => [
-                'type' => self::TYPE_STRING,
-                'validate' => 'isString',
-                'required' => true,
-                'db_type' => 'VARCHAR(50)',
-            ],
-        ],
-    ];
+        'fields' => array(
+            'id_product_ps'        => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true),
+            'id_product_attribute' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true),
+            'id_product_stripe'    => array('type' => self::TYPE_STRING, 'validate' => 'isString', 'required' => true),
+            'id_price_stripe'      => array('type' => self::TYPE_STRING, 'validate' => 'isString', 'required' => true),
+        ),
+    );
 
-    public static function getStripePriceIdByPsId($id_product_ps)
+    public static function getStripePriceIdByPsId($id_product, $id_product_attribute = 0)
     {
-        return Db::getInstance()->getValue('
-            SELECT `id_price_stripe`
-            FROM `' . _DB_PREFIX_ . 'stripe_price_link`
-            WHERE `id_price_stripe` = "' . pSQL($id_product_ps) . '"
-        ');
+        $sql = new DbQuery();
+        $sql->select('id_price_stripe');
+        $sql->from('stripe_price_link');
+        $sql->where('id_product_ps = ' . (int)$id_product);
+        $sql->where('id_product_attribute = ' . (int)$id_product_attribute);
+
+        return Db::getInstance()->getValue($sql);
     }
 }
