@@ -1,0 +1,10 @@
+New customer service ticket created
+
+Ticket ID: #{ticket_id}
+Client: {email}
+Type: {request_type}
+
+Message:
+{message}
+
+Log in to the Back-Office > SAV to reply.
