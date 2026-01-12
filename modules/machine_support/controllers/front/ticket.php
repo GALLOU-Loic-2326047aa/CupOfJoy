@@ -8,6 +8,9 @@ class Machine_SupportTicketModuleFrontController extends ModuleFrontController
         $this->setTemplate('module:machine_support/views/templates/front/ticket.tpl');
     }
 
+    // Fonction par défaut de prestashop que gère l'entièreté du module
+    // Gère l'envoie de mail en validant les champs de texte demander
+    // Ajoute le nouveau ticket support et envoie le mail de validation au client et la notification de l'admin
     public function postProcess()
     {
         if (Tools::isSubmit('submitMachineSupport')) {
@@ -53,6 +56,13 @@ class Machine_SupportTicketModuleFrontController extends ModuleFrontController
 
             // Création du message
             if ($ct->id) {
+
+                Db::getInstance()->update(
+                    'customer_thread',
+                    ['request_type' => pSQL($requestType)],
+                    'id_customer_thread = ' . (int)$ct->id
+                );
+
                 $cm = new CustomerMessage();
                 $cm->id_customer_thread = $ct->id;
 
@@ -75,7 +85,8 @@ class Machine_SupportTicketModuleFrontController extends ModuleFrontController
         }
     }
 
-        protected function sendEmails($ct, $messageBody, $clientEmail, $subjectType)
+    // Fonction qui gère l'envoie de mail
+    protected function sendEmails($ct, $messageBody, $clientEmail, $subjectType)
     {
         $shopName = Configuration::get('PS_SHOP_NAME');
         $id_lang = (int)$this->context->language->id;

@@ -1,10 +1,14 @@
+Support Request Registered
+
 Hello,
 
-We have received your customer service request.
-Ticket number: #{ticket_id}
+We have successfully received your support request.
+Ticket Number: #{ticket_id}
 Request Type: {request_type}
 
 Your message:
 {message}
 
-Our team will process your request as soon as possible.
+Our technical team will process your request as soon as possible.
+
+{shop_name} - {shop_url}

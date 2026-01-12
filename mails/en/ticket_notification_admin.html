@@ -1,15 +1,47 @@
 <!DOCTYPE html>
 <html>
-    <body>
-    <h3>New ticker customer support created.</h3>
-    <ul>
-        <li><strong>Ticket ID :</strong> #{ticket_id}</li>
-        <li><strong>Customer :</strong> {email}</li>
-        <li><strong>Type :</strong> <span style="color:red; font-weight:bold;">{request_type}</span></li>
-    </ul>
-    <hr>
-        <p><strong>Message :</strong><br>{message}</p>
-    <hr>
-    <p>Log in to the Back-Office > SAV to reply.</p>
-    </body>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>New Support Ticket</title>
+</head>
+<body style="background-color:#f6f6f6; font-family:Arial, sans-serif; font-size:14px; color:#555; margin:0; padding:0;">
+<table style="width:100%; background-color:#f6f6f6; padding:20px;">
+    <tr>
+        <td align="center">
+            <table style="width:650px; background-color:#ffffff; border:1px solid #e9e9e9; border-radius:4px;" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td align="center" style="padding:20px; border-bottom:1px solid #e9e9e9;">
+                        <a href="{shop_url}" title="{shop_name}"><img src="{shop_logo}" alt="{shop_name}" style="border:none; max-height:70px;" /></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:30px;">
+                        <h1 style="color:#333; font-size:20px; font-weight:600; margin:0 0 20px 0; text-transform:uppercase;">New Support Ticket</h1>
+
+                        <div style="background-color:#fff1f0; border:1px solid #ffa39e; padding:15px; margin:20px 0;">
+                            <p style="margin:5px 0;"><strong>Ticket ID:</strong> #{ticket_id}</p>
+                            <p style="margin:5px 0;"><strong>Customer:</strong> {email}</p>
+                            <p style="margin:5px 0;"><strong>Type:</strong> <span style="font-weight:bold; color:#d9534f;">{request_type}</span></p>
+                        </div>
+
+                        <p><strong>Customer message:</strong></p>
+                        <div style="background-color:#f9f9f9; padding:15px; border-radius:4px;">
+                            {message}
+                        </div>
+
+                        <div style="text-align:center; margin-top:30px;">
+                            <a href="{shop_url}admin-dev" style="background-color:#333; color:#ffffff; padding:10px 20px; text-decoration:none; font-weight:bold; border-radius:3px;">Reply in Back Office</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" style="background-color:#fbfbfb; padding:20px; border-top:1px solid #e9e9e9; font-size:12px; color:#777;">
+                        <a href="{shop_url}" style="color:#333; text-decoration:none; font-weight:bold;">{shop_name}</a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
 </html>

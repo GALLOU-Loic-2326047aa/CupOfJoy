@@ -1,13 +1,47 @@
 <!DOCTYPE html>
 <html>
-    <body>
-        <h3>Hello,</h3>
-        <p>We have received your customer service request.</p>
-        <p><strong>Ticket number :</strong> #{ticket_id}</p>
-        <p><strong>Request type :</strong> {request_type}</p>
-        <hr>
-            <p><strong>Your message :</strong><br>{message}</p>
-        <hr>
-        <p>Our team will process your request as soon as possible.</p>
-    </body>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Support Request Received</title>
+</head>
+<body style="background-color:#f6f6f6; font-family:Arial, sans-serif; font-size:14px; color:#555; margin:0; padding:0;">
+<table style="width:100%; background-color:#f6f6f6; padding:20px;">
+    <tr>
+        <td align="center">
+            <table style="width:650px; background-color:#ffffff; border:1px solid #e9e9e9; border-radius:4px;" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td align="center" style="padding:20px; border-bottom:1px solid #e9e9e9;">
+                        <a href="{shop_url}" title="{shop_name}"><img src="{shop_logo}" alt="{shop_name}" style="border:none; max-height:70px;" /></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:30px;">
+                        <h1 style="color:#333; font-size:20px; font-weight:600; margin:0 0 20px 0; text-transform:uppercase;">Support Request Registered</h1>
+
+                        <p>Hello,</p>
+                        <p>We have successfully received your support request.</p>
+
+                        <div style="background-color:#fbfbfb; border:1px solid #e6e6e6; padding:15px; margin:20px 0;">
+                            <p style="margin:5px 0;"><strong>Ticket Number:</strong> #{ticket_id}</p>
+                            <p style="margin:5px 0;"><strong>Request Type:</strong> {request_type}</p>
+                        </div>
+
+                        <p><strong>Your message:</strong></p>
+                        <blockquote style="font-style:italic; color:#777; border-left:3px solid #ccc; padding-left:10px; margin-left:0;">
+                            {message}
+                        </blockquote>
+
+                        <p style="margin-top:20px;">Our technical team will process your request as soon as possible.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" style="background-color:#fbfbfb; padding:20px; border-top:1px solid #e9e9e9; font-size:12px; color:#777;">
+                        <a href="{shop_url}" style="color:#333; text-decoration:none; font-weight:bold;">{shop_name}</a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
 </html>

@@ -1,10 +1,14 @@
-New customer service ticket created
+Support Request Registered
 
-Ticket ID: #{ticket_id}
-Client: {email}
-Type: {request_type}
+Hello,
 
-Message:
+We have successfully received your support request.
+Ticket Number: #{ticket_id}
+Request Type: {request_type}
+
+Your message:
 {message}
 
-Log in to the Back-Office > SAV to reply.
+Our technical team will process your request as soon as possible.
+
+{shop_name} - {shop_url}
