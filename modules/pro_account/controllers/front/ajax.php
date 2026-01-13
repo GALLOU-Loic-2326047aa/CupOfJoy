@@ -18,10 +18,12 @@ class pro_accountajaxModuleFrontController extends ModuleFrontController
         $this->ajaxResponse(false, 'Action non reconnue', [], 400);
     }
 
+    // Fonction qui vérfie si le numéro de Siret rentré par le client
     protected function ajaxProcessValidateSiret()
     {
         $siret = Tools::getValue('siret');
 
+        // Vérifie le nombre de caractère requis à un numéro de Siret
         if (strlen($siret) !== 14 || !preg_match('/^[0-9]{14}$/', $siret)) {
             $this->ajaxResponse(false, 'Format invalide. Un SIRET doit contenir exactement 14 chiffres.');
             return;
@@ -33,11 +35,13 @@ class pro_accountajaxModuleFrontController extends ModuleFrontController
             $this->ajaxResponse(false, 'La clé API n\'est pas configurée.');
         }
 
+        // Lien vers l'API Sirene de l'INSEE
         $apiUrl = "https://api.insee.fr/api-sirene/3.11/siret/" . urlencode($siret);
 
         $curl = curl_init($apiUrl);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
+        // Corp de l'appel API
         curl_setopt($curl, CURLOPT_HTTPHEADER, [
             "X-INSEE-Api-Key-Integration: " . $apiKey,
             "Accept: application/json"
@@ -46,6 +50,7 @@ class pro_accountajaxModuleFrontController extends ModuleFrontController
         $response = curl_exec($curl);
         $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
+        // Retourne une erreur si la connexion avec l'API n'a pas pu s'effectuer
         if (curl_errno($curl)) {
             $error_msg = curl_error($curl);
             curl_close($curl);
@@ -56,6 +61,7 @@ class pro_accountajaxModuleFrontController extends ModuleFrontController
 
         $data = json_decode($response, true);
 
+        // Vérifie le si l'entreprise existe et rentre toute les données necessaires si l'entreprise existe
         if ($http_code == 200 && isset($data['etablissement'])) {
             $uniteLegale = $data['etablissement']['uniteLegale'];
 
@@ -85,6 +91,7 @@ class pro_accountajaxModuleFrontController extends ModuleFrontController
         }
     }
 
+    // Fonction qui gère la réponse de l'API
     protected function ajaxResponse($success, $message, $data = [], $http_code = 200)
     {
         header('Content-Type: application/json');

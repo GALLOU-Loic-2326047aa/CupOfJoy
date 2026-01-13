@@ -21,6 +21,7 @@ class AdminProAccountBusinessController extends ModuleAdminController
         $this->context->smarty->assign('content', $this->content);
     }
 
+    // Affiche le formulaire pour créer un compte pro côté admin
     public function renderForm()
     {
         $this->fields_form = [
@@ -74,6 +75,8 @@ class AdminProAccountBusinessController extends ModuleAdminController
         return parent::renderForm();
     }
 
+    // Fonction qui gère la création d'un compte pro côté admin, créer un mot de passe totalement aléatoire
+    // Et envoie un mail au client avec les informations du compte avec le mot de passe généré
     public function postProcess()
     {
         if (Tools::isSubmit('submitAddcustomer')) {
@@ -150,32 +153,5 @@ class AdminProAccountBusinessController extends ModuleAdminController
                 $this->errors[] = $this->module->l('Erreur lors de l\'envoi de l\'email. Le compte n\'a PAS été créé. Vérifiez votre configuration mail et les templates.');
             }
         }
-    }
-
-    protected function sendWelcomeEmail($customer, $password, $companyName)
-    {
-        $template_vars = [
-            '{firstname}' => $customer->firstname,
-            '{lastname}' => $customer->lastname,
-            '{email}' => $customer->email,
-            '{password}' => $password,
-            '{company_name}' => $companyName,
-            '{shop_name}' => Configuration::get('PS_SHOP_NAME'),
-            '{shop_url}' => Context::getContext()->link->getPageLink('index', true, Context::getContext()->language->id)
-        ];
-
-        Mail::Send(
-            (int)$this->context->language->id,
-            'account_creation_pro',
-            $this->module->l('Vos identifiants de connexion PRO'),
-            $template_vars,
-            $customer->email,
-            $customer->firstname . ' ' . $customer->lastname,
-            null,
-            null,
-            null,
-            null,
-            _PS_MODULE_DIR_ . '../mails/en/'
-        );
     }
 }

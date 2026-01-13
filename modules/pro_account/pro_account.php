@@ -15,17 +15,18 @@ class Pro_Account extends Module
         $this->bootstrap = true;
         parent::__construct();
         $this->displayName = $this->l('Compte Professionnel');
-        $this->description = $this->l('Ajoute des champs pro au formulaire d\'inscription.');
+        $this->description = $this->l('Ajoute des champs pro au formulaire d\'inscription, et aussi la possiblité d\'ajouter des reductions uniquement au compte professionnel.');
     }
 
     public function install()
     {
         return parent::install()
             && $this->installDatabase()
+            && $this->installProGroup()
+            && $this->installTab()
             && $this->registerHook('displayCustomerAccountForm')
             && $this->registerHook('actionSubmitAccount')
             && $this->registerHook('displayHeader')
-            && $this->installTab()
             && $this->registerHook('actionCustomerAccountAdd');
     }
 
@@ -34,6 +35,7 @@ class Pro_Account extends Module
         return parent::uninstall() && $this->uninstallDatabase();
     }
 
+    // Fonction qui créer la table customer_pro_data qui gère toutes les données des comptes pro
     public function installDatabase()
     {
         $sql = "CREATE TABLE IF NOT EXISTS `"._DB_PREFIX_."customer_pro_data` (
@@ -45,28 +47,56 @@ class Pro_Account extends Module
         return Db::getInstance()->execute($sql);
     }
 
+    // Fonction qui supprime la table customer_pro_data
     public function uninstallDatabase()
     {
         return Db::getInstance()->execute("DROP TABLE IF EXISTS `"._DB_PREFIX_."customer_pro_data`");
     }
 
+    // Fonction qui créer les 2 nouvelle page coté admin pour gérer les comptes pro et la réduction excusive aux comptes pro
     public function installTab()
     {
+        // 1. Onglet Business (Clients)
+        $this->addTab('AdminProAccountBusiness', 'Business (Création)', 'AdminParentCustomer');
+
+        // 2. Onglet Discounts (Catalogue)
+        $this->addTab('AdminProDiscounts', 'Discount for Businesses', 'AdminCatalog');
+
+        return true;
+    }
+
+    private function addTab($className, $tabName, $parentClassName)
+    {
+        // On vérifie si l'onglet existe déjà pour éviter les doublons
+        $id_tab = (int)Tab::getIdFromClassName($className);
+        if ($id_tab) {
+            return true; // Il existe déjà, on ne fait rien
+        }
+
         $tab = new Tab();
         $tab->active = 1;
-        $tab->class_name = 'AdminProAccountBusiness';
+        $tab->class_name = $className;
         $tab->name = array();
         foreach (Language::getLanguages(true) as $lang) {
-            $tab->name[$lang['id_lang']] = 'Business (Pro)';
+            $tab->name[$lang['id_lang']] = $tabName;
         }
-        $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentCustomer'); // On le met dans le menu "Clients"
+        $tab->id_parent = (int)Tab::getIdFromClassName($parentClassName);
         $tab->module = $this->name;
+
         return $tab->add();
     }
 
     public function uninstallTab()
     {
-        $id_tab = (int)Tab::getIdFromClassName('AdminProAccountBusiness');
+        $this->removeTab('AdminProAccountBusiness');
+        $this->removeTab('AdminProDiscounts');
+
+        return true;
+    }
+
+    private function removeTab($className)
+    {
+        $id_tab = (int)Tab::getIdFromClassName($className);
         if ($id_tab) {
             $tab = new Tab($id_tab);
             return $tab->delete();
@@ -74,6 +104,25 @@ class Pro_Account extends Module
         return true;
     }
 
+    // Fonction qui créer le groupe Pro
+    public function installProGroup()
+    {
+        // On vérifie si le groupe existe déjà dans la config
+        if (!Configuration::get('PRO_ACCOUNT_GROUP_ID')) {
+            $group = new Group();
+            $group->name = array();
+            foreach (Language::getLanguages(true) as $lang) {
+                $group->name[$lang['id_lang']] = 'Professionnels (Module)';
+            }
+            $group->price_display_method = 1; // 1 = Hors Taxe, 0 = TTC
+            $group->save();
+
+            Configuration::updateValue('PRO_ACCOUNT_GROUP_ID', $group->id);
+        }
+        return true;
+    }
+
+    // Hook qui affiche les champs textes pour la créations d'un compte pro
     public function hookDisplayCustomerAccountForm()
     {
         $this->context->smarty->assign([
@@ -84,6 +133,7 @@ class Pro_Account extends Module
         return $this->display(__FILE__, 'views/templates/hook/pro_fields.tpl');
     }
 
+    // Hook qui gère l'action de créer un compte et cela vérifie si le compte est pro les champs de textes pro
     public function hookActionSubmitAccount()
     {
         if (!Tools::isSubmit('is_pro')) {
@@ -101,6 +151,7 @@ class Pro_Account extends Module
         }
     }
 
+    // Hook qui gère la création d'un compte, si le compte est pro cela l'ajoute dans le groupe pro
     public function hookActionCustomerAccountAdd($params)
     {
         if (!Tools::isSubmit('is_pro')) {
@@ -119,9 +170,18 @@ class Pro_Account extends Module
                 'company_name' => pSQL($company_name),
                 'siret' => pSQL($siret),
             ]);
+
+            $groupId = (int)Configuration::get('PRO_ACCOUNT_GROUP_ID');
+            if ($groupId) {
+                $newCustomer->addGroups([$groupId]);
+                // On définit le groupe par défaut
+                $newCustomer->id_default_group = $groupId;
+                $newCustomer->update();
+            }
         }
     }
 
+    // Hook qui permets d'afficher un logo pro quand le client à un compte pro
     public function hookDisplayHeader()
     {
         if (!$this->context->customer->isLogged()) {
