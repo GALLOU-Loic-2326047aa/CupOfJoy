@@ -54,7 +54,6 @@ class RentFunnelObjectModel extends ObjectModel
             $id_lang = Context::getContext()->language->id;
         }
 
-        // Récupérer les produits de cette catégorie en joignant directement avec category_lang
         $sql = "SELECT p.id_product, p.price, pl.name, pl.description
                 FROM " . _DB_PREFIX_ . "product p
                 JOIN " . _DB_PREFIX_ . "product_lang pl ON p.id_product = pl.id_product
@@ -107,5 +106,63 @@ class RentFunnelObjectModel extends ObjectModel
 
         // Image par défaut si aucune image n'est trouvée
         return '/img/p/fr-default-home_default.jpg';
+    }
+
+    public static function getCompanyInfo($companyId)
+    {
+        $sql = "SELECT ci.company_size, ci.consumption, ci.additional_questions
+                FROM " . _DB_PREFIX_ . "rentFunnel_company_info ci
+                WHERE ci.company_id = '" . (int)$companyId . "'";
+
+        $result = Db::getInstance()->executeS($sql);
+        if (!$result)
+        {
+            return [
+                'company_size' => '',
+                'consumption' => '',
+                'additional_questions' => '',
+            ];
+        }
+
+        if(!empty($result['additional_questions']))
+        {
+            $result['additional_questions'] = json_decode($result['additional_questions'], true) ?: [];
+        }
+
+        return $result;
+    }
+
+    public static function setCompanyInfo($companyId, $companyInfo)
+    {
+        $companySize = pSQL($companyInfo['company_size']);
+        $consumption = pSQL($companyInfo['consumption']);
+        $additionalQuestions = [];
+        foreach ($companyInfo as $key => $value)
+        {
+            if($key != 'company_size' && $key != 'consumption')
+            {
+                $additionalQuestions[$key] = $value;
+            }
+        }
+        $additionalQuestionsJson = pSQL(json_encode($additionalQuestions));
+
+        $existingId = Db::getInstance()->getValue(
+            "SELECT id_rentFunnel_company_info FROM " . _DB_PREFIX_ . "rentFunnel_company_info
+                    WHERE company_id = " . (int)$companyId
+        );
+
+        if($existingId) {
+            $sql = "UPDATE " . _DB_PREFIX_ . "rentFunnel_company_info
+                SET company_size = '$companySize',
+                    consumption = '$consumption',
+                    additional_questions = '$additionalQuestionsJson',
+                WHERE company_id = " . (int)$companyId;
+        } else {
+            $sql = "INSERT INTO " . _DB_PREFIX_ . "rentFunnel_company_info
+                (company_id, company_size, consumption, additional_questions)
+                VALUES ('$companyId', '$companySize', '$consumption', '$additionalQuestionsJson)";
+        }
+
+        Db::getInstance()->execute($sql);
     }
 }

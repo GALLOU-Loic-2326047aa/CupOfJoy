@@ -7,6 +7,7 @@ if (!defined('_PS_VERSION_')) exit;
 class RentFunnel extends Module
 {
     public const HOOKS = [
+        'displayHome',
         'displayProductListFunctionalButtons',
         'displayProductActions',
         'displayNav2',
@@ -31,18 +32,28 @@ class RentFunnel extends Module
 
     public function install()
     {
-        $sql = "CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . "rentFunnel` (
-                    `id_rentFunnel` INT(11) NOT NULL AUTO_INCREMENT,
+        $sql_order = "CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . "rentFunnel_order` (
+                    `id_rentFunnel_order` INT(11) NOT NULL AUTO_INCREMENT,
                     `id_category` INT(11) NOT NULL,
                     `name` VARCHAR(255) NOT NULL,
                     `position` INT(11) NOT NULL,
                     `multiselect` BOOLEAN NOT NULL,
                     `skippable` BOOLEAN NOT NULL,
-                    PRIMARY KEY (`id_rentFunnel`),
+                    PRIMARY KEY (`id_rentFunnel_order`),
                     UNIQUE KEY `uniq_category` (`id_category`)
                 ) ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
-        if(!(DB::getInstance()->execute($sql)))
+        $sql_company_info = "CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . "rentFunnel_company_info` (
+                                `id_rentFunnel_company_info` INT(11) NOT NULL AUTO_INCREMENT,
+                                `company_id` INT(11) NOT NULL,
+                                `company_size` VARCHAR(30) NOT NULL,
+                                `consumption` VARCHAR(30) NOT NULL,
+                                `additional_questions` MEDIUMTEXT NOT NULL,
+                                PRIMARY KEY (`id_rentFunnel_company_info`),
+                                UNIQUE KEY `uniq_company` (`company_id`)
+                            ) ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8mb4 COLLATE=utfmb4_unicode_ci;";
+
+        if(!(DB::getInstance()->execute($sql_order)))
         {
             return false;
         }
@@ -53,13 +64,96 @@ class RentFunnel extends Module
 
     public function uninstall()
     {
-        $sql = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . "rentFunnel`";
+        $sqlOrder = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . "rentFunnel_order`";
 
-        if (!Db::getInstance()->execute($sql)) {
+        if (!Db::getInstance()->execute($sqlOrder)) {
+            return false;
+        }
+
+        $sqlCompanyInfo = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . "rentFunnel_company_info`";
+
+        if (!Db::getInstance()->execute($sqlCompanyInfo)) {
             return false;
         }
 
         return parent::uninstall();
+    }
+
+    public function hookDisplayHome()
+    {
+        $dropdowns = json_decode(Configuration::get('RENTFUNNEL_DROPDOWNS'), true) ?: [];
+
+        $mainQuestions = [
+            [
+                'name' => 'company_size',
+                'label' => 'Quelle est la taille de votre entreprise ?',
+                'options' => ['1-10 employés', '11-50 employés', '51-200 employés', '201-500 employés', '+ de 500 employés']
+            ],
+            [
+                'name' => 'consumption',
+                'label' => 'Quelle est la consommation de café/thé de votre entreprise par mois ?',
+                'options' => ['Moins de 50 tasses', '50 à 100 tasses', '100 à 200 tasses', '200 à 500 tasses', '+ de 500 tasses']
+            ]
+        ];
+
+        if(Tools::isSubmit('submitCompanyInfo'))
+        {
+            $data = $this->processCompanyInfoForm($mainQuestions, $dropdowns);
+
+            if($data)
+            {
+                RentFunnelObjectModel::setCompanyInfo($data);
+
+                Tools::redirect($this->context->link->getPageLink('index'));
+            }
+        }
+
+        $this->context->smarty->assign([
+            'mainQuestions' => $mainQuestions,
+            'dropdowns' => $dropdowns,
+            'module_dir' => $this->getPathUri(),
+            'form_errors' => $this->context->controller->errors ?? [],
+        ]);
+
+        return $this->display(__FILE__, '/views/templates/front/company_info.tpl');
+    }
+
+    private function processCompanyInfoForm($mainQuestions, $dropdowns)
+    {
+        $data = [];
+        $errors = [];
+
+        foreach($mainQuestions as $question)
+        {
+            $value = Tools::getValue($question['name']);
+
+            if(empty($value))
+            {
+                $errors[] = $question['label'] . ' est obligatoire';
+            } else {
+                $data[$question['name']] = pSQL($value);
+            }
+        }
+
+        foreach ($dropdowns as $dropdown)
+        {
+            $value = Tools::getValue($dropdown['name']);
+            if(!empty($value))
+            {
+                $data[$dropdown['name']] = pSQL($value);
+            }
+        }
+
+        if(!empty($errors))
+        {
+            $this->context->controller->errors = array_merge(
+                $this->context->controller->errors ?? [],
+                $errors
+            );
+            return false;
+        }
+
+        return $data;
     }
 
     public function hookDisplayProductListFunctionalButtons()
@@ -143,13 +237,26 @@ class RentFunnel extends Module
     {
         $this->context->controller->addJS($this->_path . 'views/js/back_office_form.js');
 
-        $this->postProcess();
-        return $this->renderForm();
+        $output = '';
+
+        if(Tools::isSubmit('submitRentFunnelOrder'))
+        {
+            $this->postProcessOrder();
+            $output .= $this->displayConfirmation($this->l('Configuration de l\'ordre des commandes sauvegardé'));
+        }
+
+        if(Tools::isSubmit('submitRentFunnelCompanyInfo'))
+        {
+            $this->postProcessCompanyInfo();
+            $output .= $this->displayConfirmation($this->l('Configuration des questions sauvegardée'));
+        }
+
+        return $output . $this->renderFormOrder() . $this->renderFormCompanyInfo();
     }
 
-    private function postProcess()
+    private function postProcessOrder()
     {
-        if(Tools::isSubmit('submitRentFunnel'))
+        if(Tools::isSubmit('submitRentFunnelOrder'))
         {
             $sqlDelete = "DELETE FROM " . _DB_PREFIX_ . "rentFunnel";
             Db::getInstance()->execute($sqlDelete);
@@ -187,7 +294,7 @@ class RentFunnel extends Module
         }
     }
 
-    private function renderForm()
+    private function renderFormOrder()
     {
         $category_inputs = [];
         $categories = RentFunnelObjectModel::getCategories();
@@ -279,7 +386,7 @@ class RentFunnel extends Module
         $fields_form = [
             'form' => [
                 'legend' => [
-                    'title' => $this->trans('Settings', [], 'Admin.Global'),
+                    'title' => $this->trans('Paramètres de l\'entonnoir des commandes', [], 'Admin.Global'),
                     'icon' => 'icon-cogs',
                 ],
                 'input' => $category_inputs,
@@ -298,12 +405,12 @@ class RentFunnel extends Module
         $helper->module = $this;
         $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
         $helper->identifier = $this->identifier;
-        $helper->submit_action = 'submitRentFunnel';
+        $helper->submit_action = 'submitRentFunnelOrder';
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false) . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->tpl_vars = [
             'uri' => $this->getPathUri(),
-            'fields_value' => $this->getConfigFieldsValues(),
+            'fields_value' => $this->getOrderConfigFieldsValues(),
             'languages' => $this->context->controller->getLanguages(),
             'id_language' => $this->context->language->id,
         ];
@@ -311,7 +418,7 @@ class RentFunnel extends Module
         return $helper->generateForm([$fields_form]);
     }
 
-    private function getConfigFieldsValues()
+    private function getOrderConfigFieldsValues()
     {
         $fields = [];
 
@@ -338,6 +445,104 @@ class RentFunnel extends Module
             }
         }
         return $fields;
+    }
+
+
+    private function postProcessCompanyInfo()
+    {
+        if(Tools::isSubmit('submitRentFunnelCompanyInfo'))
+        {
+            $dropdowns = [];
+            $index = 0;
+
+            while (Tools::getIsset('dropdown_name_' . $index)) {
+                $name = Tools::getValue('dropdown_name_' . $index);
+                $label = Tools::getValue('dropdown_label_' . $index);
+                $default = Tools::getValue('dropdown_default_' . $index);
+                $options = Tools::getValue('dropdown_options_' . $index);
+
+                if ($name && $label) {
+                    $dropdowns[] = [
+                        'name' => pSQL($name),
+                        'label' => pSQL($label),
+                        'default' => pSql($default),
+                        'options' => array_map('trim', preg_split("/\r\n|\n|\r/", (string)$options)),
+                    ];
+                }
+                $index++;
+            }
+
+            Configuration::updateValue('RENTFUNNEL_DROPDOWNS', json_encode($dropdowns));
+        }
+    }
+
+    private function renderFormCompanyInfo()
+    {
+        $dropdowns = json_decode(Configuration::get('RENTFUNNEL_DROPDOWNS'), true) ?: [];
+        $dropdowns_Json = htmlspecialchars(json_encode($dropdowns), ENT_QUOTES, 'UTF-8');
+
+        $menu_inputs[] = [
+            'type' => 'html',
+            'name' => 'dropdown-container',
+            'html_content' => '
+            <div>
+                <h3>
+                    Questions principales : 
+                    <br> - "Quelle est la taille de votre entreprise ?"
+                    <br> - "Quelle est votre consommation de café/thé par mois ?"
+                </h3>
+            </div>
+            <div id="dropdown_container" data-dropdowns="'.$dropdowns_Json.'">
+                <h4>Questions supplémentaires <small>(cliquez sur "+" pour en ajouter)</small></h4>
+                <div id="dropdown-list">
+                    <!-- Les menus déroulants apparaîtront ici -->
+                </div>
+                <button type="button" id="add-dropdown-btn" class="btn btn-success">
+                    <i class="icon-plus"></i> Ajouter un menu déroulant
+                </button>
+            </div>
+            '
+        ];
+
+        $fields_form = [
+            'form' => [
+                'legend' => [
+                    'title' => $this->trans('Paramètres des questions', [], 'Admin.Global'),
+                    'icon' => 'icon-cogs',
+                ],
+                'input' => $menu_inputs,
+                'submit' => [
+                    'title' => $this->trans('Save', [], 'Admin.Actions'),
+                ],
+            ],
+        ];
+
+        $lang = new Language((int) Configuration::get('PS_LANG_DEFAULT'));
+
+        $helper = new HelperForm();
+        $helper->show_toolbar = false;
+        $helper->table = $this->table;
+        $helper->default_form_language = $lang->id;
+        $helper->module = $this;
+        $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
+        $helper->identifier = $this->identifier;
+        $helper->submit_action = 'submitRentFunnelCompanyInfo';
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false) . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+        $helper->token = Tools::getAdminTokenLite('AdminModules');
+        $helper->tpl_vars = [
+            'uri' => $this->getPathUri(),
+            'fields_value' => $this->getCompanyInfoConfigFieldValues(),
+            'languages' => $this->context->controller->getLanguages(),
+            'id_language' => $this->context->language->id,
+        ];
+
+        return $helper->generateForm([$fields_form]);
+    }
+
+    public function getCompanyInfoConfigFieldValues()
+    {
+        $dropdowns = json_decode(Configuration::get('RENTFUNNEL_DROPDOWNS'), true) ?: [];
+        return $dropdowns;
     }
 
 }
