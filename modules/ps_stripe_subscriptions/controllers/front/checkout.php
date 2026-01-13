@@ -2,85 +2,68 @@
 
 class Ps_Stripe_SubscriptionsCheckoutModuleFrontController extends ModuleFrontController
 {
-    public function postProcess()
+    public function initContent()
     {
-        $cart = $this->context->cart;
-        $customer = $this->context->customer;
-
-        // 1. Sécurité : Client et panier valides
-        if (!Validate::isLoadedObject($customer) || !$customer->isLogged() || $cart->nbProducts() == 0) {
-            Tools::redirect('index.php?controller=order');
-        }
+        parent::initContent();
 
         try {
-            $this->module->initStripeApi(); //
-            if (method_exists($this->module, 'loadModuleClasses')) {
-                $this->module->loadModuleClasses(); //
-            }
+            //Chargement des outils et de l'API
+            $this->module->loadModuleClasses();
+            $this->module->initStripeApi();
 
-            $line_items = [];
-            $has_subscription = false;
-            $has_classic_product = false;
-            $products = $cart->getProducts();
+            $cart = $this->context->cart;
+            $customer = $this->context->customer;
 
-            // 2. Analyse du panier pour détecter le type de produits
-            foreach ($products as $product) {
-                // On vérifie si ce produit spécifique est un abonnement dans baba_stripe_price_link
-                $stripe_price_id = StripePriceLink::getStripePriceIdByPsId((int)$product['id_product']);
+            //Gestion du client Stripe
+            $stripeCustomerId = $this->module->createOrGetStripeCustomer(
+                $customer->id,
+                $customer->email,
+                $customer->firstname,
+                $customer->lastname
+            );
 
-                if ($stripe_price_id) {
-                    $has_subscription = true;
-                    $line_items[] = [
-                        'price' => $stripe_price_id,
-                        'quantity' => (int)$product['cart_quantity'],
-                    ];
-                } else {
-                    $has_classic_product = true;
-                    $line_items[] = [
-                        'price_data' => [
-                            'currency' => $this->context->currency->iso_code,
-                            'product_data' => [
-                                'name' => $product['name'],
-                            ],
-                            'unit_amount' => (int)number_format($product['price_wt'] * 100, 0, '', ''),
-                        ],
-                        'quantity' => (int)$product['cart_quantity'],
-                    ];
+            //Préparation des articles
+            $lineItems = [];
+            foreach ($cart->getProducts() as $product) {
+                $priceId = StripePriceLink::getStripePriceIdByPsId(
+                    (int)$product['id_product'],
+                    (int)$product['id_product_attribute']
+                );
+
+                if (!$priceId) {
+                    die("Erreur : Le produit " . $product['name'] . " (ID: " . $product['id_product'] . ") n'est pas configuré comme abonnement Stripe.");
                 }
+
+                $lineItems[] = [
+                    'price' => $priceId,
+                    'quantity' => (int)$product['cart_quantity'],
+                ];
             }
 
-            // 3. Gestion de l'incompatibilité des modes Stripe
-            if ($has_subscription && $has_classic_product) {
-                throw new Exception("Attention : Votre panier contient un mélange d'abonnement et d'achat unique. Veuillez commander vos abonnements séparément.");
-            }
+            $validationUrl = $this->context->link->getModuleLink($this->module->name, 'validation', [], true);
+            $separator = (strpos($validationUrl, '?') !== false) ? '&' : '?';
+            $successUrl = $validationUrl . $separator . 'session_id={CHECKOUT_SESSION_ID}';
 
-            // 4. Définition du mode
-            $mode = $has_subscription ? 'subscription' : 'payment'; //
-
-            // 5. Création de la session
-            $session_params = [
+            //Création de la session Stripe Checkout
+            $session = \Stripe\Checkout\Session::create([
+                'customer' => $stripeCustomerId,
                 'payment_method_types' => ['card'],
-                'line_items' => $line_items,
-                'mode' => $mode,
-                'billing_address_collection' => 'required',
-                'success_url' => $this->context->link->getModuleLink($this->module->name, 'validation', ['session_id' => '{CHECKOUT_SESSION_ID}'], true),
-                'cancel_url' => $this->context->link->getModuleLink($this->module->name, 'checkout', ['cancel' => 1], true),
-            ];
+                'line_items' => $lineItems,
+                'mode' => 'subscription', // Mode abonnement actif
+                'metadata' => [
+                    'cart_id' => (int)$cart->id,
+                ],
+                'success_url' => $successUrl,
+                'cancel_url' => $this->context->link->getPageLink('order', true, null, ['step' => 3]),
+            ]);
 
-            // On ajoute le client s'il est déjà lié à Stripe
-            $stripe_customer_id = $this->module->createOrGetStripeCustomer($customer->id, $customer->email, $customer->firstname, $customer->lastname);
-            if ($stripe_customer_id) {
-                $session_params['customer'] = $stripe_customer_id;
-            }
-
-            $session = \Stripe\Checkout\Session::create($session_params);
-
-            Tools::redirect($session->url);
+            //Redirection vers Stripe
+            header("Location: " . $session->url);
+            exit;
 
         } catch (Exception $e) {
-            PrestaShopLogger::addLog('Stripe Checkout Error: ' . $e->getMessage(), 3);
-            $this->errors[] = $this->module->l('Erreur de paiement : ') . $e->getMessage();
-            $this->redirectWithNotifications('index.php?controller=order&step=3');
+            // Affichage de l'erreur réelle en cas de problème
+            die("Erreur Stripe Fatale : " . $e->getMessage());
         }
     }
 }
