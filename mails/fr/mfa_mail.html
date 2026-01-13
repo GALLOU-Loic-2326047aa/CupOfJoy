@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+</head>
+<body style="font-family: Arial, sans-serif; font-size: 14px; color: #333;">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center" style="padding: 20px 0;">
+            <table width="600" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse; border: 1px solid #ddd;">
+                <tr>
+                    <td align="center" style="padding: 20px; background-color: #f8f8f8;">
+                        <a href="{shop_url}" title="{shop_name}">
+                            <img src="{shop_logo}" alt="{shop_name}" style="max-height: 70px;">
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 40px 30px;">
+                        <h1 style="font-size: 20px; color: #555;">Bonjour {firstname} {lastname},</h1>
+                        <p>Pour finaliser votre connexion sur <strong>{shop_name}</strong>, veuillez utiliser le code de vérification unique ci-dessous.</p>
+
+                        <p style="text-align: center; font-size: 28px; font-weight: bold; letter-spacing: 5px; color: #000; background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin: 30px 0;">
+                            {code}
+                        </p>
+
+                        <p>Ce code expirera dans 10 minutes. Pour votre sécurité, ne le partagez avec personne.</p>
+                        <p>Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email en toute sécurité.</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center" style="padding: 20px; background-color: #f8f8f8; border-top: 1px solid #ddd;">
+                        <p style="margin: 0;">
+                            <a href="{shop_url}" style="color: #337ab7; text-decoration: none;">{shop_name}</a>
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
