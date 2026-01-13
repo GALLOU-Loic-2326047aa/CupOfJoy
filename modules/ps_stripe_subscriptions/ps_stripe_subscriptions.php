@@ -4,7 +4,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class Ps_Stripe_Subscriptions extends Module
+class Ps_Stripe_Subscriptions extends PaymentModule
 {
     public function __construct()
     {
@@ -57,7 +57,8 @@ class Ps_Stripe_Subscriptions extends Module
             'displayCustomerAccount',
             'paymentOptions',
             'actionAuthentication',
-            'actionCustomerAccountAdd'
+            'actionCustomerAccountAdd',
+            'displayCustomerAccount'
         ];
 
         foreach ($hooks as $hook) {
@@ -361,8 +362,7 @@ class Ps_Stripe_Subscriptions extends Module
 
     public function hookDisplayCustomerAccount($params)
     {
-        $this->context->smarty->assign(['subscription_link' => $this->context->link->getModuleLink($this->name, 'default')]);
-        return $this->display(__FILE__, 'views/templates/customer_account.tpl');
+        return $this->display(__FILE__, 'views/templates/hook/my-account.tpl');
     }
 
     public function hookActionAuthentication($params)
@@ -380,4 +380,17 @@ class Ps_Stripe_Subscriptions extends Module
             $this->createOrGetStripeCustomer($c->id, $c->email, $c->firstname, $c->lastname);
         }
     }
+
+    public function hookUpdateOrderStatus($params)
+    {
+    }
+
+    public function hookDisplayPaymentEU($params)
+    {
+        if (!$this->active) {
+            return;
+        }
+        return $this->hookPaymentOptions($params);
+    }
+
 }
