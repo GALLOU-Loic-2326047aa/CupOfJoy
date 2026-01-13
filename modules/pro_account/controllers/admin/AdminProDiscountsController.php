@@ -32,6 +32,7 @@ class AdminProDiscountsController extends ModuleAdminController
         $this->addRowAction('delete');
     }
 
+    // Fonction qui gère l'appel du JS pour l'autocomplete des champs textes pro
     public function setMedia($isNewTheme = false)
     {
         parent::setMedia($isNewTheme);
@@ -55,6 +56,7 @@ class AdminProDiscountsController extends ModuleAdminController
         parent::initContent();
     }
 
+    // Fonction qui va géré tout le processus coté admin de l'affichage des réduction pour les comptes pro
     public function postProcess()
     {
         if (Tools::isSubmit('submitAddspecific_price')) {
@@ -129,6 +131,7 @@ class AdminProDiscountsController extends ModuleAdminController
         parent::postProcess();
     }
 
+    // Fonction qui gère la création des prix spécific (par défaut pour prestashop)
     protected function createSpecificPrice($id_product, $data)
     {
         $specificPrice = new SpecificPrice();
@@ -150,6 +153,7 @@ class AdminProDiscountsController extends ModuleAdminController
         $specificPrice->add();
     }
 
+    // Fonction qui gère la mise en forme de à qui, quel catégorie ou quelle produit on applique la réduction
     public function renderForm()
     {
         // Liste des produits
@@ -247,6 +251,7 @@ class AdminProDiscountsController extends ModuleAdminController
                     'desc' => $this->module->l('Laisser sur "Tous les Pros" pour appliquer au groupe entier, ou choisir une entreprise spécifique.')
                 ],
 
+                // Menu déroulant pour le type de réduction
                 [
                     'type' => 'select',
                     'label' => $this->module->l('Type de réduction'),
@@ -260,6 +265,7 @@ class AdminProDiscountsController extends ModuleAdminController
                         'name' => 'name'
                     ]
                 ],
+                // Champs texte pour mettre le prix
                 [
                     'type' => 'text',
                     'label' => $this->module->l('Valeur'),
@@ -267,6 +273,7 @@ class AdminProDiscountsController extends ModuleAdminController
                     'col' => 2,
                     'suffix' => $this->module->l('HT ou %')
                 ],
+                // Choix des dates
                 [
                     'type' => 'datetime',
                     'label' => $this->module->l('Disponible du'),
@@ -299,6 +306,7 @@ class AdminProDiscountsController extends ModuleAdminController
         return parent::renderForm();
     }
 
+    // Fonction qui retourne le nom des produits
     public function getProductNameForList($id_product)
     {
         if ((int)$id_product === 0) return '<span class="badge badge-success">TOUS</span>';
@@ -306,6 +314,7 @@ class AdminProDiscountsController extends ModuleAdminController
         return $p->name;
     }
 
+    // Fonction qui retourne le nom des clients pro
     public function getCustomerNameForList($id_customer)
     {
         if ((int)$id_customer === 0) return '<span class="badge badge-info">GROUPE PRO</span>';
@@ -313,6 +322,7 @@ class AdminProDiscountsController extends ModuleAdminController
         return $c->firstname . ' ' . $c->lastname;
     }
 
+    // Fonction qui retourne la réduction final, et si la réduction est un pourcentage cela réalise le calcul
     public function displayReduction($value, $row)
     {
         if ($row['reduction_type'] == 'percentage') return '-' . (float)($value * 100) . '%';

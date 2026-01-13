@@ -1,3 +1,4 @@
+// Fichier qui gère l'affichage d'un logo pro
 document.addEventListener('DOMContentLoaded', function() {
 
     if (typeof customerIsPro !== 'undefined' && customerIsPro === true) {

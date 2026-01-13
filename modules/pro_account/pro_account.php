@@ -35,6 +35,7 @@ class Pro_Account extends Module
         return parent::uninstall() && $this->uninstallDatabase();
     }
 
+    // Fonction qui créer la table customer_pro_data qui gère toutes les données des comptes pro
     public function installDatabase()
     {
         $sql = "CREATE TABLE IF NOT EXISTS `"._DB_PREFIX_."customer_pro_data` (
@@ -46,11 +47,13 @@ class Pro_Account extends Module
         return Db::getInstance()->execute($sql);
     }
 
+    // Fonction qui supprime la table customer_pro_data
     public function uninstallDatabase()
     {
         return Db::getInstance()->execute("DROP TABLE IF EXISTS `"._DB_PREFIX_."customer_pro_data`");
     }
 
+    // Fonction qui créer les 2 nouvelle page coté admin pour gérer les comptes pro et la réduction excusive aux comptes pro
     public function installTab()
     {
         // 1. Onglet Business (Clients)
@@ -101,6 +104,7 @@ class Pro_Account extends Module
         return true;
     }
 
+    // Fonction qui créer le groupe Pro
     public function installProGroup()
     {
         // On vérifie si le groupe existe déjà dans la config
@@ -117,6 +121,8 @@ class Pro_Account extends Module
         }
         return true;
     }
+
+    // Hook qui affiche les champs textes pour la créations d'un compte pro
     public function hookDisplayCustomerAccountForm()
     {
         $this->context->smarty->assign([
@@ -127,6 +133,7 @@ class Pro_Account extends Module
         return $this->display(__FILE__, 'views/templates/hook/pro_fields.tpl');
     }
 
+    // Hook qui gère l'action de créer un compte et cela vérifie si le compte est pro les champs de textes pro
     public function hookActionSubmitAccount()
     {
         if (!Tools::isSubmit('is_pro')) {
@@ -144,6 +151,7 @@ class Pro_Account extends Module
         }
     }
 
+    // Hook qui gère la création d'un compte, si le compte est pro cela l'ajoute dans le groupe pro
     public function hookActionCustomerAccountAdd($params)
     {
         if (!Tools::isSubmit('is_pro')) {
@@ -173,6 +181,7 @@ class Pro_Account extends Module
         }
     }
 
+    // Hook qui permets d'afficher un logo pro quand le client à un compte pro
     public function hookDisplayHeader()
     {
         if (!$this->context->customer->isLogged()) {
