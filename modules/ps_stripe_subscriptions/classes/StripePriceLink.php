@@ -20,12 +20,20 @@ class StripePriceLink extends ObjectModel
 
     public static function getStripePriceIdByPsId($id_product, $id_product_attribute = 0)
     {
-        $sql = new DbQuery();
-        $sql->select('id_price_stripe');
-        $sql->from('stripe_price_link');
-        $sql->where('id_product_ps = ' . (int)$id_product);
-        $sql->where('id_product_attribute = ' . (int)$id_product_attribute);
+        $sql = 'SELECT id_price_stripe FROM ' . _DB_PREFIX_ . 'stripe_price_link 
+            WHERE id_product_ps = ' . (int)$id_product . ' 
+            AND id_product_attribute = ' . (int)$id_product_attribute;
 
-        return Db::getInstance()->getValue($sql);
+        $result = Db::getInstance()->getValue($sql);
+
+        //on cherche le produit parent
+        if (!$result && $id_product_attribute > 0) {
+            $sql = 'SELECT id_price_stripe FROM ' . _DB_PREFIX_ . 'stripe_price_link 
+                WHERE id_product_ps = ' . (int)$id_product . ' 
+                AND id_product_attribute = 0';
+            $result = Db::getInstance()->getValue($sql);
+        }
+
+        return $result;
     }
 }
