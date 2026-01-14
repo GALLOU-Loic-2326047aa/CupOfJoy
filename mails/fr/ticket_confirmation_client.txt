@@ -1,0 +1,10 @@
+Bonjour,
+
+Nous avons bien reçu votre demande de SAV.
+Numéro de ticket : #{ticket_id}
+Type de demande : {request_type}
+
+Votre message :
+{message}
+
+Notre équipe va traiter votre demande dans les plus brefs délais.
