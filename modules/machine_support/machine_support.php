@@ -25,7 +25,7 @@ class Machine_Support extends Module
         return parent::install()
             && $this->installDatabase()
             && $this->registerHook('displayCustomerAccount')
-            && $this->registerHook('displayNav2')
+            && $this->registerHook('displayNav1')
             && $this->registerHook('actionAdminCustomerThreadsListingFieldsModifier');
     }
 
@@ -88,7 +88,7 @@ class Machine_Support extends Module
     }
 
     // Hook qui permet d'ajouter de nouveaux éléments dans la barre de navigation
-    public function hookDisplayNav2()
+    public function hookDisplayNav1()
     {
         return $this->display(__FILE__, 'views/templates/hook/nav.tpl');
     }

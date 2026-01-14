@@ -1,7 +1,7 @@
 {extends file='page.tpl'}
 
 {block name='page_title'}
-    {l s='Déclarer un problème machine' mod='machine_support'}
+    {l s='Déclarer un problème' mod='machine_support'}
 {/block}
 
 {block name='page_content'}
