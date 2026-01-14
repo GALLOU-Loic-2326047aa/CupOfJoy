@@ -204,3 +204,4 @@ phpstan-tmp-legacy-layout-baseline.neon
 phpstan.neon.dist
 rector.php
 robots.txt
+/modules/pro_account/phpunit.xml

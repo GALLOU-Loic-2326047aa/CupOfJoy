@@ -11,6 +11,7 @@ class pro_accountmanualvalidationModuleFrontController extends ModuleFrontContro
         $this->setTemplate('module:pro_account/views/templates/front/manual_validation.tpl');
     }
 
+    // Fonction qui gère le formulaire de demande de création d'un compte pro côté client
     public function postProcess()
     {
         if (Tools::isSubmit('submitManualSiret')) {
