@@ -8,7 +8,7 @@ class Ps_Stripe_SubscriptionsWebhookModuleFrontController extends ModuleFrontCon
 
     public function postProcess()
     {
-        // 1. Initialisation de l'API Stripe
+        //Initialisation de l'API Stripe
         try {
             $this->module->initStripeApi();
             $this->module->loadModuleClasses();
@@ -37,7 +37,7 @@ class Ps_Stripe_SubscriptionsWebhookModuleFrontController extends ModuleFrontCon
                 break;
 
             case 'invoice.payment_failed':
-                // On pourrait envoyer un mail au client ici
+                //On pourrait envoyer un mail au client ici
                 PrestaShopLogger::addLog('Échec de paiement Stripe pour la facture : ' . $event->data->object->id, 3);
                 break;
         }
@@ -54,7 +54,7 @@ class Ps_Stripe_SubscriptionsWebhookModuleFrontController extends ModuleFrontCon
         $stripeCustomerId = $invoice->customer;
         $subscriptionId = $invoice->subscription;
 
-        // On cherche l'ID du client PrestaShop lié à cet ID Stripe
+        //On cherche l'ID du client PrestaShop lié à cet ID Stripe
         $id_customer_ps = StripeCustomerLink::getStripeIdByPsId($stripeCustomerId);
 
         if (!$id_customer_ps) {

@@ -8,6 +8,7 @@ class Ps_Stripe_Subscriptions extends PaymentModule
 {
     public function __construct()
     {
+        // Identifiants techniques du module
         $this->name = 'ps_stripe_subscriptions';
         $this->tab = 'billing_payment';
         $this->version = '1.1.0';
@@ -17,6 +18,7 @@ class Ps_Stripe_Subscriptions extends PaymentModule
 
         parent::__construct();
 
+        // Nom et description visibles dans la liste des modules
         $this->displayName = $this->l('Module d\'abonnements Stripe');
         $this->description = $this->l('Gestion hybride des achats uniques et abonnements récurrents via Stripe.');
 
@@ -24,7 +26,7 @@ class Ps_Stripe_Subscriptions extends PaymentModule
     }
 
     /**
-     * Charge les classes nécessaires au module pour éviter le ClassNotFound
+     * Charge les classes personnalisées du module (StripePriceLink, etc.)
      */
     public function loadModuleClasses()
     {
@@ -41,6 +43,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         }
     }
 
+    /**
+     * Installation : Enregistre les points d'accroche (hooks) et crée les tables SQL
+     */
     public function install()
     {
         if (!parent::install()) {
@@ -67,6 +72,7 @@ class Ps_Stripe_Subscriptions extends PaymentModule
             }
         }
 
+        // Table pour lier les produits/déclinaisons PrestaShop aux IDs Stripe
         $sqlPrice = "CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . "stripe_price_link` (
             `id_product_ps` INT(10) UNSIGNED NOT NULL,
             `id_product_attribute` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -75,6 +81,7 @@ class Ps_Stripe_Subscriptions extends PaymentModule
             PRIMARY KEY (`id_product_ps`, `id_product_attribute`)
         ) ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8;";
 
+        // Table pour lier les comptes clients PrestaShop aux clients Stripe
         $sqlCustomer = "CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . "stripe_customer_link` (
             `id_customer_ps` INT(10) UNSIGNED NOT NULL PRIMARY KEY,
             `id_customer_stripe` VARCHAR(255) NOT NULL,
@@ -84,6 +91,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         return Db::getInstance()->execute($sqlPrice) && Db::getInstance()->execute($sqlCustomer);
     }
 
+    /**
+     * Désinstallation : Nettoie la base de données
+     */
     public function uninstall()
     {
         $sql = [
@@ -100,6 +110,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
 
     // --- Interface de Configuration (Admin) ---
 
+    /**
+     * Gère l'affichage de la page de configuration du module
+     */
     public function getContent()
     {
         $output = '';
@@ -112,6 +125,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         return $output . $this->renderSyncForm();
     }
 
+    /**
+     * Génère le formulaire de synchronisation globale
+     */
     protected function renderSyncForm()
     {
         $helper = new HelperForm();
@@ -140,6 +156,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         return $helper->generateForm([$form]);
     }
 
+    /**
+     * Scanne tous les produits et crée les abonnements Stripe si nécessaire
+     */
     private function syncAllProductsToStripe()
     {
         $this->loadModuleClasses();
@@ -166,6 +185,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
 
     // --- Configuration API & Helpers ---
 
+    /**
+     * Lit une variable dans le fichier .env (actuellement dans le dossier module)
+     */
     public function getEnvVariable($key)
     {
         $envPath = _PS_MODULE_DIR_ . $this->name . '/.env';
@@ -185,6 +207,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         return null;
     }
 
+    /**
+     * Initialise la connexion à l'API Stripe avec la clé secrète
+     */
     public function initStripeApi()
     {
         $autoload = _PS_MODULE_DIR_ . $this->name . '/vendor/autoload.php';
@@ -201,6 +226,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
 
     // --- Logique Métier (Stripe Sync) ---
 
+    /**
+     * Crée physiquement le produit et le prix sur le tableau de bord Stripe
+     */
     public function createStripePriceForProduct($product_obj, $id_attribute = 0, $attr_name = '')
     {
         $this->loadModuleClasses();
@@ -236,7 +264,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         }
     }
 
-
+    /**
+     * Récupère ou crée un client Stripe pour l'associer à l'ID PrestaShop
+     */
     public function createOrGetStripeCustomer($id_customer, $email, $firstname, $lastname)
     {
         $this->loadModuleClasses();
@@ -263,6 +293,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         }
     }
 
+    /**
+     * Interdit d'avoir des abonnements et des produits classiques en même temps dans le panier
+     */
     public function hookActionBeforeCartUpdateQty($params)
     {
         $this->loadModuleClasses();
@@ -292,7 +325,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         }
     }
 
-
+    /**
+     * Ajoute l'onglet "Abonnement" dans la fiche produit côté Admin (Produit simple)
+     */
     public function hookDisplayAdminProductsExtra($params)
     {
         $this->loadModuleClasses();
@@ -306,6 +341,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         return $this->display(__FILE__, 'views/templates/admin/product_tab.tpl');
     }
 
+    /**
+     * Enregistre l'état de l'abonnement lors de la mise à jour d'un produit simple
+     */
     public function hookActionProductUpdate($params)
     {
         $id_product = (int)$params['id_product'];
@@ -317,6 +355,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         }
     }
 
+    /**
+     * Ajoute le champ abonnement dans le formulaire des déclinaisons
+     */
     public function hookDisplayAdminProductsCombinationsForm($params)
     {
         $this->loadModuleClasses();
@@ -331,6 +372,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         return $this->display(__FILE__, 'views/templates/admin/combination_fields.tpl');
     }
 
+    /**
+     * Enregistre l'état de l'abonnement lors de la mise à jour d'une déclinaison
+     */
     public function hookActionProductCombinationSave($params)
     {
         $id_product = (int)$params['id_product'];
@@ -344,7 +388,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         }
     }
 
-
+    /**
+     * Propose Stripe comme option de paiement lors du passage en caisse
+     */
     public function hookPaymentOptions($params)
     {
         if (!$this->active) return [];
@@ -355,16 +401,25 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         return [$option];
     }
 
+    /**
+     * Charge le script Stripe.js sur les pages front-end
+     */
     public function hookActionFrontControllerSetMedia($params)
     {
         $this->context->controller->registerJavascript('stripe-v3', 'https://js.stripe.com/v3/', ['server' => 'remote']);
     }
 
+    /**
+     * Ajoute un lien vers la gestion des abonnements dans le compte client
+     */
     public function hookDisplayCustomerAccount($params)
     {
         return $this->display(__FILE__, 'views/templates/hook/my-account.tpl');
     }
 
+    /**
+     * Synchronise le client Stripe lors d'une connexion réussie
+     */
     public function hookActionAuthentication($params)
     {
         if (isset($params['customer'])) {
@@ -373,6 +428,9 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         }
     }
 
+    /**
+     * Synchronise le client Stripe lors de la création d'un nouveau compte
+     */
     public function hookActionCustomerAccountAdd($params)
     {
         if (isset($params['newCustomer'])) {
@@ -383,14 +441,6 @@ class Ps_Stripe_Subscriptions extends PaymentModule
 
     public function hookUpdateOrderStatus($params)
     {
-    }
-
-    public function hookDisplayPaymentEU($params)
-    {
-        if (!$this->active) {
-            return;
-        }
-        return $this->hookPaymentOptions($params);
     }
 
 }
