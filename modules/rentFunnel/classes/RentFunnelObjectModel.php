@@ -110,23 +110,29 @@ class RentFunnelObjectModel extends ObjectModel
 
     public static function getCompanyInfo($companyId)
     {
-        $sql = "SELECT ci.company_size, ci.consumption, ci.additional_questions
+        $sql = "SELECT ci.company_size, ci.consumption, ci.additional_drinks, ci.dynamic_answers
                 FROM " . _DB_PREFIX_ . "rentFunnel_company_info ci
                 WHERE ci.company_id = '" . (int)$companyId . "'";
 
-        $result = Db::getInstance()->executeS($sql);
+        $result = Db::getInstance()->getRow($sql);
         if (!$result)
         {
             return [
                 'company_size' => '',
                 'consumption' => '',
-                'additional_questions' => '',
+                'additional_drinks' => '',
+                'dynamic_answers' => '',
             ];
         }
 
-        if(!empty($result['additional_questions']))
+        if(!empty($result['additional_drinks']))
         {
-            $result['additional_questions'] = json_decode($result['additional_questions'], true) ?: [];
+            $result['additional_drinks'] = json_decode($result['additional_drinks'], true) ?: [];
+        }
+
+        if(!empty($result['dynamic_answers']))
+        {
+            $result['dynamic_answers'] = json_decode($result['dynamic_answers'], true) ?: [];
         }
 
         return $result;
@@ -165,7 +171,7 @@ class RentFunnelObjectModel extends ObjectModel
                         WHERE company_id = " . (int)$companyId;
         } else {
             $sql = "INSERT INTO " . _DB_PREFIX_ . "rentFunnel_company_info
-                (company_id, company_size, consumption, additional_questions, dynamic_answers)
+                (company_id, company_size, consumption, additional_drinks, dynamic_answers)
                 VALUES ('$companyId', '$companySize', '$consumption', '$additionalDrinksJson', '$dynamicAnswersJson')";
         }
 

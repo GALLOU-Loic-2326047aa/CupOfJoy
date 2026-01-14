@@ -11,6 +11,10 @@ class RentFunnel extends Module
         'displayProductListFunctionalButtons',
         'displayProductActions',
         'displayNav2',
+        'actionPresentProductListing',
+        'actionProductListOverride',
+        'actionProductListModifier',
+        'actionSearch',
     ];
 
     public function __construct()
@@ -312,6 +316,174 @@ class RentFunnel extends Module
         return false;
     }
 
+    private function getCustomerProductPriorityScore($id_customer)
+    {
+        $companyInfo = RentFunnelObjectModel::getCompanyInfo($id_customer);
+        if (empty($companyInfo['company_size']) && empty($companyInfo['consumption']) && empty($companyInfo['additional_drinks'])) {
+            return null;
+        }
+
+        $priorityScore = [
+            'company_size_score' => 0,
+            'consumption_score' => 0,
+            'additional_drinks_boost' => []
+        ];
+
+        // Score par taille de l'entreprise
+        $sizeScores = [
+            '1-10 employés' => 1,
+            '11-50 employés' => 2,
+            '51-200 employés' => 3,
+            '201-500 employés' => 4,
+            '+ de 500 employés' => 5
+        ];
+        $priorityScore['company_size_score'] = $sizeScores[$companyInfo['company_size']] ?? 0;
+
+        // Score par consommation
+        $consumptionScores = [
+            'Moins de 50 tasses' => 1,
+            '50 à 100 tasses' => 2,
+            '100 à 200 tasses' => 3,
+            '200 à 500 tasses' => 4,
+            '+ de 500 tasses' => 5
+        ];
+        $priorityScore['consumption_score'] = $consumptionScores[$companyInfo['consumption']] ?? 0;
+
+        // Parser les boissons additionnelles
+        if (!empty($companyInfo['additional_drinks']) && is_array($companyInfo['additional_drinks'])) {
+            foreach ($companyInfo['additional_drinks'] as $drinkName) {
+                $priorityScore['additional_drinks_boost'][trim($drinkName)] = 50;
+            }
+        }
+
+        return $priorityScore;
+    }
+
+    public function hookActionPresentProductListing($params)
+    {
+        if (!isset($params['productListingLazyArray']) || !is_object($params['productListingLazyArray'])) {
+            return;
+        }
+
+        $id_customer = (int)$this->context->customer->id;
+        $priorityRules = $this->getCustomerProductPriorityScore($id_customer);
+
+        if (!$priorityRules) {
+            return;
+        }
+
+        // Récupérer les produits via le presenter
+        $products = $params['productListingLazyArray']->getProducts();
+        if (empty($products)) {
+            return;
+        }
+
+        $sortedProducts = [];
+        foreach ($products as $product) {
+            $score = $this->calculateProductPriorityScore($product, $priorityRules);
+            $product->rentfunnel_priority_score = $score; // Stocker le score
+            $sortedProducts[$score . '_' . $product->id] = $product;
+        }
+
+        // Trier par score décroissant
+        krsort($sortedProducts);
+        $params['productListingLazyArray']->setProducts(array_values($sortedProducts));
+    }
+
+    public function hookActionProductListOverride($params)
+    {
+        // Ne prioriser que pour les clients pro ayant rempli le formulaire
+        $id_customer = (int)$this->context->customer->id;
+        $companyInfo = RentFunnelObjectModel::getCompanyInfo($id_customer);
+
+        if (empty($companyInfo['company_size'])) {
+            return;
+        }
+
+        $priorityRules = $this->getCustomerProductPriorityScore($id_customer);
+
+        // Récupérer les produits de la liste
+        if (!$priorityRules || !isset($params['products']) || empty($params['products'])) {
+            return;
+        }
+
+        $products = $params['products'];
+        $sortedProducts = [];
+
+        foreach ($products as $product) {
+            $productCategories = $this->getProductCategoryNames($product['id_product']);
+
+            $score = 0;
+
+            foreach ($productCategories as $catName) {
+                $catNameClean = trim($catName);
+                if (isset($priorityRules['additional_drinks_boost'][$catNameClean])) {
+                    $score += $priorityRules['additional_drinks_boost'][$catNameClean];
+                    error_log("BOOST BOISSON: $catNameClean -> Score: $score pour produit {$product['id_product']}");
+                }
+            }
+
+            $score += $priorityRules['company_size_score'];
+            $score += $priorityRules['consumption_score'];
+
+            $product['rentfunnel_priority_score'] = $score;
+            $sortedProducts[$score . '_' . $product['id_product']] = $product;
+        }
+
+        // Trier par score décroissant
+        krsort($sortedProducts);
+        $params['products'] = array_values($sortedProducts);
+    }
+
+    public function hookActionProductListModifier($params)
+    {
+        $this->hookActionProductListOverride($params);
+    }
+
+    private function getProductCategoryNames($id_product, $id_lang = null)
+    {
+        if ($id_lang === null) {
+            $id_lang = $this->context->language->id;
+        }
+
+        $sql = "SELECT DISTINCT cl.name
+                FROM " . _DB_PREFIX_ . "category_product cp
+                JOIN " . _DB_PREFIX_ . "category_lang cl ON cp.id_category = cl.id_category
+                WHERE cp.id_product = " . (int)$id_product . "
+                AND cl.id_lang = " . (int)$id_lang;
+
+        $categories = Db::getInstance()->executeS($sql);
+        $names = [];
+
+        foreach ($categories as $cat) {
+            $names[] = $cat['name'];
+        }
+
+        return $names;
+    }
+
+    private function calculateProductPriorityScore($product, $priorityRules)
+    {
+        $score = $priorityRules['company_size_score'] + $priorityRules['consumption_score'];
+
+        // Récupérer les catégories du produit
+        $productCategories = [];
+        if (isset($product->id)) {
+            $productCategories = $this->getProductCategoryNames($product->id);
+        } elseif (isset($product['id_product'])) {
+            $productCategories = $this->getProductCategoryNames($product['id_product']);
+        }
+
+        // BOOST MAXIMAL pour les boissons sélectionnées
+        foreach ($productCategories as $catName) {
+            if (isset($priorityRules['additional_drinks_boost'][$catName])) {
+                $score += $priorityRules['additional_drinks_boost'][$catName];
+            }
+        }
+
+        return $score;
+    }
+    
     public function getContent()
     {
         $this->context->controller->addJS($this->_path . 'views/js/back_office_form.js');
@@ -542,10 +714,14 @@ class RentFunnel extends Module
                 if (!empty($questionType) && !empty($questionCategory)) {
                     $dropdowns[] = [
                         'question_type' => pSQL($questionType),
-                        'question_category' => pSQL($questionCategory),
+                        'question_category' => (int)$questionCategory,
                     ];
                 }
                 $index++;
+
+                if ($index > 100) { // Protection
+                    break;
+                }
             }
 
             Configuration::updateValue('RENTFUNNEL_DROPDOWNS', json_encode($dropdowns));
