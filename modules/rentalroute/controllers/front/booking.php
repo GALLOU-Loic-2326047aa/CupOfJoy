@@ -58,7 +58,7 @@ class rentalroutebookingModuleFrontController extends ModuleFrontController
             $booking->status = 'pending';
 
             if ($booking->add()) {
-                $redirect_url = $this->context->link->getModuleLink('rentalroute', 'booking', ['confirmation' => 1]);
+                $redirect_url = $this->context->link->getModuleLink('rentalroute', 'booking', ['id_product' => $id_product, 'rental_duration' => $rental_duration, 'confirmation' => 1]);
                 Tools::redirect($redirect_url);
             } else {
                 $this->errors[] = $this->trans('Une erreur est survenue lors de l\'enregistrement de votre réservation.', [], 'Modules.Rentalroute.Shop');
@@ -72,6 +72,13 @@ class rentalroutebookingModuleFrontController extends ModuleFrontController
     {
         parent::initContent();
 
+        $moduleEntonnoir = Module::getInstanceByName('rentFunnel');
+
+        if($moduleEntonnoir && $moduleEntonnoir->active)
+        {
+            $this->HandleFunnel();
+        }
+
         if (Tools::getValue('confirmation') == 1) {
             $this->context->smarty->assign([
                 'booking_success_message' => $this->trans('Votre réservation a bien été enregistrée. Veuillez payer votre location.', [], 'Modules.Rentalroute.Shop'),
@@ -80,5 +87,40 @@ class rentalroutebookingModuleFrontController extends ModuleFrontController
         }
 
         $this->setTemplate('module:rentalroute/views/templates/front/booking_page.tpl');
+    }
+
+    public function HandleFunnel() {
+        $rentFunnel = RentFunnelObjectModel::getRentFunnel();
+        $categoryList = [];
+        Configuration::updateValue("RENTFUNNEL_SELECTED_PRODUCTS", json_encode([]));
+
+        foreach ($rentFunnel as $rentFunnelItem) {
+            $categoryList[] = $rentFunnelItem;
+        }
+
+        $id_product = Tools::getValue('id_product');
+        $product = RentFunnelObjectModel::getProductById($id_product);
+
+        $rental_duration = Tools::getValue('rental_duration');
+        $rental_data = Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_.'rental_product` WHERE `id_product` = '.(int)$id_product);
+        $price = 0;
+        if ($rental_duration == 12) {
+            $price = $rental_data['price_per_month_12'];
+        } elseif ($rental_duration == 36) {
+            $price = $rental_data['price_per_month_36'];
+        }
+
+        $totalSelectedProducts['Produit loué'][$product['id_product']] = [
+            'name' => $product['name'],
+            'description' => $product['description'],
+            'price' => $price,
+            'quantity' => 1,
+            'rental_duration' => $rental_duration,
+        ];
+        Configuration::updateValue("RENTFUNNEL_SELECTED_PRODUCTS", json_encode($totalSelectedProducts));
+
+        array_splice($categoryList, 0, 1);
+        Configuration::updateValue("RENTFUNNEL_CATEGORYLIST", json_encode($categoryList));
+        $this->context->smarty->assign('categoryList', $categoryList);
     }
 }
