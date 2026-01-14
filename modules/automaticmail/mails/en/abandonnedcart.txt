@@ -1,0 +1,12 @@
+Hello {firstname} {lastname},
+
+You left items in your cart on Cup of Joy!
+
+Coffee is always better when it’s freshly ordered. Don’t let your favorite capsules slip away.
+
+To finalize your order, go here: {shop_url}
+
+See you very soon on {shop_name}.
+
+---
+The Cup of Joy team

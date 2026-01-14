@@ -1,0 +1,12 @@
+Bonjour {firstname} {lastname},
+
+Vous avez laissé des articles dans votre panier sur Cup of Joy !
+
+Le café est toujours meilleur quand il est fraîchement commandé. Ne laissez pas vos capsules préférées vous échapper.
+
+Pour finaliser votre commande, rendez-vous ici : {shop_url}
+
+À très bientôt sur {shop_name}.
+
+---
+L'équipe Cup of Joy
