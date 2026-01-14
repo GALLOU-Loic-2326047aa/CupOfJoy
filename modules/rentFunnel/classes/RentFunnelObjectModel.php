@@ -35,14 +35,14 @@ class RentFunnelObjectModel extends ObjectModel
         return Db::getInstance()->executeS($sql);
     }
 
-    public static function getRentFunnel($id_lang = null)
+    public static function getRentFunnelOrder($id_lang = null)
     {
         if ($id_lang === null) {
             $id_lang = Context::getContext()->language->id;
         }
 
         $sql = "SELECT rf.id_category, rf.name, rf.position, rf.multiselect, rf.skippable
-                FROM " . _DB_PREFIX_ . "rentFunnel rf
+                FROM " . _DB_PREFIX_ . "rentFunnel_order rf
                 ORDER BY rf.position ASC";
 
         return Db::getInstance()->executeS($sql);
@@ -136,15 +136,20 @@ class RentFunnelObjectModel extends ObjectModel
     {
         $companySize = pSQL($companyInfo['company_size']);
         $consumption = pSQL($companyInfo['consumption']);
-        $additionalQuestions = [];
-        foreach ($companyInfo as $key => $value)
-        {
-            if($key != 'company_size' && $key != 'consumption')
-            {
-                $additionalQuestions[$key] = $value;
-            }
+        $additionalDrinks = isset($companyInfo['additional_drinks']) ? pSQL($companyInfo['additional_drinks']) : '';
+        if (is_array($additionalDrinks)) {
+            $additionalDrinksJson = pSQL(json_encode($additionalDrinks));
+        } else {
+            $additionalDrinksJson = pSQL(json_encode([$additionalDrinks]));
         }
-        $additionalQuestionsJson = pSQL(json_encode($additionalQuestions));
+
+        // Gérer les réponses dynamiques
+        $dynamicAnswers = isset($companyInfo['dynamic_answers']) ? $companyInfo['dynamic_answers'] : '[]';
+        if (is_string($dynamicAnswers)) {
+            $dynamicAnswersJson = pSQL($dynamicAnswers);
+        } else {
+            $dynamicAnswersJson = pSQL(json_encode($dynamicAnswers));
+        }
 
         $existingId = Db::getInstance()->getValue(
             "SELECT id_rentFunnel_company_info FROM " . _DB_PREFIX_ . "rentFunnel_company_info
@@ -153,16 +158,40 @@ class RentFunnelObjectModel extends ObjectModel
 
         if($existingId) {
             $sql = "UPDATE " . _DB_PREFIX_ . "rentFunnel_company_info
-                SET company_size = '$companySize',
-                    consumption = '$consumption',
-                    additional_questions = '$additionalQuestionsJson',
-                WHERE company_id = " . (int)$companyId;
+                        SET company_size = '$companySize',
+                            consumption = '$consumption',
+                            additional_drinks = '$additionalDrinksJson',
+                            dynamic_answers = '$dynamicAnswersJson'
+                        WHERE company_id = " . (int)$companyId;
         } else {
             $sql = "INSERT INTO " . _DB_PREFIX_ . "rentFunnel_company_info
-                (company_id, company_size, consumption, additional_questions)
-                VALUES ('$companyId', '$companySize', '$consumption', '$additionalQuestionsJson)";
+                (company_id, company_size, consumption, additional_questions, dynamic_answers)
+                VALUES ('$companyId', '$companySize', '$consumption', '$additionalDrinksJson', '$dynamicAnswersJson')";
         }
 
         Db::getInstance()->execute($sql);
+    }
+
+    public static function getDrinkTypes($id_lang = null)
+    {
+        if ($id_lang === null) {
+            $id_lang = Context::getContext()->language->id;
+        }
+
+        $sql = "SELECT cl.id_category, cl.name 
+                    FROM " . _DB_PREFIX_ . "category_lang cl
+                    JOIN " . _DB_PREFIX_ . "category c ON cl.id_category = c.id_category
+                    JOIN " . _DB_PREFIX_ . "category_lang parent_cl ON c.id_parent = parent_cl.id_category
+                    WHERE parent_cl.name = 'Boissons' 
+                    AND cl.id_lang = " . $id_lang . " 
+                    AND parent_cl.id_lang = " . $id_lang;
+
+        $result = Db::getInstance()->executeS($sql);
+        if (!$result)
+        {
+            return [];
+        }
+
+        return $result;
     }
 }

@@ -1,3 +1,4 @@
+// Fonction pour afficher les options des categories lorsqu'elles sont sélectionnées, dans le premier formulaire
 document.addEventListener('DOMContentLoaded', function() {
     const categories = new Set();
 
@@ -31,16 +32,15 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 });
 
+// Fonction pour ajouter les options d'un nouveau menu déroulant, dans le deuxième formulaire
 $(document).ready(function() {
     let dropdownCounter = 0;
 
     // Fonction pour créer un menu déroulant
     function createDropdownField(index, data) {
 
-        const name    = data?.name    || '';
-        const label   = data?.label   || '';
-        const defaultVal = data?.default || '';
-        const options = (data?.options || []).join('\n');
+        const questionType    = data?.question_type    || '';
+        const questionCategory   = data?.question_category   || '';
 
         return `
         <div class="form-group row dropdown-group" data-index="${index}">
@@ -49,42 +49,25 @@ $(document).ready(function() {
             </label>
             <div class="col-lg-9">
                 <div class="row">
-                    <div class="col-md-3">
-                        <input type="text" 
-                               class="form-control" 
-                               name="dropdown_name_${index}" 
-                               placeholder="Nom du champ (name)"
-                               value="${name.replace(/"/g, '&quot;')}"
-                               required>
+                    <div class="col-md-12">
+                        <label>Type de question</label>
+                        <select class="form-control" name="dropdown_question_type_${index}">
+                            <option value="preference" ${questionType === 'preference' ? 'selected' : ''}>Préférence</option>
+                            <option value="consumption" ${questionType === 'consumption' ? 'selected' : ''}>Consommation</option>
+                        </select>
+                        
+                        <label>Pour quelle catégorie ?</label>
+                        <select class="form-control" name="dropdown_categories_${index}">
+                            <!-- Options remplies par JS -->
+                        </select>
                     </div>
-                    <div class="col-md-5">
-                        <input type="text"
-                                class="form-control"
-                                name="dropdown_label_${index}"
-                                value="${label.replace(/"/g, '&quot;')})"
-                                placeholder="Libellé affiché">
-                    </div>
-                    <div class="col-md-3">
-                        <input type="text"
-                                class="form-control"
-                                name="dropdown_default_${index}"
-                                value="${defaultVal.replace(/"/g, '&quot;')}"
-                                placeholder="Valeur par défaut">
-                    </div>
+                    
                     <div class="col-md-1">
                         <button type="button"
                                 class="btn btn-danger btn-block remove-dropdown"
                                 data-index="${index}">
                                 <i class="icon-trash"></i>
                         </button>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-md-12">
-                        <textarea class="form-control"
-                                    name="dropdown_options_${index}"
-                                    rows="3"
-                                    placeholder="Options (une par ligne):&#10;option1&#10;option2&#10;option3">${options}</textarea>
                     </div>
                 </div>
             </div>
@@ -108,13 +91,30 @@ $(document).ready(function() {
         dropdownCounter = i + 1;
     });
 
+    const categories = container && container.dataset.categories ? JSON.parse(container.dataset.categories) : [];
+
+    function populateCategorySelects() {
+        $('.dropdown-group select[name^="dropdown_categories_"]').each(function() {
+            const $select = $(this);
+
+            categories.forEach(function(cat) {
+                $select.append(`
+                <option value="${cat.id_category}">${cat.name}</option>
+            `);
+            });
+        });
+    }
+
+    populateCategorySelects();
+
     $('#add-dropdown-btn').click(function() {
         const html = createDropdownField(dropdownCounter, null);
         $('#dropdown-list').append(html);
         dropdownCounter++;
+        populateCategorySelects();
     })
 
     $(document).on('click', '.remove-dropdown', function(){
         $(this).closest('.dropdown-group').remove();
     })
-})
+});

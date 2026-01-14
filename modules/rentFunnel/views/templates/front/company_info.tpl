@@ -20,48 +20,57 @@
                         {/if}
 
                         <form action="{$urls.pages.index}" method="post" class="company-info-form" id="companyInfoForm">
-                            <div class="questions-grid">
-                                {foreach from=$mainQuestions item=question}
-                                    <div class="form-group">
-                                        <label for="{$question.name}" class="form-label">
-                                            {$question.label} <span class="required">*</span>
-                                        </label>
-                                        <select name="{$question.name}" id="{$question.name}" class="form-control custom-select" required>
-                                            <option value="">-- Sélectionnez --</option>
-                                            {foreach from=$question.option item=option}
-                                                <option value="{$option|escape:'html':'UTF-8'}">
-                                                    {$option|escape:'html':'UTF-8'}
-                                                </option>
-                                            {/foreach}
-                                        </select>
-                                    </div>
-                                {/foreach}
+                            <div class="main-questions">
+                                <h3 class="section-title">Informations principales</h3>
+                                <div class="questions-grid">
+                                    {foreach from=$mainQuestions item=question}
+                                        <div class="form-group">
+                                            <label for="{$question.name}" class="form-label">
+                                                {$question.label} <span class="required">*</span>
+                                                {if $question.name=='additional_drinks'}
+                                                    <br><small class="small">Ctrl+click pour sélectionner plusieurs options</small>
+                                                {/if}
+                                            </label>
+                                            <select name="{$question.name}" id="{$question.name}" class="form-control custom-select" required {if $question.name=='additional_drinks'}multiple{/if}>
+                                                <option value="">-- Sélectionnez --</option>
+                                                {foreach from=$question.options item=option}
+                                                    <option value="{$option|escape:'html':'UTF-8'}">
+                                                        {$option|escape:'html':'UTF-8'}
+                                                    </option>
+                                                {/foreach}
+                                            </select>
+                                        </div>
+                                        <br>
+                                    {/foreach}
+                                </div>
                             </div>
 
-                            {if $dropdowns}
-                                <div class="additional-questions">
+                            {if $dynamicQuestions && count($dynamicQuestions) > 0}
+                                <div class="dynamic-questions">
                                     <h3>Informations complémentaires</h3>
                                     <div class="questions-grid">
-                                        {foreach from=$dropdowns item=dropdown}
-                                            <div class="form-group">
-                                                <label for="{$dropdown.name}" class="form-label">
-                                                    {$dropdown.label|escape:'html':'UTF-8'}
+                                        {foreach from=$dynamicQuestions item=dynQuestion}
+                                            <div class="form-group dynamic-question-group">
+                                                <label class="form-label dynamic-label">
+                                                    {$dynQuestion.label|escape:'html':'UTF-8'}
                                                 </label>
-                                                <select name="{$dropdown.name}" id="{$dropdown.name}" class="form-control custom-select" required>
-                                                    <option value="">-- Sélectionnez --</option>
-                                                    {if isset($dropdown.default) && $dropdown.default}
-                                                        <option value="{$dropdown.default|escape:'html':'utf-8'}" selected>
-                                                            {$dropdown.default|escape:'html':'UTF-8'}
-                                                        </option>
-                                                    {/if}
-                                                    {foreach from=$dropdown.options item=option}
-                                                        {if $option !== $dropdown.default}
-                                                            <option value="{$option|escape:'html':'UTF-8'}">
-                                                                {$option|escape:'html':'UTF-8'}
+
+                                                <div class="dynamic-select-wrapper">
+                                                    <select name="{$dynQuestion.select_name}"
+                                                            id="{$dynQuestion.select_name}"
+                                                            class="form-control custom-select dynamic-select">
+                                                        <option value="">-- Sélectionnez une option --</option>
+                                                        {foreach from=$dynQuestion.sub_categories item=subCat}
+                                                            <option value="{$subCat.id}">
+                                                                {$subCat.name|escape:'html':'UTF-8'}
                                                             </option>
-                                                        {/if}
-                                                    {/foreach}
-                                                </select>
+                                                        {/foreach}
+                                                    </select>
+
+                                                    <small class="form-text text-muted">
+                                                        Type de question : {$dynQuestion.question_type_label|escape:'html':'UTF-8'}
+                                                    </small>
+                                                </div>
                                             </div>
                                         {/foreach}
                                     </div>
