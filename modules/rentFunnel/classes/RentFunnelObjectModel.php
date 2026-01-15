@@ -35,14 +35,14 @@ class RentFunnelObjectModel extends ObjectModel
         return Db::getInstance()->executeS($sql);
     }
 
-    public static function getRentFunnel($id_lang = null)
+    public static function getRentFunnelOrder($id_lang = null)
     {
         if ($id_lang === null) {
             $id_lang = Context::getContext()->language->id;
         }
 
         $sql = "SELECT rf.id_category, rf.name, rf.position, rf.multiselect, rf.skippable
-                FROM " . _DB_PREFIX_ . "rentFunnel rf
+                FROM " . _DB_PREFIX_ . "rentFunnel_order rf
                 ORDER BY rf.position ASC";
 
         return Db::getInstance()->executeS($sql);
@@ -54,7 +54,6 @@ class RentFunnelObjectModel extends ObjectModel
             $id_lang = Context::getContext()->language->id;
         }
 
-        // Récupérer les produits de cette catégorie en joignant directement avec category_lang
         $sql = "SELECT p.id_product, p.price, pl.name, pl.description
                 FROM " . _DB_PREFIX_ . "product p
                 JOIN " . _DB_PREFIX_ . "product_lang pl ON p.id_product = pl.id_product
@@ -107,5 +106,98 @@ class RentFunnelObjectModel extends ObjectModel
 
         // Image par défaut si aucune image n'est trouvée
         return '/img/p/fr-default-home_default.jpg';
+    }
+
+    public static function getCompanyInfo($companyId)
+    {
+        $sql = "SELECT ci.company_size, ci.consumption, ci.additional_drinks, ci.dynamic_answers
+                FROM " . _DB_PREFIX_ . "rentFunnel_company_info ci
+                WHERE ci.company_id = '" . (int)$companyId . "'";
+
+        $result = Db::getInstance()->getRow($sql);
+        if (!$result)
+        {
+            return [
+                'company_size' => '',
+                'consumption' => '',
+                'additional_drinks' => '',
+                'dynamic_answers' => '',
+            ];
+        }
+
+        if(!empty($result['additional_drinks']))
+        {
+            $result['additional_drinks'] = json_decode($result['additional_drinks'], true) ?: [];
+        }
+
+        if(!empty($result['dynamic_answers']))
+        {
+            $result['dynamic_answers'] = json_decode($result['dynamic_answers'], true) ?: [];
+        }
+
+        return $result;
+    }
+
+    public static function setCompanyInfo($companyId, $companyInfo)
+    {
+        $companySize = pSQL($companyInfo['company_size']);
+        $consumption = pSQL($companyInfo['consumption']);
+        $additionalDrinks = isset($companyInfo['additional_drinks']) ? pSQL($companyInfo['additional_drinks']) : '';
+        if (is_array($additionalDrinks)) {
+            $additionalDrinksJson = pSQL(json_encode($additionalDrinks));
+        } else {
+            $additionalDrinksJson = pSQL(json_encode([$additionalDrinks]));
+        }
+
+        // Gérer les réponses dynamiques
+        $dynamicAnswers = isset($companyInfo['dynamic_answers']) ? $companyInfo['dynamic_answers'] : '[]';
+        if (is_string($dynamicAnswers)) {
+            $dynamicAnswersJson = pSQL($dynamicAnswers);
+        } else {
+            $dynamicAnswersJson = pSQL(json_encode($dynamicAnswers));
+        }
+
+        $existingId = Db::getInstance()->getValue(
+            "SELECT id_rentFunnel_company_info FROM " . _DB_PREFIX_ . "rentFunnel_company_info
+                    WHERE company_id = " . (int)$companyId
+        );
+
+        if($existingId) {
+            $sql = "UPDATE " . _DB_PREFIX_ . "rentFunnel_company_info
+                        SET company_size = '$companySize',
+                            consumption = '$consumption',
+                            additional_drinks = '$additionalDrinksJson',
+                            dynamic_answers = '$dynamicAnswersJson'
+                        WHERE company_id = " . (int)$companyId;
+        } else {
+            $sql = "INSERT INTO " . _DB_PREFIX_ . "rentFunnel_company_info
+                (company_id, company_size, consumption, additional_drinks, dynamic_answers)
+                VALUES ('$companyId', '$companySize', '$consumption', '$additionalDrinksJson', '$dynamicAnswersJson')";
+        }
+
+        Db::getInstance()->execute($sql);
+    }
+
+    public static function getDrinkTypes($id_lang = null)
+    {
+        if ($id_lang === null) {
+            $id_lang = Context::getContext()->language->id;
+        }
+
+        $sql = "SELECT cl.id_category, cl.name 
+                    FROM " . _DB_PREFIX_ . "category_lang cl
+                    JOIN " . _DB_PREFIX_ . "category c ON cl.id_category = c.id_category
+                    JOIN " . _DB_PREFIX_ . "category_lang parent_cl ON c.id_parent = parent_cl.id_category
+                    WHERE parent_cl.name = 'Boissons' 
+                    AND cl.id_lang = " . $id_lang . " 
+                    AND parent_cl.id_lang = " . $id_lang;
+
+        $result = Db::getInstance()->executeS($sql);
+        if (!$result)
+        {
+            return [];
+        }
+
+        return $result;
     }
 }
