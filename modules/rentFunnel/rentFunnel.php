@@ -247,7 +247,7 @@ class RentFunnel extends Module
     public function hookDisplayProductActions()
     {
         $moduleBooking = Module::getInstanceByName('rentalroute');
-        if(!($moduleBooking) && !($moduleBooking->active))
+        if(!($moduleBooking) || !($moduleBooking->active))
         {
             $id_category = $this->context->controller->getCategory()->id;
             $category = new Category($id_category, $this->context->language->id);
@@ -483,7 +483,7 @@ class RentFunnel extends Module
 
         return $score;
     }
-    
+
     public function getContent()
     {
         $this->context->controller->addJS($this->_path . 'views/js/back_office_form.js');
