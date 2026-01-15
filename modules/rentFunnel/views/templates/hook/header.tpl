@@ -1,5 +1,5 @@
 <div id="recap-container" class="recap-container">
-    <button id="btn-recap" class="btn-recap" type="button">
+    <button id="btn-recap" class="header-nav btn-recap" type="button">
         <span>
             Mon abonnement
         </span>

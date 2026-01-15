@@ -1,16 +1,16 @@
 .rentFunnel-product-list {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(17em, 1fr));
+    gap: 2em;
     padding: 0;
     list-style: none;
 }
 
 .rentFunnel-product-item {
     background: #fafafa;
-    padding: 16px;
+    padding: 1.6em;
     text-align: center;
-    box-shadow: 0 0 8px #17171a0d, 0 2px 8px #17171a14;
+    box-shadow: 0 0 0.8em #17171a0d, 0 0.2em 0.8em #17171a14;
 }
 
 body {
@@ -19,4 +19,8 @@ body {
 
 .coffee-select-button {
     left: 25%;
+}
+
+.btn-rent-funnel {
+    white-space: normal !important;
 }

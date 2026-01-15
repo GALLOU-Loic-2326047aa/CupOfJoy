@@ -15,7 +15,7 @@
                  alt="{$product.name}"
                  style="max-width: 300px; max-height: 300px; width: auto; height: auto;"/>
                 <p>{$product.description nofilter}</p>
-                <button class="btn btn-primary" type="button"
+                <button class="btn btn-primary btn-rent-funnel" type="button"
                         onclick="window.location.href='{$link->getModuleLink('rentFunnel', 'saveChoice')}?product_id={$product.id_product}'">
                     Louer "{$product.name}" pour {$product.price|rtrim: '0'|rtrim: '.'}{$shop_currency}
                 </button>

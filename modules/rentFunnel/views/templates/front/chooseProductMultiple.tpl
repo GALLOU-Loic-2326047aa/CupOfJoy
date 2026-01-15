@@ -22,18 +22,10 @@
                         <label for="qty_{$product.id_product}">Quantité :</label>
                         <div class="quantity-button js-quantity-button ">
                             <div class="input-group flex-nowrap product-select-button">
-                                <button role="button" aria-label="decrement" class="btn decrement js-decrement-button" type="button">
-                                    <i class="material-icons" aria-hidden="true"></i>
-                                    <i class="material-icons confirmation d-none"></i>
-                                    <div class="spinner-border spinner-border-sm align-middle d-none"></div>
-                                </button>
+
                                 <input id="quantity_wanted_{$product.id_product}" value="0" min="0" class="form-control" name="product_quantities[{$product.id_product}]"
                                        aria-label="Quantité" type="text" inputmode="numeric" pattern="[0-9]*">
-                                <button role="button" aria-label="increment" class="btn increment js-increment-button" type="button">
-                                    <i class="material-icons" aria-hidden="true"></i>
-                                    <i class="material-icons confirmation d-none"></i>
-                                    <div class="spinner-border spinner-border-sm align-middle d-none" role="status"></div>
-                                </button>
+                                
                             </div>
                         </div>
                         <input type="hidden" name="product_info[{$product.id_product}][name]" value="{$product.name|escape:'html'}" />
