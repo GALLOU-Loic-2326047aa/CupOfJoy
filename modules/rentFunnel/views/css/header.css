@@ -1,14 +1,14 @@
 .recap-details {
     position: absolute;
-    top: 70px; /* Ajuster selon le header */
-    right: 0px;
-    min-width: 220px;
+    top: 7em; /* Ajuster selon le header */
+    right: 0;
+    min-width: 2.2em;
     background: #fff;
-    border: 1px solid #e9ecef;
-    box-shadow: 3px 2px 8px rgba(0,0,0,.07);
+    border: 0.1em solid #e9ecef;
+    box-shadow: 0.3em 0.2em 0.8em rgba(0,0,0,.07);
     z-index: 999;
-    padding: 14px;
-    border-radius: 8px;
+    padding: 1.4em;
+    border-radius: 0.8em;
 }
 #recap-container {
     position: relative;
@@ -21,8 +21,8 @@
     color: #fff;
     font-weight: bold;
     font-size: 1.1em;
-    border-radius: 8px;
-    height: 70px;
+    border-radius: 0.8em;
+    height: 3.5em;
 }
 
 .header-recap-category {
