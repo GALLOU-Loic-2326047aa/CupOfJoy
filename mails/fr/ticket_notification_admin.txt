@@ -1,0 +1,10 @@
+Nouveau Ticket SAV Créé
+
+Ticket ID : #{ticket_id}
+Client : {email}
+Type : {request_type}
+
+Message :
+{message}
+
+Connectez-vous au Back-Office > SAV pour répondre.

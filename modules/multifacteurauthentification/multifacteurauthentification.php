@@ -24,17 +24,38 @@ class MultifacteurAuthentification extends Module
 
     public function install()
     {
-        return parent::install() && $this->registerHook('actionAuthentication');
+        // Création de la table mfa lors de l'installation
+        $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'mfa` (
+            `id_customer` INT(11) UNSIGNED NOT NULL,
+            `is_verified` TINYINT(1) DEFAULT 0,
+            PRIMARY KEY (`id_customer`)
+        ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
+
+        return parent::install()
+            && Db::getInstance()->execute($sql)
+            && $this->registerHook('actionAuthentication');
     }
 
     public function uninstall()
     {
+        // On supprime la table si on désinstalle le module
+        Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'mfa`');
         return parent::uninstall();
     }
 
     public function hookActionAuthentication($params)
     {
         $customer = $params['customer'];
+
+        // Si la vérification est déjà faite, on arrête et on passe à la suite
+        $alreadyVerified = Db::getInstance()->getValue('
+            SELECT is_verified FROM `' . _DB_PREFIX_ . 'mfa` 
+            WHERE id_customer = ' . (int)$customer->id
+        );
+
+        if ((int)$alreadyVerified === 1) {
+            return;
+        }
 
         $verificationCode = rand(100000, 999999);
 
@@ -44,6 +65,7 @@ class MultifacteurAuthentification extends Module
         $cookie->mfa_id_customer = $customer->id;
         $cookie->write();
 
+        // Envoie du mail contenant le code de vérification
         Mail::Send(
             (int)$this->context->language->id,
             'mfa_mail',

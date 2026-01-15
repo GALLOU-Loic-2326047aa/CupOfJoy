@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>rentFunnel</name>
+    <displayName><![CDATA[]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Handles the process by which customers can order coffee when renting a machine.]]></description>
+    <author><![CDATA[Math&eacute;o BERTIN]]></author>
+    <tab><![CDATA[]]></tab>
+    <is_configurable>0</is_configurable>
+    <need_instance>1</need_instance>
+</module>
