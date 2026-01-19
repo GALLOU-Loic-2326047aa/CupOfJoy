@@ -3,6 +3,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once _PS_MODULE_DIR_ . 'machine_support/classes/MachineSupportType.php';
+
 class Machine_Support extends Module
 {
     public function __construct()
@@ -22,8 +24,11 @@ class Machine_Support extends Module
 
     public function install()
     {
+        include_once _PS_MODULE_DIR_ . 'machine_support/classes/MachineSupportType.php';
+
         return parent::install()
             && $this->installDatabase()
+            && $this->installTab()
             && $this->registerHook('displayCustomerAccount')
             && $this->registerHook('displayNav1')
             && $this->registerHook('actionAdminCustomerThreadsListingFieldsModifier');
@@ -35,6 +40,7 @@ class Machine_Support extends Module
     }
 
     // Modifie la table customer_thread pour ajouter la colonne request_type
+    // Créer la table
     public function installDatabase()
     {
         $sql = 'ALTER TABLE `' . _DB_PREFIX_ . 'customer_thread` 
@@ -46,38 +52,82 @@ class Machine_Support extends Module
 
         }
 
-        return true;
+        // Table des types
+        $sql1 = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'support_client_type` (
+            `id_support_client_type` int(11) NOT NULL AUTO_INCREMENT,
+            `active` tinyint(1) unsigned NOT NULL DEFAULT \'1\',
+            PRIMARY KEY (`id_support_client_type`)
+        ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
+
+        // Table langue
+        $sql2 = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'support_client_type_lang` (
+            `id_support_client_type` int(11) NOT NULL,
+            `id_lang` int(11) NOT NULL,
+            `name` varchar(255) NOT NULL,
+            PRIMARY KEY (`id_support_client_type`, `id_lang`)
+        ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
+
+        if (Db::getInstance()->execute($sql1) && Db::getInstance()->execute($sql2)) {
+            // Insertion des valeurs par défaut
+            $defaults = ['Panne Machine', 'Intervention', 'Remboursement', 'Autre'];
+            foreach ($defaults as $name) {
+                $type = new MachineSupportType();
+                $type->active = 1;
+                foreach (Language::getLanguages(false) as $lang) {
+                    $type->name[$lang['id_lang']] = $name;
+                }
+                $type->save();
+            }
+            return true;
+        }
+        return false;
     }
 
     // Supprime l'ajout de la colonne request_type dans la table customer_thread dans la BD
     public function uninstallDatabase()
     {
-        $sql = 'ALTER TABLE `' . _DB_PREFIX_ . 'customer_thread` DROP COLUMN `request_type`';
-        return Db::getInstance()->execute($sql);
+        Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'support_client_type`');
+        Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'support_client_type_lang`');
+        return true;
+
+    }
+
+    public function installTab()
+    {
+        $tab = new Tab();
+        $tab->active = 1;
+        $tab->class_name = 'AdminMachineSupportTypes';
+        $tab->name = array();
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = 'Types de demande SAV';
+        }
+        $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentCustomerThreads'); // Dans le menu Clients
+        $tab->module = $this->name;
+        return $tab->add();
     }
 
     // Hook qui gère la modification de la liste des tickets supports pour ajouter une colonne "Type de demande"
     public function hookActionAdminCustomerThreadsListingFieldsModifier($params)
     {
-        // On ajoute le champ à la requête SQL de la liste
         if (isset($params['select'])) {
             $params['select'] .= ', a.request_type';
         }
 
-        // On définit la colonne visuelle
+        // Récupération dynamique des types pour le filtre
+        include_once _PS_MODULE_DIR_ . 'machine_support/classes/MachineSupportType.php';
+        $types = MachineSupportType::getTypes($this->context->language->id);
+        $list = [];
+        foreach ($types as $t) {
+            $list[$t['name']] = $t['name'];
+        }
+
         $params['fields']['request_type'] = [
             'title' => $this->l('Type de demande'),
             'align' => 'center',
             'class' => 'fixed-width-lg',
             'type' => 'select',
-            'list' => [
-                'Panne Machine' => $this->l('Panne Machine'),
-                'Intervention' => $this->l('Intervention'),
-                'Remboursement' => $this->l('Remboursement'),
-                'Autre' => $this->l('Autre')
-            ],
-            'filter_key' => 'a!request_type',
-            'callback_object' => $this
+            'list' => $list, // Liste dynamique
+            'filter_key' => 'a!request_type'
         ];
     }
 
