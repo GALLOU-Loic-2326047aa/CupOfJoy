@@ -27,22 +27,31 @@ class Ps_Stripe_SubscriptionsCheckoutModuleFrontController extends ModuleFrontCo
             );
 
             // Préparation de la liste des produits pour Stripe
+            // Préparation de la liste des articles
             $lineItems = [];
             foreach ($cart->getProducts() as $product) {
-                // On cherche l'ID du prix Stripe associé au produit ou à sa déclinaison
-                $priceId = StripePriceLink::getStripePriceIdByPsId(
-                    (int)$product['id_product'],
-                    (int)$product['id_product_attribute']
-                );
+                $sql = 'SELECT id_product_stripe FROM ' . _DB_PREFIX_ . 'stripe_price_link 
+                        WHERE id_product_ps = ' . (int)$product['id_product'] . ' 
+                        AND id_product_attribute = ' . (int)$product['id_product_attribute'];
+                $stripeProductId = Db::getInstance()->getValue($sql);
 
-                //Si un produit du panier n'est pas lié à Stripe, on arrête le processus
-                if (!$priceId) {
-                    die("Erreur : Le produit " . $product['name'] . " (ID: " . $product['id_product'] . ") n'est pas configuré comme abonnement Stripe.");
+                if (!$stripeProductId) {
+                    die("Erreur : Le produit " . $product['name'] . " n'est pas synchronisé.");
                 }
 
-                // Ajout de l'article à la liste d'achat
+                // 2. ON RÉCUPÈRE LE PRIX CALCULÉ PAR PRESTASHOP (avec la réduction Pro)
+                $finalPrice = (int)round($product['price_wt'] * 100);
+
+                // 3. On envoie un "Prix Dynamique" à Stripe
                 $lineItems[] = [
-                    'price' => $priceId,
+                    'price_data' => [
+                        'currency' => $this->context->currency->iso_code,
+                        'product' => $stripeProductId, // On lie au produit existant
+                        'unit_amount' => $finalPrice,  // On envoie le prix réduit calculé par ton ami
+                        'recurring' => [
+                            'interval' => 'month',    // On précise que c'est un abonnement
+                        ],
+                    ],
                     'quantity' => (int)$product['cart_quantity'],
                 ];
             }
