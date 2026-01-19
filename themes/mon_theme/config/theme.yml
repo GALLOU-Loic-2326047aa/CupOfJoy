@@ -1,0 +1,17 @@
+name: mon_theme
+
+display_name: Mon Thème Personnalisé
+
+parent: classic
+
+version: 1.0.0
+author:
+  name: "Maxime Allasio"
+
+assets:
+  use_parent_assets: true
+  css:
+    all: # sert à charger tous les fichiers qui sont en dessous
+      - id: custom-style # xxxx-style, le xxxx doit correspondre au nom du fichier en question. J'ai fait des test avec d'autre nom mais ça ne foncitonne pas donc on part du principe qu'il faut le même nom.
+        path: assets/css/custom.css # chemain d'acces d'ou se trouve le module
+        priority: 200 # plus le nombre est elevé, moins il sera prioritaire zu niveau du chargement
