@@ -24,3 +24,7 @@ body {
 .btn-rent-funnel {
     white-space: normal !important;
 }
+
+.btn-pass-step {
+    background: #ff1616 !important;
+}

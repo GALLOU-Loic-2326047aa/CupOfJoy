@@ -23,10 +23,7 @@ class rentFunnelChooseProductSimpleModuleFrontController extends ModuleFrontCont
     {
         $categoryList = json_decode(Configuration::get("RENTFUNNEL_CATEGORYLIST"));
         $products = $this->getProducts($categoryList[0]->name);
-
-
-        $totalSelectedProducts = json_decode(Configuration::get("RENTFUNNEL_SELECTED_PRODUCTS"), true);
-
+        
         parent::initContent();
 
         $this->context->smarty->assign([

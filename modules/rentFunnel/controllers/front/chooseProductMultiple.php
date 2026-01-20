@@ -33,9 +33,6 @@ class rentFunnelChooseProductMultipleModuleFrontController extends ModuleFrontCo
         // Récupérer les produits de cette catégorie
         $products = $this->getProducts($currentCategory->name);
 
-        // Récupérer les produits déjà sélectionnés
-        $totalSelectedProducts = json_decode(Configuration::get("RENTFUNNEL_SELECTED_PRODUCTS"), true);
-
         // Assigner les variables au template
         $this->context->smarty->assign([
             'products' => $products,

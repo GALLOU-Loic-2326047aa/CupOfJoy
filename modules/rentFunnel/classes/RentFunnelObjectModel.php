@@ -54,7 +54,31 @@ class RentFunnelObjectModel extends ObjectModel
             $id_lang = Context::getContext()->language->id;
         }
 
-        $sql = "SELECT p.id_product, p.price, pl.name, pl.description
+        // Vérifier si la table existe en essayant une requête simple
+        $tableExists = false;
+        try {
+            $result = Db::getInstance()->executeS("SHOW TABLES LIKE '" . _DB_PREFIX_ . "stripe_price_link'");
+            $tableExists = !empty($result);
+        } catch (Exception $e) {
+            $tableExists = false;
+        }
+
+        if ($tableExists) {
+            $sql = "SELECT p.id_product, p.price, pl.name, pl.description
+                FROM " . _DB_PREFIX_ . "product p
+                JOIN " . _DB_PREFIX_ . "product_lang pl ON p.id_product = pl.id_product
+                JOIN " . _DB_PREFIX_ . "category_product cp ON p.id_product = cp.id_product
+                JOIN " . _DB_PREFIX_ . "category c ON cp.id_category = c.id_category
+                JOIN " . _DB_PREFIX_ . "category_lang cl ON c.id_category = cl.id_category
+                JOIN " . _DB_PREFIX_ . "stripe_price_link spl ON p.id_product = spl.id_product_ps
+                WHERE spl.id_product_ps = p.id_product
+                AND cl.name = '" . pSQL($categoryName) . "'
+                AND cl.id_lang = " . (int)$id_lang . "
+                AND pl.id_lang = " . (int)$id_lang . "
+                AND p.active = 1
+                ORDER BY cp.position ASC";
+        } else {
+            $sql = "SELECT p.id_product, p.price, pl.name, pl.description
                 FROM " . _DB_PREFIX_ . "product p
                 JOIN " . _DB_PREFIX_ . "product_lang pl ON p.id_product = pl.id_product
                 JOIN " . _DB_PREFIX_ . "category_product cp ON p.id_product = cp.id_product
@@ -65,6 +89,7 @@ class RentFunnelObjectModel extends ObjectModel
                 AND pl.id_lang = " . (int)$id_lang . "
                 AND p.active = 1
                 ORDER BY cp.position ASC";
+        }
 
         $products = Db::getInstance()->executeS($sql);
 

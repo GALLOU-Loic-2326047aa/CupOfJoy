@@ -1,3 +1,3 @@
-<button class="btn btn-primary" type="button" onclick="window.location.href='{$link->getModuleLink('rentFunnel', 'saveChoice')}'">
-    Étape suivante
+<button class="btn btn-primary btn-rent-funnel btn-pass-step" type="button" onclick="window.location.href='{$link->getModuleLink('rentFunnel', 'saveChoice')}'">
+    Passer cette étape
 </button>

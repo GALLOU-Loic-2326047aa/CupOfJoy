@@ -4,9 +4,6 @@
     <h1>{$page_title}</h1>
 {/block}
 {block name="page_content"}
-    {if $categoryList[0]->skippable == 1}
-        {include file="module:rentFunnel/views/templates/front/chooseProductPass.tpl"}
-    {/if}
     <ul class="rentFunnel-product-list">
         {foreach from=$products item=product}
 
@@ -22,4 +19,7 @@
             </li>
         {/foreach}
     </ul>
+    {if $categoryList[0]->skippable == 1}
+        {include file="module:rentFunnel/views/templates/front/chooseProductPass.tpl"}
+    {/if}
 {/block}

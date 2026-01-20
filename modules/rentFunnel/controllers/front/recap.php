@@ -74,6 +74,7 @@ class rentFunnelRecapModuleFrontController extends ModuleFrontController
             foreach ($products as $productId => $product) {
                 $quantity = isset($product['quantity']) ? (int)$product['quantity'] : 1;
 
+                Configuration::updateValue('ADD_PRODUCT_TO_CART_ID', $productId);
                 $cart->updateQty($quantity, (int)$productId, null, false, 'up');
             }
         }

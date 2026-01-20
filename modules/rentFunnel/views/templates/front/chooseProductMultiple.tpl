@@ -4,9 +4,6 @@
     <h1>{$page_title}</h1>
 {/block}
 {block name="page_content"}
-    {if $categoryList[0]->skippable == 1}
-        {include file="module:rentFunnel/views/templates/front/chooseProductPass.tpl"}
-    {/if}
     <form method="post" action="{$link->getModuleLink('rentFunnel', 'saveChoice')}">
         <div class="rentFunnel-product-list">
             {foreach from=$products item=product}
@@ -38,5 +35,8 @@
         <button type="submit" class="btn btn-primary">
             Valider ma sélection
         </button>
+        {if $categoryList[0]->skippable == 1}
+            {include file="module:rentFunnel/views/templates/front/chooseProductPass.tpl"}
+        {/if}
     </form>
 {/block}
