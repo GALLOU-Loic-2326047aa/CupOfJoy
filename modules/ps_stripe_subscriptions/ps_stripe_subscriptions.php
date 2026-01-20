@@ -313,8 +313,8 @@ class Ps_Stripe_Subscriptions extends PaymentModule
             }
         }
 
-        $id_to_add = (int)Tools::getValue('id_product');
-        $attr_to_add = (int)Tools::getValue('id_product_attribute');
+        $id_to_add = pSQL((int)Configuration::get('ADD_PRODUCT_TO_CART_ID'));
+        $attr_to_add = pSQL((int)Configuration::get('ADD_PRODUCT_TO_CART_ATTRIBUTE'));
         $is_adding_sub = (bool)StripePriceLink::getStripePriceIdByPsId($id_to_add, $attr_to_add);
 
         if (($is_adding_sub && $has_classic) || (!$is_adding_sub && $has_sub)) {
