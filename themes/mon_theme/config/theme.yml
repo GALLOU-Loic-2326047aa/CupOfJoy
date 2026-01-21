@@ -18,3 +18,6 @@ assets:
       - id: nav-bar-style # xxxx-style, le xxxx doit correspondre au nom du fichier en question. J'ai fait des test avec d'autre nom mais ça ne foncitonne pas donc on part du principe qu'il faut le même nom.
         path: assets/css/nav-bar.css # chemain d'acces d'ou se trouve le module
         priority: 200 # plus le nombre est elevé, moins il sera prioritaire zu niveau du chargement
+      - id: my-account-style
+        path: assets/css/my-account.css
+        priority: 200
