@@ -48,10 +48,12 @@ class Ps_Stripe_Subscriptions extends PaymentModule
      */
     public function install()
     {
+        // 1. Installation de base de PrestaShop
         if (!parent::install()) {
             return false;
         }
 
+        // 2. Enregistrement des hooks
         $hooks = [
             'displayAdminProductsExtra',
             'displayAdminProductsCombinationsForm',
@@ -72,7 +74,7 @@ class Ps_Stripe_Subscriptions extends PaymentModule
             }
         }
 
-        // Table pour lier les produits/déclinaisons PrestaShop aux IDs Stripe
+        // 3. Création des tables SQL
         $sqlPrice = "CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . "stripe_price_link` (
             `id_product_ps` INT(10) UNSIGNED NOT NULL,
             `id_product_attribute` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -81,14 +83,35 @@ class Ps_Stripe_Subscriptions extends PaymentModule
             PRIMARY KEY (`id_product_ps`, `id_product_attribute`)
         ) ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8;";
 
-        // Table pour lier les comptes clients PrestaShop aux clients Stripe
         $sqlCustomer = "CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . "stripe_customer_link` (
             `id_customer_ps` INT(10) UNSIGNED NOT NULL PRIMARY KEY,
             `id_customer_stripe` VARCHAR(255) NOT NULL,
             UNIQUE KEY `id_customer_stripe_unique` (`id_customer_stripe`)
         ) ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8;";
 
-        return Db::getInstance()->execute($sqlPrice) && Db::getInstance()->execute($sqlCustomer);
+        if (!Db::getInstance()->execute($sqlPrice) || !Db::getInstance()->execute($sqlCustomer)) {
+            return false;
+        }
+
+        if (!$this->installTab('AdminStripe', 'Suivi Expéditions Abonnés', 'AdminParentOrders')) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function installTab($class_name, $name, $parent)
+    {
+        $tab = new Tab();
+        $tab->active = 1;
+        $tab->class_name = $class_name;
+        $tab->name = array();
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = $name;
+        }
+        $tab->id_parent = (int)Tab::getIdFromClassName($parent);
+        $tab->module = $this->name;
+        return $tab->add();
     }
 
     /**
