@@ -65,7 +65,8 @@ class Ps_Stripe_Subscriptions extends PaymentModule
             'paymentOptions',
             'actionAuthentication',
             'actionCustomerAccountAdd',
-            'displayCustomerAccount'
+            'displayCustomerAccount',
+            'actionPaymentOptionsAfter'
         ];
 
         foreach ($hooks as $hook) {
@@ -416,12 +417,32 @@ class Ps_Stripe_Subscriptions extends PaymentModule
      */
     public function hookPaymentOptions($params)
     {
-        if (!$this->active) return [];
-        $option = new \PrestaShop\PrestaShop\Core\Payment\PaymentOption();
-        $option->setModuleName($this->name)
-            ->setCallToActionText($this->l('Payer par Carte (Stripe Subscriptions)'))
-            ->setAction($this->context->link->getModuleLink($this->name, 'checkout', [], true));
-        return [$option];
+        if (!$this->active) {
+            return [];
+        }
+
+        $this->loadModuleClasses();
+        $cart = $this->context->cart;
+        $products = $cart->getProducts();
+
+        $has_subscription = false;
+
+        foreach ($products as $p) {
+            if (StripePriceLink::getStripePriceIdByPsId($p['id_product'], $p['id_product_attribute'])) {
+                $has_subscription = true;
+                break;
+            }
+        }
+
+        if ($has_subscription) {
+            $option = new \PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+            $option->setModuleName($this->name)
+                ->setCallToActionText($this->l('Payer mon abonnement par Carte'))
+                ->setAction($this->context->link->getModuleLink($this->name, 'checkout', [], true));
+
+            return [$option];
+        }
+        return [];
     }
 
     /**
@@ -464,6 +485,33 @@ class Ps_Stripe_Subscriptions extends PaymentModule
 
     public function hookUpdateOrderStatus($params)
     {
+    }
+
+    public function hookActionPaymentOptionsAfter($params)
+    {
+        if (!$this->active || !isset($params['payment_options'])) {
+            return;
+        }
+
+        $this->loadModuleClasses();
+        $cart = $this->context->cart;
+        $has_subscription = false;
+
+        foreach ($cart->getProducts() as $p) {
+            if (class_exists('StripePriceLink') && StripePriceLink::getStripePriceIdByPsId($p['id_product'], $p['id_product_attribute'])) {
+                $has_subscription = true;
+                break;
+            }
+        }
+
+        if ($has_subscription) {
+            foreach ($params['payment_options'] as $module_name => $options) {
+                if ($module_name !== $this->name) {
+                    // On retire les autres modules de la liste finale d'affichage
+                    unset($params['payment_options'][$module_name]);
+                }
+            }
+        }
     }
 
 }
