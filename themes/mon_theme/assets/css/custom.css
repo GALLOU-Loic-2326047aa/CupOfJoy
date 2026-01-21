@@ -1,3 +1,199 @@
-body {
-    border: 15px solid limegreen !important;
+/* Bannière en haut de page */
+
+.main-banner {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    background-color: #000;
+    opacity: initial;
+}
+
+.main-banner .banner-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.main-banner .banner-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+}
+
+.main-banner:hover .banner-bg {
+    transform: scale(1.03);
+    opacity: 0.50;
+}
+
+.main-banner .banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.main-banner .banner-content {
+    color: #FFFFFF;
+    padding: 20px;
+    max-width: 800px;
+}
+
+.main-banner .banner-title {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 3rem !important;
+    font-weight: 200 !important;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    margin-bottom: 15px;
+    color: #FFFFFF !important;
+}
+
+.main-banner .banner-subtitle {
+    font-size: 1.2rem;
+    font-weight: 300;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    text-transform: none;
+    color: antiquewhite;
+}
+
+.main-banner .btn-action {
+    display: inline-block;
+    padding: 14px 40px;
+    border: 1px solid #ffffff;
+    background: transparent;
+    color: #ffffff;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 2px;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.main-banner .btn-action:hover {
+    background: #ffffff;
+    color: #000000;
+    text-decoration: none;
+}
+
+@media (max-width: 767px) {
+    .main-banner { height: 350px; }
+    .main-banner .banner-title { font-size: 1.8rem !important; }
+}
+
+/* Bannière de bas de page */
+
+.inspired-grid {
+    margin: 80px 0;
+    background: #ffffff;
+}
+
+.grid-link {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 480px;
+    width: 100%;
+    overflow: hidden;
+    text-decoration: none !important;
+    background-color: #000;
+}
+
+.grid-link::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+    transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.link-boissons::before {
+    background-image: url('../img/boissons.jpg');
+}
+.link-machines::before {
+    background-image: url('../img/machines.jpg');
+}
+.link-accessoires::before {
+    background-image: url('../img/accessoires.jpg');
+}
+
+.content-box {
+    position: relative;
+    z-index: 2;
+    margin-top: auto;
+    width: 100%;
+    padding: 50px 30px 40px 30px;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+    color: #ffffff;
+    text-align: left;
+}
+
+.category-label {
+    display: block;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.8;
+    color: #ffffff;
+}
+
+.content-box h3 {
+    color: #ffffff !important;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300 !important;
+    font-size: 1.8rem !important;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 15px;
+    line-height: 1.2;
+}
+
+.explore-link {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #ffffff;
+    display: inline-block;
+    border-bottom: 1px solid rgba(255,255,255,0.4);
+    padding-bottom: 5px;
+    transition: all 0.3s ease;
+}
+
+.grid-link:hover::before {
+    transform: scale(1.06);
+}
+
+.grid-link:hover .explore-link {
+    border-bottom: 1px solid #ffffff;
+    padding-right: 15px;
+    letter-spacing: 3px;
+}
+
+.grid-link:hover .content-box {
+    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);
+}
+
+@media (max-width: 767px) {
+    .grid-link {
+        height: 350px;
+        margin-bottom: 20px;
+    }
+
+    .content-box h3 {
+        font-size: 1.5rem !important;
+    }
 }
