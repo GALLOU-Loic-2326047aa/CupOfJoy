@@ -44,7 +44,7 @@
                     </div>
                 </div>
 
-                {* TYPE DE DEMANDE *}
+                {* TYPE DE DEMANDE DYNAMIQUE *}
                 <div class="form-group row">
                     <label class="col-md-3 form-control-label required">
                         {l s='Type de demande' mod='machine_support'}
@@ -52,10 +52,11 @@
                     <div class="col-md-6">
                         <select class="form-control" name="request_type" required>
                             <option value="">-- {l s='Choisir le motif' mod='machine_support'} --</option>
-                            <option value="Panne Machine">{l s='Panne / Problème technique' mod='machine_support'}</option>
-                            <option value="Intervention">{l s='Demande d\'intervention' mod='machine_support'}</option>
-                            <option value="Remboursement">{l s='Demande de remboursement' mod='machine_support'}</option>
-                            <option value="Autre">{l s='Autre demande' mod='machine_support'}</option>
+
+                            {foreach from=$support_types item=type}
+                                <option value="{$type.id_support_client_type}">{$type.name}</option>
+                            {/foreach}
+
                         </select>
                     </div>
                 </div>

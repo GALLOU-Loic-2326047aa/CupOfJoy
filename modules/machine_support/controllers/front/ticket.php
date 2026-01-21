@@ -5,6 +5,17 @@ class Machine_SupportTicketModuleFrontController extends ModuleFrontController
     public function initContent()
     {
         parent::initContent();
+
+        // chargement de la classe
+        require_once _PS_MODULE_DIR_ . 'machine_support/classes/MachineSupportType.php';
+
+        // récupèration des types
+        $types = MachineSupportType::getTypes($this->context->language->id);
+
+        $this->context->smarty->assign([
+            'support_types' => $types
+        ]);
+
         $this->setTemplate('module:machine_support/views/templates/front/ticket.tpl');
     }
 
@@ -18,6 +29,13 @@ class Machine_SupportTicketModuleFrontController extends ModuleFrontController
             $phone = Tools::getValue('phone');
             $requestType = Tools::getValue('request_type'); // Récupération du type
             $message = Tools::getValue('message');
+            $id_type = (int)Tools::getValue('request_type');
+
+            require_once _PS_MODULE_DIR_ . 'machine_support/classes/MachineSupportType.php';
+
+            $typeObj = new MachineSupportType($id_type, $this->context->language->id);
+            $requestType = $typeObj->name;
+
 
             // Validation des différentes informations
             if (!Validate::isEmail($from)) {
@@ -26,7 +44,7 @@ class Machine_SupportTicketModuleFrontController extends ModuleFrontController
                 $this->errors[] = $this->l('Veuillez décrire le problème.');
             } elseif (empty($phone)) {
                 $this->errors[] = $this->l('Le numéro de téléphone est requis.');
-            } elseif (empty($requestType)) {
+            } elseif (empty($requestType) || !Validate::isLoadedObject($typeObj)) {
                 $this->errors[] = $this->l('Veuillez choisir un type de demande.');
             }
 
