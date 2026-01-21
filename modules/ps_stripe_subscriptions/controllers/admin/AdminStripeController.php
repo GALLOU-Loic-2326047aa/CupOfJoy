@@ -9,21 +9,20 @@ class AdminStripeController extends ModuleAdminController
         $this->className = 'StripeCustomerLink';
         $this->identifier = 'id_customer_ps';
 
-        // 1. Récupération de l'instance du module
+        // Récupération de l'instance et chargement des classes nécessaires
         $this->module = Module::getInstanceByName('ps_stripe_subscriptions');
 
-        // 2. Chargement des classes (StripeCustomerLink, etc.) pour éviter l'erreur "Class not found"
         if (method_exists($this->module, 'loadModuleClasses')) {
             $this->module->loadModuleClasses();
         }
 
         parent::__construct();
 
-        // 3. Configuration de la requête SQL (Jointure pour le nom et alias pour la date)
+        // Jointure pour récupérer les infos client PS et alias pour le calcul de date
         $this->_select = 'c.`firstname`, c.`lastname`, a.`id_customer_stripe` AS next_delivery';
         $this->_join = 'LEFT JOIN `' . _DB_PREFIX_ . 'customer` c ON (c.`id_customer` = a.`id_customer_ps`)';
 
-        // 4. Définition des colonnes de la liste
+        // Configuration des colonnes du tableau de bord
         $this->fields_list = [
             'id_customer_ps' => [
                 'title' => $this->module->l('ID'),
@@ -44,18 +43,17 @@ class AdminStripeController extends ModuleAdminController
             ],
             'next_delivery' => [
                 'title' => $this->module->l('Prochaine Expédition'),
-                'callback' => 'calculateNextDelivery',
+                'callback' => 'calculateNextDelivery', // Appel API Stripe dynamique
                 'search' => false,
                 'orderby' => false,
             ]
         ];
 
-        // 5. Activation du bouton "Afficher" (l'icône de l'œil)
         $this->addRowAction('view');
     }
 
     /**
-     * Calcule et affiche la date de prochaine expédition via Stripe
+     * Récupère la date de fin de période via l'API Stripe
      */
     public function calculateNextDelivery($id_stripe, $row)
     {
@@ -66,6 +64,7 @@ class AdminStripeController extends ModuleAdminController
         try {
             $this->module->initStripeApi();
 
+            // Récupère le premier abonnement actif trouvé
             $subs = \Stripe\Subscription::all([
                 'customer' => $id_stripe,
                 'status' => 'active',
@@ -79,6 +78,7 @@ class AdminStripeController extends ModuleAdminController
             $timestamp = $subs->data[0]->current_period_end;
             $date_formatted = date('d/m/Y', $timestamp);
 
+            // Alerte visuelle si l'échéance est imminente (moins de 5 jours)
             if ($timestamp < strtotime('+5 days')) {
                 return '<b style="color:red;">' . $date_formatted . ' (URGENT)</b>';
             }
@@ -91,11 +91,10 @@ class AdminStripeController extends ModuleAdminController
     }
 
     /**
-     * Gère l'action du bouton "Afficher" : Redirige vers la dernière commande
+     * Logique de redirection au clic sur "Afficher"
      */
     public function renderView()
     {
-        // 1. Récupération de l'ID du client depuis la ligne
         $id_customer = (int)Tools::getValue('id_customer_ps');
 
         if (!$id_customer) {
@@ -103,7 +102,7 @@ class AdminStripeController extends ModuleAdminController
             return;
         }
 
-        // 2. Recherche de la commande la plus récente
+        // Tente de rediriger vers la dernière commande passée
         $last_order_id = (int)Db::getInstance()->getValue('
             SELECT id_order 
             FROM ' . _DB_PREFIX_ . 'orders 
@@ -116,15 +115,13 @@ class AdminStripeController extends ModuleAdminController
                 'id_order' => $last_order_id,
                 'vieworder' => 1
             ]);
-
             Tools::redirectAdmin($orderUrl);
         } else {
-            // Si vraiment aucune commande n'existe, on va sur la fiche client
+            // Fallback sur la fiche client classique
             $customerUrl = $this->context->link->getAdminLink('AdminCustomers', true, [
                 'id_customer' => $id_customer,
                 'viewcustomer' => 1
             ]);
-
             Tools::redirectAdmin($customerUrl);
         }
     }

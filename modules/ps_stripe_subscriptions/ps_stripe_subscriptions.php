@@ -495,8 +495,8 @@ class Ps_Stripe_Subscriptions extends PaymentModule
 
         $this->loadModuleClasses();
         $cart = $this->context->cart;
-        $has_subscription = false;
 
+        $has_subscription = false;
         foreach ($cart->getProducts() as $p) {
             if (class_exists('StripePriceLink') && StripePriceLink::getStripePriceIdByPsId($p['id_product'], $p['id_product_attribute'])) {
                 $has_subscription = true;
@@ -505,10 +505,12 @@ class Ps_Stripe_Subscriptions extends PaymentModule
         }
 
         if ($has_subscription) {
-            foreach ($params['payment_options'] as $module_name => $options) {
+            $payment_options = &$params['payment_options'];
+
+            foreach (array_keys($payment_options) as $module_name) {
+                // On supprime TOUT ce qui n'est pas ton module
                 if ($module_name !== $this->name) {
-                    // On retire les autres modules de la liste finale d'affichage
-                    unset($params['payment_options'][$module_name]);
+                    unset($payment_options[$module_name]);
                 }
             }
         }
