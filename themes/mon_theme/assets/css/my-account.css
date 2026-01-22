@@ -1,0 +1,66 @@
+/* Blocs de code pour la mise en page (Grille sans espaces) */
+body#my-account .page-content .links a {
+    margin-bottom: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+body#my-account .page-content .links a span.link-item {
+    border-radius: 0 !important;
+    border: 1px solid #e5e5e5;
+    box-shadow: none;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Blocs de code pour la couleurs des boutons Votre Compte */
+body#my-account .page-content .links a span.link-item {
+    background-color: #dccbba;
+    color: #333333;
+    transition: background-color 0.3s ease;
+}
+
+body#my-account .page-content .links a:hover span.link-item {
+    background-color: #cbb5a0;
+    color: #000000;
+}
+
+body#my-account .page-content .links a span.link-item i {
+    color: #333333;
+}
+
+/* Blocs de code pour l'animation au survol (Zoom et Relief) */
+body#my-account .page-content .links a span.link-item {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+body#my-account .page-content .links a:hover {
+    z-index: 10;
+    position: relative;
+}
+
+body#my-account .page-content .links a:hover span.link-item {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* Blocs de code pour centrer le titre Votre Compte */
+body#my-account .page-header h1 {
+    text-align: center;
+    width: 100%;
+}
+
+body#my-account .page-header {
+    display: flex;
+    justify-content: center;
+}
+
+/* Blocs de code pour masquer le fil d'Ariane */
+body#my-account nav.breadcrumb,
+body#my-account .breadcrumb {
+    display: none !important;
+}
