@@ -1,5 +1,4 @@
 {if $displayedFacets|count}
-    <div class="nespresso-search-filters-wrapper">
     <div id="search_filters" class="nespresso-search-filters">
         {block name='facets_title'}
             <p class="text-uppercase h6 hidden-sm-down">{l s='Filter By' d='Shop.Theme.Actions'}</p>
@@ -136,7 +135,7 @@
                     {block name='facet_item_slider'}
                         {foreach from=$facet.filters item="filter"}
                             <ul id="facet_{$_expand_id}"
-                                class="faceted-slider collapse{if !$_collapse} in{/if}"
+                                class="faceted-slider collapse{if !$_collapse} in{/if} nespresso-slider"
                                 data-slider-min="{$facet.properties.min}"
                                 data-slider-max="{$facet.properties.max}"
                                 data-slider-id="{$_expand_id}"
@@ -159,7 +158,6 @@
                 {/if}
             </section>
         {/foreach}
-    </div>
     </div>
 {else}
     <div id="search_filters" style="display:none;">
