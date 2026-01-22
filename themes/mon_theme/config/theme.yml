@@ -13,11 +13,17 @@ assets:
   css:
     all: # sert à charger tous les fichiers qui sont en dessous
       - id: custom-style # xxxx-style, le xxxx doit correspondre au nom du fichier en question. J'ai fait des test avec d'autre nom mais ça ne foncitonne pas donc on part du principe qu'il faut le même nom.
-        path: assets/css/home.css # chemain d'acces d'ou se trouve le module
-        priority: 100 # plus le nombre est elevé, moins il sera prioritaire zu niveau du chargement
-      - id: nav-bar-style # xxxx-style, le xxxx doit correspondre au nom du fichier en question. J'ai fait des test avec d'autre nom mais ça ne foncitonne pas donc on part du principe qu'il faut le même nom.
-        path: assets/css/nav-bar.css # chemain d'acces d'ou se trouve le module
+        path: assets/css/custom.css # chemain d'acces d'ou se trouve le module
         priority: 200 # plus le nombre est elevé, moins il sera prioritaire zu niveau du chargement
+      - id: product-style
+        path: assets/css/product.css
+        priority: 200
+      - id: home-style.css
+        path: assets/css/home.css
+        priority: 200
+      - id: nav-bar-style
+        path: assets/css/nav-bar.css
+        priority: 200 
       - id: my-account-style
         path: assets/css/my-account.css
         priority: 200
