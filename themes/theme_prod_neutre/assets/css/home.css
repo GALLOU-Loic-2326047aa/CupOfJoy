@@ -1,0 +1,474 @@
+/* Bannière en haut de page */
+
+.main-banner {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    background-color: #000;
+    opacity: initial;
+}
+
+.main-banner .banner-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.main-banner .banner-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+}
+
+.main-banner:hover .banner-bg {
+    transform: scale(1.03);
+    opacity: 0.50;
+}
+
+.main-banner .banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.main-banner .banner-content {
+    color: #FFFFFF;
+    padding: 20px;
+    max-width: 800px;
+}
+
+.main-banner .banner-title {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 3rem !important;
+    font-weight: 200 !important;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    margin-bottom: 15px;
+    color: #FFFFFF !important;
+}
+
+.main-banner .banner-subtitle {
+    font-size: 1.2rem;
+    font-weight: 300;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    text-transform: none;
+    color: antiquewhite;
+}
+
+.main-banner .btn-action {
+    display: inline-block;
+    padding: 14px 40px;
+    border: 1px solid #ffffff;
+    background: transparent;
+    color: #ffffff;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 2px;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.main-banner .btn-action:hover {
+    background: #ffffff;
+    color: #000000;
+    text-decoration: none;
+}
+
+@media (max-width: 767px) {
+    .main-banner { height: 350px; }
+    .main-banner .banner-title { font-size: 1.8rem !important; }
+}
+
+/* Bannière de bas de page */
+
+.inspired-grid {
+    margin: 80px 0;
+    background: #ffffff;
+}
+
+.grid-link {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 480px;
+    width: 100%;
+    overflow: hidden;
+    text-decoration: none !important;
+    background-color: #000;
+}
+
+.grid-link::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+    transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.link-boissons::before {
+    background-image: url('../img/boissons.jpg');
+}
+.link-machines::before {
+    background-image: url('../img/machines.jpg');
+}
+.link-accessoires::before {
+    background-image: url('../img/accessoires.jpg');
+}
+
+.content-box {
+    position: relative;
+    z-index: 2;
+    margin-top: auto;
+    width: 100%;
+    padding: 50px 30px 40px 30px;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+    color: #ffffff;
+    text-align: left;
+}
+
+.category-label {
+    display: block;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.8;
+    color: #ffffff;
+}
+
+.content-box h3 {
+    color: #ffffff !important;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300 !important;
+    font-size: 1.8rem !important;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 15px;
+    line-height: 1.2;
+}
+
+.explore-link {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #ffffff;
+    display: inline-block;
+    border-bottom: 1px solid rgba(255,255,255,0.4);
+    padding-bottom: 5px;
+    transition: all 0.3s ease;
+}
+
+.grid-link:hover::before {
+    transform: scale(1.06);
+}
+
+.grid-link:hover .explore-link {
+    border-bottom: 1px solid #ffffff;
+    padding-right: 15px;
+    letter-spacing: 3px;
+}
+
+.grid-link:hover .content-box {
+    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);
+}
+
+@media (max-width: 767px) {
+    .grid-link {
+        height: 350px;
+        margin-bottom: 20px;
+    }
+
+    .content-box h3 {
+        font-size: 1.5rem !important;
+    }
+}
+
+/*Style page d'accueil - Cartes produits modernes */
+
+/* --- 1. FOND DE PAGE ET WRAPPER --- */
+#wrapper {
+    background-color: #f7f7f7 !important; /* Gris clair luxe */
+    padding-top: 40px !important;
+    padding-bottom: 60px !important;
+}
+
+/* --- 2. TITRES DE SECTION (STYLE NESPRESSO) --- */
+.section-title-wrapper {
+    text-align: center !important;
+    margin-bottom: 50px !important;
+}
+
+.products-section-title {
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 2px !important;
+    color: #222 !important;
+    margin-bottom: 10px !important;
+}
+
+.section-subtitle {
+    display: block !important;
+    font-size: 14px !important;
+    color: #888 !important;
+    font-style: italic !important;
+    font-weight: 300 !important;
+}
+
+.section-title-wrapper::after {
+    content: "" !important;
+    display: block !important;
+    width: 60px !important;
+    height: 2px !important;
+    background: #3d815e !important; /* Vert Nespresso */
+    margin: 20px auto 0 !important;
+}
+
+/* --- 3. LA GRILLE DE PRODUITS --- */
+.nespresso-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 25px !important;
+    justify-content: center !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+}
+
+/* --- 4. LA CARTE PRODUIT INDIVIDUELLE --- */
+.nespresso-card {
+    background: #fff !important;
+    width: calc(25% - 25px) !important; /* Force 4 colonnes moins le gap */
+    min-width: 250px !important;
+    display: flex !important;
+    flex-direction: column !important; /* Image en haut, contenu en bas */
+    padding: 15px !important;
+    border: 1px solid #eee !important;
+    box-sizing: border-box !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.nespresso-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+    border-color: #ddd !important;
+}
+
+/* Bloc Image */
+.card-img-block {
+    text-align: center !important;
+    background: #fdfdfd !important;
+    padding: 20px !important;
+    margin: -15px -15px 15px -15px !important;
+    min-height: 200px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.card-img-block img {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+/* Contenu (Titre, Description) */
+.card-content {
+    flex-grow: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.product-title a {
+    font-weight: 700 !important;
+    color: #222 !important;
+    font-size: 16px !important;
+    text-decoration: none !important;
+    line-height: 1.2 !important;
+}
+
+.product-desc {
+    font-size: 13px !important;
+    color: #777 !important;
+    margin: 12px 0 !important;
+    line-height: 1.4 !important;
+    height: 38px !important; /* Aligne les cartes en limitant le texte */
+    overflow: hidden !important;
+}
+
+.card-footer {
+    display: flex !important;
+    justify-content: space-between !important; /* Pousse le prix à gauche et le bouton à droite */
+    align-items: center !important; /* Aligne verticalement le prix et le bouton */
+    width: 100% !important;
+    padding-top: 15px !important;
+    border-top: 1px solid #f5f5f5 !important;
+    margin-top: auto !important; /* Force le footer à rester tout en bas de la carte */
+}
+
+.current-price {
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    color: #000 !important;
+}
+
+/* Bouton "+" Vert */
+.add-to-cart-green {
+    background: #3d815e !important;
+    color: white !important;
+    border: none !important;
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: background 0.2s ease !important;
+}
+
+.add-to-cart-green:hover {
+    background: #2e6146 !important;
+}
+
+/* --- 5. RESPONSIVE --- */
+
+/* Tablettes (2 colonnes) */
+@media (max-width: 991px) {
+    .nespresso-card { width: calc(50% - 25px) !important; }
+}
+
+/* Mobiles (1 colonne) */
+@media (max-width: 575px) {
+    .nespresso-card {
+        width: 100% !important;
+        min-width: unset !important;
+    }
+    .products-section-title { font-size: 22px !important; }
+}
+
+/* --- FOOTER GLOBAL --- */
+.footer-container {
+    background: #1a1a1a !important;
+    color: #ffffff !important;
+    padding-top: 50px !important;
+    margin-top: 0 !important; /* Colle parfaitement au wrapper gris */
+}
+
+/* --- RÉASSURANCE --- */
+.footer-reassurance-row {
+    display: flex !important;
+    justify-content: space-around !important;
+    border-bottom: 1px solid #333 !important;
+    padding-bottom: 40px !important;
+    margin-bottom: 40px !important;
+}
+
+.reassurance-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.reassurance-item i {
+    font-size: 32px !important;
+    color: #3d815e !important; /* Vert d'action */
+}
+
+.reassurance-item span {
+    font-size: 14px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    font-weight: 500 !important;
+}
+
+/* --- LIENS ET TEXTES --- */
+.footer-links-section {
+    padding-bottom: 40px !important;
+}
+
+/* On force les titres des blocs du footer en blanc */
+.footer-links-section h3,
+.footer-links-section .h3,
+.footer-links-section .title_block {
+    color: #ffffff !important;
+    text-transform: uppercase !important;
+    font-size: 16px !important;
+    margin-bottom: 20px !important;
+}
+
+.footer-links-section a {
+    color: #999 !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    transition: color 0.2s ease !important;
+}
+
+.footer-links-section a:hover {
+    color: #3d815e !important;
+}
+
+/* --- COPYRIGHT --- */
+.footer-bottom {
+    border-top: 1px solid #333 !important;
+    padding: 25px 0 !important;
+    text-align: center !important;
+}
+
+.copyright a {
+    color: #666 !important;
+    font-size: 12px !important;
+    text-decoration: none !important;
+}
+
+/* --- RESPONSIVE FOOTER --- */
+@media (max-width: 767px) {
+    .footer-reassurance-row {
+        flex-direction: column !important;
+        gap: 25px !important;
+        align-items: center !important;
+    }
+}
+
+/* Badge de réduction (placé en haut à gauche de l'image) */
+.discount-pill {
+    position: absolute !important;
+    top: 10px !important;
+    left: 10px !important;
+    background-color: #000000 !important; /* Rouge moderne */
+    color: white !important;
+    padding: 2px 8px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    border-radius: 4px !important;
+    z-index: 10 !important;
+}
+
+/* Prix barré */
+.regular-price {
+    display: block !important; /* On le met sur une ligne au-dessus ou à côté */
+    font-size: 13px !important;
+    color: #999 !important;
+    text-decoration: line-through !important;
+    font-weight: 400 !important;
+}
+
+/* On ajuste la section prix pour qu'elle contienne les deux */
+.price-section {
+    display: flex !important;
+    flex-direction: column !important; /* Prix barré au-dessus du prix actuel */
+    align-items: flex-start !important;
+}

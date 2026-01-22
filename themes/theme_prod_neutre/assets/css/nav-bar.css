@@ -1,0 +1,412 @@
+/* Blocs de code pour la configuration générale et le Header Sticky */
+body {
+    background-color: #f6f3e4;
+}
+
+.header-sticky-wrapper {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+    background-color: #f6f3e4;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 5px 0;
+}
+
+/* Blocs de code pour la compensation de l'espace du header */
+.header-top {
+    margin-top: 75px !important;
+}
+
+/* Blocs de code pour la structure Flexbox et le Logo */
+.my-flex-row {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    height: 60px;
+}
+
+#_desktop_logo {
+    display: flex;
+    align-items: center;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin: 0 !important;
+}
+
+#_desktop_logo img {
+    max-height: 45px;
+    width: auto;
+}
+
+/* Blocs de code pour la barre de recherche */
+#search_container {
+    display: flex;
+    align-items: center;
+    padding-top: 0 !important;
+}
+
+#search_widget {
+    width: 100%;
+    margin: 0 !important;
+}
+
+#search_widget form {
+    position: relative !important;
+    width: 100%;
+    max-width: 100%;
+}
+
+#search_widget form input[type=text] {
+    width: 100%;
+    background-color: #f1f1f1;
+    border: 1px solid #333;
+    border-radius: 50px;
+    height: 40px;
+    padding-left: 20px !important;
+    padding-right: 50px !important;
+    text-align: left !important;
+}
+
+#search_widget form button[type=submit] {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    right: 5px !important;
+    left: auto !important;
+    background: transparent !important;
+    border: none !important;
+    color: #333 !important;
+    cursor: pointer;
+    z-index: 10;
+    border-radius: 0 50px 50px 0;
+}
+
+#search_widget form button[type=submit] .search {
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* Blocs de code pour la navigation droite (Panier et Utilisateur) */
+.right-nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 0 !important;
+    min-height: 60px;
+}
+
+.user-cart-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: nowrap !important;
+    width: 100%;
+}
+
+.header-nav .user-info a,
+.header-nav .blockcart a {
+    border: 1px solid #333;
+    border-radius: 50px;
+    padding: 0 15px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    background: transparent;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    flex-shrink: 0;
+}
+
+.header-nav .blockcart {
+    display: flex !important;
+    align-items: center;
+    margin-left: 10px !important;
+    background-color: transparent !important;
+}
+
+.header-nav .user-info,
+.header-nav .blockcart {
+    margin: 0 !important;
+    padding: 0 !important;
+    float: none !important;
+}
+
+.header-nav .user-info i,
+.header-nav .blockcart i {
+    margin-right: 5px;
+    font-size: 18px;
+}
+
+/* Blocs de code pour la barre de menu centrée */
+.header-top {
+    background: #f6dcc9;
+    padding: 0;
+    border-bottom: 1px solid #e1e1e1;
+}
+
+.centered-nav-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 50px;
+}
+
+/* Blocs de code pour la structure du menu principal */
+#custom_menu_wrapper .top-menu {
+    margin-bottom: 0;
+    width: auto !important;
+}
+
+#custom_menu_wrapper .top-menu > ul {
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+#custom_menu_wrapper .top-menu > ul > li {
+    float: none;
+    display: inline-block;
+    margin: 0 15px;
+}
+
+#custom_menu_wrapper .top-menu > ul > li > a {
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #333;
+    text-decoration: none;
+    padding-bottom: 0;
+}
+
+/* Blocs de code pour le lien contact */
+#custom_contact_wrapper {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+#custom_contact_wrapper #_desktop_contact_link,
+#custom_contact_wrapper .contact-link {
+    margin: 0 !important;
+    display: inline-block;
+}
+
+#custom_contact_wrapper .contact-link {
+    font-weight: bold;
+    color: #333;
+    text-transform: uppercase;
+}
+
+/* Blocs de code pour les sous-menus déroulants */
+.top-menu .sub-menu {
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 200px;
+    z-index: 1001;
+    text-align: left;
+}
+
+/* Blocs de code pour l'uniformisation des couleurs du menu */
+.header-top .centered-nav-container a,
+.header-top .centered-nav-container span,
+.header-top .centered-nav-container p {
+    color: #000000 !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+}
+
+.header-top .centered-nav-container a:hover {
+    color: #555555 !important;
+    text-decoration: none !important;
+}
+
+/* Blocs de code pour la mise en page du Mega Menu */
+.top-menu .sub-menu {
+    width: 800px !important;
+    max-width: 90vw;
+    padding: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.top-menu .sub-menu > ul {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+}
+
+.top-menu .sub-menu > ul > li {
+    width: 50%;
+    display: block !important;
+    float: none !important;
+    margin: 0 !important;
+    padding: 10px 15px;
+    box-sizing: border-box;
+    text-align: left !important;
+    border-right: 1px solid #f0f0f0;
+}
+
+.top-menu .sub-menu > ul > li:nth-child(4n) {
+    border-right: none;
+}
+
+.top-menu .sub-menu ul li a {
+    font-weight: normal !important;
+    text-transform: none !important;
+    font-size: 14px;
+    color: #555 !important;
+    padding: 0;
+}
+
+.top-menu .sub-menu ul li > a.dropdown-item {
+    font-weight: bold !important;
+    color: #000 !important;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Blocs de code pour les icônes dans le sous-menu */
+.top-menu .sub-menu ul li a {
+    display: flex !important;
+    align-items: center;
+    font-weight: bold !important;
+    color: #333 !important;
+}
+
+.top-menu .sub-menu ul li a::before {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+.top-menu .sub-menu ul li a[href*="cafe"]::before {
+    background-image: url('../img/icon-cafe.png');
+}
+
+.top-menu .sub-menu ul li a[href*="the"]::before {
+    background-image: url('../img/icon-the.png');
+}
+
+/* Blocs de code pour l'effet de survol dans le sous-menu */
+.top-menu .sub-menu > ul > li:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+    transition: background-color 0.2s ease;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.top-menu .sub-menu > ul > li {
+    position: relative;
+}
+
+.top-menu .sub-menu > ul > li > a {
+    text-decoration: none !important;
+}
+
+.top-menu .sub-menu > ul > li:hover > a {
+    color: #000 !important;
+}
+
+/* Blocs de code pour le bouton déconnexion */
+.header-nav .user-info .logout i {
+    display: none !important;
+}
+
+.header-nav .user-info .logout {
+    background-color: transparent;
+    transition: background-color 0.3s;
+}
+
+.header-nav .user-info .logout:hover {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    border-color: #000 !important;
+}
+
+.header-nav .user-info .logout {
+    font-size: 0 !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    border: 1px solid #333;
+    margin-left: 10px !important;
+    background-image: url('../img/icon-logout.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20px;
+    background-color: transparent;
+    display: inline-block !important;
+    vertical-align: middle;
+}
+
+.header-nav .user-info .logout::before {
+    content: none !important;
+    display: none !important;
+}
+
+.header-nav .user-info .logout:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+/* Blocs de code pour les effets de survol (Connexion, Compte, Panier) */
+.header-nav .user-info .login,
+.header-nav .user-info .account,
+.header-nav .blockcart a {
+    transition: background-color 0.3s ease;
+}
+
+.header-nav .user-info .login:hover,
+.header-nav .user-info .account:hover,
+.header-nav .blockcart a:hover {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    color: #333 !important;
+    text-decoration: none !important;
+    border-color: #000 !important;
+}
+
+/* Blocs de code pour le style du panier actif */
+.header-nav .blockcart.active {
+    background-color: transparent !important;
+    padding-top: 0 !important;
+}
+
+.header-nav .blockcart.active a {
+    background-color: #e6e1cf !important;
+    color: #333 !important;
+    border-color: #d1ccb8 !important;
+}
+
+.header-nav .blockcart.active a:hover {
+    background-color: #dcd7c5 !important;
+    color: #000 !important;
+}
+
+/* Blocs de code pour la correction du survol de connexion */
+.header-nav .user-info > a.login,
+.header-nav .user-info > a[href*="my-account"],
+.header-nav .user-info > a[href*="login"] {
+    transition: background-color 0.3s ease;
+}
+
+.header-nav .user-info > a.login:hover,
+.header-nav .user-info > a[href*="login"]:hover {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    color: #333 !important;
+    text-decoration: none !important;
+    border-color: #000 !important;
+}

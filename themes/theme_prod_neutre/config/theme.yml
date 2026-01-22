@@ -1,0 +1,41 @@
+name: theme_prod_neutre
+
+display_name: Thème de la Prod couleur Neutre
+
+parent: classic
+
+version: 1.0.0
+author:
+  name: "Loic GALLOU"
+
+assets:
+  use_parent_assets: true
+  css:
+    all: # sert à charger tous les fichiers qui sont en dessous
+      - id: custom-style # xxxx-style, le xxxx doit correspondre au nom du fichier en question. J'ai fait des test avec d'autre nom mais ça ne foncitonne pas donc on part du principe qu'il faut le même nom.
+        path: assets/css/custom.css # chemain d'acces d'ou se trouve le module
+        priority: 200 # plus le nombre est elevé, moins il sera prioritaire zu niveau du chargement
+      - id: product-style
+        path: assets/css/product.css
+        priority: 200
+      - id: home-style.css
+        path: assets/css/home.css
+        priority: 200
+      - id: nav-bar-style
+        path: assets/css/nav-bar.css
+        priority: 200
+      - id: my-account-style
+        path: assets/css/my-account.css
+        priority: 200
+      - id: login-style
+        path: assets/css/login.css
+        priority: 200
+      - id: register-style
+        path: assets/css/register.css
+        priority: 200
+      - id: machine_support-style
+        path: assets/css/machine_support.css
+        priority: 200
+      - id: pro_account-style
+        path: assets/css/pro_account.css
+        priority: 200

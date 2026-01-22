@@ -1,0 +1,121 @@
+/* ================================================================= */
+/* === STYLE MODULE PRO ACCOUNT (Validation Manuelle) === */
+/* ================================================================= */
+
+/* 1. Centrage du titre et suppression du fil d'ariane */
+body[id*="pro_account"] .page-header h1 {
+    text-align: center;
+    width: 100%;
+}
+
+body[id*="pro_account"] .page-header {
+    display: flex;
+    justify-content: center;
+}
+
+body[id*="pro_account"] .breadcrumb {
+    display: none !important;
+}
+
+/* 2. Style du conteneur principal (La carte blanche) */
+body[id*="pro_account"] .page-content {
+    border-radius: 15px !important;
+    overflow: hidden !important;
+    background-color: #ffffff !important;
+    padding: 20px;
+    /* On retire l'ombre par défaut si le module en met une bizarre */
+    box-shadow: none;
+}
+
+/* 3. Centrer le texte de description (la phrase sous le titre) */
+body[id*="pro_account"] .page-content p {
+    text-align: center;
+    margin-bottom: 30px; /* Un peu d'espace avant le formulaire */
+}
+
+/* 4. Transformer les champs (Input) : Enlever le gris et le style "pilule" */
+body[id*="pro_account"] .form-control {
+    /* On remet le fond blanc */
+    background-color: #ffffff !important;
+
+    /* On remet la bordure fine standard */
+    border: 1px solid #e5e5e5 !important;
+
+    /* On met l'arrondi à 8px (au lieu de 50px sur votre image) */
+    border-radius: 8px !important;
+
+    /* Taille standard */
+    padding: 10px 15px !important;
+    height: auto !important;
+}
+
+/* 5. Gestion du Focus (Clic dans le champ) en Beige */
+body[id*="pro_account"] .form-control:focus {
+    box-shadow: none !important;
+    outline: none !important;
+    border-color: #cbb5a0 !important; /* Beige Foncé */
+}
+
+/* 6. Style et Positionnement du Bouton "ENVOYER LA DEMANDE" */
+
+/* A. Positionner le bouton à droite */
+body[id*="pro_account"] form footer,
+body[id*="pro_account"] .form-footer {
+    display: flex;
+    justify-content: flex-end !important; /* Force l'alignement à droite */
+    width: 100%;
+    background: none !important; /* Enlève le fond gris si présent */
+    border: none !important;
+}
+
+/* B. Style du bouton (On enlève le noir et le style pilule) */
+body[id*="pro_account"] .btn,
+body[id*="pro_account"] button[type="submit"] {
+    border-radius: 8px !important;
+    transition: all 0.3s ease;
+    background-color: dimgrey;
+}
+
+/* C. Animation au survol (Beige + Zoom) */
+body[id*="pro_account"] .btn:hover,
+body[id*="pro_account"] button[type="submit"]:hover {
+    background-color: #cbb5a0 !important; /* Beige Foncé */
+    border-color: #cbb5a0 !important;
+    color: #ffffff !important;
+    transform: scale(1.05);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+
+/* --- Style du bouton "Vérifier le SIRET" (Page Inscription) --- */
+
+/* 1. Style par défaut (Gris et Arrondi) */
+/* On cible les boutons à l'intérieur des lignes du formulaire */
+body#registration .form-group .btn,
+body#registration .form-group button {
+    /* On force la couleur grise (dimgrey) pour écraser le bleu cyan */
+    background-color: dimgrey !important;
+    border-color: dimgrey !important;
+    color: #ffffff !important;
+
+    /* On applique l'arrondi standard */
+    border-radius: 8px !important;
+
+    /* On prépare l'animation */
+    transition: all 0.3s ease;
+
+    /* On nettoie les ombres par défaut */
+    box-shadow: none !important;
+}
+
+/* 2. Animation au survol (Beige + Zoom) */
+body#registration .form-group .btn:hover,
+body#registration .form-group button:hover {
+    /* Couleur Beige Foncé */
+    background-color: #cbb5a0 !important;
+    border-color: #cbb5a0 !important;
+
+    /* Effet de zoom et d'ombre */
+    transform: scale(1.05);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2) !important;
+    cursor: pointer;
+}

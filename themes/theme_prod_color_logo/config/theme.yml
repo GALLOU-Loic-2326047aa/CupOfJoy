@@ -1,6 +1,6 @@
-name: mon_theme
+name: theme_prod_color_logo
 
-display_name: Mon Thème Personnalisé
+display_name: Thème de la Prod couleur du Logo Work n'Joy
 
 parent: classic
 
@@ -35,4 +35,7 @@ assets:
         priority: 200
       - id: machine_support-style
         path: assets/css/machine_support.css
+        priority: 200
+      - id: pro_account-style
+        path: assets/css/pro_account.css
         priority: 200
