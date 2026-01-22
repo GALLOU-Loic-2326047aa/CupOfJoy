@@ -1,0 +1,121 @@
+/* Pour la page catégories (page liste de produits) */
+
+/* Variables & Couleurs */
+:root {
+    --chocolat-lait: #eab38e;
+    --chocolat-noir: #9a7355;
+}
+
+.nespresso-category-block {
+    font-family: 'Arial', sans-serif !important;
+    font-size: 1.2em !important;
+    color: var(--cafe-noir) !important;
+    background-color: var(--chocolat-lait) !important;
+    border-radius: .8em;
+}
+
+.nespresso-parent-category {
+    font-family: 'Arial', sans-serif !important;
+    font-size: 1.6em !important;
+    font-weight: 600 !important;
+    color: var(--cafe-noir) !important;
+}
+
+.nespresso-search-filters-wrapper {
+    background-color: var(--chocolat-noir, #3C2F2F) !important;
+    padding: .8em;
+    border-radius: .8em;
+}
+
+.nespresso-search-filters {
+    font-family: 'Helvetica', sans-serif !important;
+    background-color: var(--chocolat-lait) !important;
+    border-radius: .3em;
+}
+
+.nespresso-facet {
+    font-family: 'Helvetica', sans-serif !important;
+}
+
+.nespresso-facet-label {
+    font-family: 'Helvetica', sans-serif !important;
+}
+.nespresso-facet-label:hover {
+    font-weight: bold;
+}
+
+.nespresso-facet-checkbox {
+    position: relative;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: .4em !important;
+    vertical-align: middle;
+    top: -.01em;
+}
+
+.nespresso-facet-checkbox input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.nespresso-facet-checkbox .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border: .1em solid #ddd;
+    border-radius: .2em;
+    transition: all 0.2s ease;
+}
+
+.nespresso-facet-checkbox input:checked + .checkmark {
+    background: #007bff;
+    border-color: #007bff;
+}
+
+.nespresso-facet-checkbox .checkmark i {
+    position: absolute;
+    top: 35%;
+    left: 80%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: .12em; /* Réduit pour mieux rentrer */
+    font-weight: bold;
+    color: white;
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.nespresso-facet-checkbox input:checked + .checkmark i {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+/* Hover et focus */
+.nespresso-facet-checkbox:hover .checkmark {
+    border-color: #007bff;
+    box-shadow: 0 0 0 .4em rgba(0,123,255,0.2);
+}
+
+.nespresso-facet-checkbox input:focus-visible + .checkmark {
+    box-shadow: 0 0 0 .6em rgba(0,123,255,0.3);
+}
+
+.facet-label:hover .nespresso-facet-checkbox .checkmark {
+    border-color: #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+    box-shadow: 0 0 0 .4em rgba(0, 123, 255, 0.25);
+    transform: scale(1.05);
+}

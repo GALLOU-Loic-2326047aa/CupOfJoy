@@ -27,3 +27,6 @@ assets:
       - id: my-account-style
         path: assets/css/my-account.css
         priority: 200
+      - id: category-page-style
+        path: assets/css/category-page.css
+        priority: 200
