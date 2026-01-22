@@ -36,3 +36,6 @@ assets:
       - id: machine_support-style
         path: assets/css/machine_support.css
         priority: 200
+      - id: pro_account-style
+        path: assets/css/pro_account.css
+        priority: 200
