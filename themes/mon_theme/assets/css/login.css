@@ -1,0 +1,159 @@
+/* Centrage du titre et suppression du fil d'ariane */
+body#authentication .page-header h1 {
+    text-align: center;
+    width: 100%;
+}
+
+body#authentication .page-header {
+    display: flex;
+    justify-content: center;
+}
+
+body#authentication nav.breadcrumb,
+body#authentication .breadcrumb {
+    display: none !important;
+}
+
+/* Arrondir les angles des champs de texte */
+body#authentication .form-control {
+    border-radius: 8px;
+    padding: 10px 15px;
+}
+
+body#authentication .input-group .form-control {
+    border-radius: 8px 0 0 8px !important;
+}
+
+body#authentication .input-group .input-group-btn .btn,
+body#authentication .input-group-append .btn {
+    border-radius: 0 8px 8px 0 !important;
+}
+
+/* Remplacement du texte MONTRER par une icône oeil */
+body#authentication .input-group-btn .btn {
+    font-size: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+}
+
+body#authentication .input-group-btn .btn::before {
+    font-family: 'Material Icons'; /* Font pour avoir l'oeuil */
+    font-size: 24px;
+    color: #7a7a7a;
+    font-style: normal;
+}
+
+body#authentication .input-group input[type="password"] ~ .input-group-btn .btn::before {
+    content: "\e8f5";
+}
+
+body#authentication .input-group input[type="text"] ~ .input-group-btn .btn::before {
+    content: "\e8f4";
+}
+
+body#authentication .input-group-btn .btn:hover::before {
+    color: #2fb5d2;
+    cursor: pointer;
+}
+
+/* Style du bouton oeil fond blanc et icône noire */
+body#authentication .input-group-btn .btn {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(0,0,0,0.25) !important;
+    border-left: none !important;
+    box-shadow: none !important;
+}
+
+body#authentication .input-group-btn .btn::before {
+    color: #000000 !important;
+    opacity: 0.8;
+}
+
+body#authentication .input-group-btn .btn:hover::before {
+    color: #000000 !important;
+    opacity: 1;
+}
+
+/* Gestion de la couleur beige au clic sur les champs */
+body#authentication .form-control:focus {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+body#authentication .form-control:focus {
+    border-color: #cbb5a0 !important;
+}
+
+body#authentication .input-group:focus-within .form-control {
+    border-color: #cbb5a0 !important;
+    z-index: 2;
+}
+
+body#authentication .input-group:focus-within .input-group-btn .btn {
+    border-color: #cbb5a0 !important;
+    z-index: 2;
+}
+
+body#authentication .form-control:focus {
+    box-shadow: none !important;
+    outline: 0 !important;
+}
+
+body#authentication .input-group:focus-within .form-control {
+    border-color: #cbb5a0 !important;
+    box-shadow: none !important;
+    z-index: 5;
+}
+
+body#authentication .input-group:focus-within .input-group-btn .btn {
+    border-color: #cbb5a0 !important;
+    box-shadow: none !important;
+    z-index: 5;
+}
+
+body#authentication .input-group:focus-within .form-control {
+    border-right: 1px solid #cbb5a0 !important;
+}
+
+body#authentication .input-group.js-parent-focus.focus,
+body#authentication .input-group.js-parent-focus:focus-within {
+    box-shadow: none !important;
+    outline: none !important;
+    border-radius: 8px !important;
+}
+
+body#authentication .input-group.js-parent-focus.focus .form-control,
+body#authentication .input-group.js-parent-focus:focus-within .form-control {
+    border-color: #cbb5a0 !important;
+    border-radius: 8px 0 0 8px !important;
+}
+
+body#authentication .input-group.js-parent-focus.focus .input-group-btn .btn,
+body#authentication .input-group.js-parent-focus:focus-within .input-group-btn .btn {
+    border-color: #cbb5a0 !important;
+    border-radius: 0 8px 8px 0 !important;
+    background-color: #ffffff !important;
+}
+
+/* Style et animation du bouton de connexion */
+body#authentication #submit-login {
+    border-radius: 8px !important;
+    transition: all 0.3s ease;
+    background-color: dimgrey;
+}
+
+body#authentication #submit-login:hover {
+    background-color: #cbb5a0 !important;
+    border-color: #cbb5a0 !important;
+    color: #ffffff !important;
+    transform: scale(1.05);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+
+/* Arrondir les angles du conteneur du formulaire */
+body#authentication .page-content.card {
+    border-radius: 15px !important;
+    overflow: hidden !important;
+}
