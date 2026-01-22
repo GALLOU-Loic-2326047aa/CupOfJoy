@@ -309,14 +309,14 @@
     overflow: hidden !important;
 }
 
-/* Pied de Carte (Prix et Bouton) */
 .card-footer {
-    margin-top: auto !important;
     display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    border-top: 1px solid #f0f0f0 !important;
+    justify-content: space-between !important; /* Pousse le prix à gauche et le bouton à droite */
+    align-items: center !important; /* Aligne verticalement le prix et le bouton */
+    width: 100% !important;
     padding-top: 15px !important;
+    border-top: 1px solid #f5f5f5 !important;
+    margin-top: auto !important; /* Force le footer à rester tout en bas de la carte */
 }
 
 .current-price {
