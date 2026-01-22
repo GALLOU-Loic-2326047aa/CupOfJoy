@@ -1,0 +1,81 @@
+/* ================================================================= */
+/* === STYLE MODULE SAV (machine_support) === */
+/* ================================================================= */
+
+/* Centrage du titre et suppression du fil d'ariane */
+body[id*="machine_support"] .page-header h1 {
+    text-align: center;
+    width: 100%;
+}
+
+body[id*="machine_support"] .page-header {
+    display: flex;
+    justify-content: center;
+}
+
+body[id*="machine_support"] nav.breadcrumb,
+body[id*="machine_support"] .breadcrumb {
+    display: none !important;
+}
+
+/* Arrondir les angles du conteneur du formulaire */
+body[id*="machine_support"] .page-content {
+    border-radius: 15px !important;
+    overflow: hidden !important;
+    /* On ajoute un fond blanc si le module n'a pas la classe 'card' par défaut */
+    background-color: #ffffff;
+    padding: 20px; /* Un peu d'espace interne */
+}
+
+/* Arrondir les champs (Input, Select, Textarea) */
+body[id*="machine_support"] .form-control {
+    border-radius: 8px;
+    padding: 10px 15px;
+}
+
+/* Gestion de la couleur beige au clic sur les champs */
+body[id*="machine_support"] .form-control:focus {
+    box-shadow: none !important;
+    outline: none !important;
+    border-color: #cbb5a0 !important; /* Beige Foncé */
+}
+
+/* Style et animation du bouton d'envoi */
+body[id*="machine_support"] .btn-primary {
+    border-radius: 8px !important;
+    transition: all 0.3s ease;
+    background-color: dimgrey;
+    border-color: dimgrey;
+}
+
+body[id*="machine_support"] .btn-primary:hover {
+    background-color: #cbb5a0 !important; /* Beige Foncé */
+    border-color: #cbb5a0 !important;
+    color: #ffffff !important;
+    transform: scale(1.05);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+
+/* --- Ajustements spécifiques Module SAV (Bouton et Select) --- */
+
+/* 1. Mettre le bouton "Envoyer" à droite */
+body[id*="machine_support"] .form-footer {
+    display: flex;
+    justify-content: flex-end; /* Pousse le contenu vers la droite */
+    width: 100%;
+}
+
+/* 2. Corriger le texte coupé dans le menu déroulant (Select) */
+body[id*="machine_support"] select.form-control {
+    /* On force la hauteur à s'adapter au contenu + padding */
+    height: auto !important;
+
+    /* On s'assure que le texte est bien centré verticalement */
+    line-height: 1.5 !important;
+
+    /* On remet le padding pour qu'il soit gros comme les autres champs */
+    padding: 10px 15px !important;
+
+    /* Optionnel : Empêcher le texte de toucher la flèche du menu */
+    padding-right: 30px !important;
+}

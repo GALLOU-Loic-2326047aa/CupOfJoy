@@ -1,0 +1,14 @@
+/*
+    Fichier qui gère le style d'un logo pro
+*/
+.pro-badge {
+    background-color: #007bff; /* Un bleu pro */
+    color: white;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 4px;
+    margin-left: 8px;
+    vertical-align: middle;
+    text-transform: uppercase;
+}
