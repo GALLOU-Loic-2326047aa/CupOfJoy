@@ -1,0 +1,473 @@
+/* Pour la page catégories (page liste de produits) */
+
+/* Variables & Couleurs */
+:root {
+    --chocolat-lait: #f8c09c;
+    --chocolat-noir: #c89c74;
+}
+
+/* Liste des catégories */
+.nespresso-category-block {
+    font-family: 'Arial', sans-serif !important;
+    font-size: 1.2em !important;
+    color: var(--cafe-noir) !important;
+    background-color: var(--chocolat-lait) !important;
+    border-radius: .8em;
+}
+
+.nespresso-parent-category {
+    font-family: 'Arial', sans-serif !important;
+    font-size: 1.6em !important;
+    font-weight: 600 !important;
+    color: var(--cafe-noir) !important;
+}
+
+/* Filtres */
+.nespresso-search-filters {
+    font-family: 'Helvetica', sans-serif !important;
+    background-color: var(--chocolat-noir) !important;
+    border-radius: .3em;
+}
+
+.nespresso-facet {
+    font-family: 'Helvetica', sans-serif !important;
+}
+
+.nespresso-facet-label {
+    font-family: 'Helvetica', sans-serif !important;
+}
+.nespresso-facet-label:hover {
+    font-weight: bold;
+}
+
+/* Checkbox */
+.nespresso-facet-checkbox {
+    position: relative;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: .4em !important;
+    vertical-align: middle;
+    top: -.01em;
+}
+
+.nespresso-facet-checkbox input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.nespresso-facet-checkbox .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border: .1em solid #ddd;
+    border-radius: .35em;
+    transition: all 0.2s ease;
+}
+
+.nespresso-facet-checkbox input:checked + .checkmark {
+    background: #007bff;
+    border-color: #007bff;
+}
+
+.nespresso-facet-checkbox .checkmark i {
+    position: absolute;
+    top: 35%;
+    left: 80%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: .12em; /* Réduit pour mieux rentrer */
+    font-weight: bold;
+    color: white;
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.nespresso-facet-checkbox input:checked + .checkmark i {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+/* Hover et focus */
+.nespresso-facet-checkbox:hover .checkmark {
+    border-color: #007bff;
+    box-shadow: 0 0 0 .4em rgba(0,123,255,0.2);
+}
+
+.nespresso-facet-checkbox input:focus-visible + .checkmark {
+    box-shadow: 0 0 0 .6em rgba(0,123,255,0.3);
+}
+
+.facet-label:hover .nespresso-facet-checkbox .checkmark {
+    border-color: #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+    box-shadow: 0 0 0 .4em rgba(0, 123, 255, 0.25);
+    transform: scale(1.05);
+}
+
+/* Slider Prestashop */
+
+/* Conteneur principal du slider */
+.nespresso-slider {
+    padding: 1em 0.5em !important;
+}
+
+.nespresso-slider li {
+    list-style: none !important;
+}
+
+/* Label du slider */
+.nespresso-slider p {
+    font-family: 'Helvetica', sans-serif !important;
+    font-size: 0.9em !important;
+    color: var(--cafe-noir) !important;
+    margin-bottom: 1.5em !important;
+    text-align: center !important;
+    font-weight: 500 !important;
+}
+
+/* Conteneur du slider jQuery UI */
+.nespresso-slider .ui-slider {
+    position: relative !important;
+    height: 0.4em !important;
+    background: #fff !important;
+    border: 0.1em solid #ddd !important;
+    border-radius: 1em !important;
+    margin: 1em 0.5em !important;
+}
+
+/* Barre de progression (partie sélectionnée) */
+.nespresso-slider .ui-slider-range {
+    position: absolute !important;
+    height: 100% !important;
+    background: linear-gradient(90deg, var(--chocolat-noir), #007bff) !important;
+    border-radius: 1em !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Poignées du slider */
+.nespresso-slider .ui-slider-handle {
+    position: absolute !important;
+    width: 1.4em !important;
+    height: 1.4em !important;
+    background: #fff !important;
+    border: 0.15em solid #007bff !important;
+    border-radius: 50% !important;
+    cursor: pointer !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 0.1em 0.3em rgba(0, 0, 0, 0.2) !important;
+    z-index: 2 !important;
+}
+
+/* Hover sur les poignées */
+.nespresso-slider .ui-slider-handle:hover {
+    background: var(--chocolat-lait) !important;
+    border-color: var(--chocolat-noir) !important;
+    transform: translate(-50%, -50%) scale(1.15) !important;
+    box-shadow: 0 0 0 0.4em rgba(0, 123, 255, 0.25) !important;
+}
+
+/* Focus sur les poignées (accessibilité) */
+.nespresso-slider .ui-slider-handle:focus {
+    outline: none !important;
+    border-color: var(--chocolat-noir) !important;
+    box-shadow: 0 0 0 0.6em rgba(154, 115, 85, 0.3) !important;
+}
+
+/* Active (lors du drag) */
+.nespresso-slider .ui-slider-handle:active {
+    background: #007bff !important;
+    border-color: #0056b3 !important;
+    transform: translate(-50%, -50%) scale(1.05) !important;
+}
+
+/* Valeurs affichées (si présentes) */
+.nespresso-slider .ui-slider-value {
+    font-family: 'Helvetica', sans-serif !important;
+    font-size: 0.85em !important;
+    color: var(--cafe-noir) !important;
+    font-weight: 600 !important;
+}
+
+/* Animation lors du changement */
+.nespresso-slider .ui-slider-range {
+    transition: left 0.3s ease, right 0.3s ease, width 0.3s ease !important;
+}
+
+/* État disabled (si nécessaire) */
+.nespresso-slider.ui-slider-disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+.nespresso-slider.ui-slider-disabled .ui-slider-handle {
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+/* Responsive - Mobile */
+@media (max-width: 48em) {
+    .nespresso-slider .ui-slider-handle {
+        width: 1.8em !important;
+        height: 1.8em !important;
+        border-width: 0.2em !important;
+    }
+
+    .nespresso-slider .ui-slider {
+        height: 0.5em !important;
+        margin: 1.5em 1em !important;
+    }
+}
+
+/* Dropdown Prestashop */
+
+/* Conteneur du dropdown */
+.facet-dropdown {
+    padding: 0.5em 0 !important;
+}
+
+.facet-dropdown.dropdown {
+    position: relative !important;
+}
+
+/* Bouton select-title (déclencheur du dropdown) */
+.facet-dropdown .select-title {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    padding: 0.8em 1em !important;
+    background: #fff !important;
+    border: 0.1em solid #ddd !important;
+    border-radius: 0.4em !important;
+    font-family: 'Helvetica', sans-serif !important;
+    font-size: 0.95em !important;
+    color: var(--cafe-noir) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+}
+
+.facet-dropdown .select-title span {
+    flex: 1 !important;
+    text-align: left !important;
+    font-weight: 500 !important;
+}
+
+/* Icône Material Icons */
+.facet-dropdown .select-title .material-icons {
+    font-size: 1.4em !important;
+    color: var(--chocolat-noir) !important;
+    transition: transform 0.3s ease !important;
+}
+
+/* Hover sur le select-title */
+.facet-dropdown .select-title:hover {
+    background: var(--chocolat-lait) !important;
+    border-color: var(--chocolat-noir) !important;
+    box-shadow: 0 0 0 0.2em rgba(154, 115, 85, 0.2) !important;
+}
+
+/* Rotation de l'icône quand ouvert */
+.facet-dropdown .select-title[aria-expanded="true"] .material-icons {
+    transform: rotate(180deg) !important;
+}
+
+/* Focus sur le select-title */
+.facet-dropdown .select-title:focus {
+    outline: none !important;
+    border-color: var(--chocolat-noir) !important;
+    box-shadow: 0 0 0 0.3em rgba(154, 115, 85, 0.3) !important;
+}
+
+/* Menu déroulant */
+.facet-dropdown .dropdown-menu {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    width: 100% !important;
+    margin-top: 0.3em !important;
+    padding: 0.5em 0 !important;
+    background: #fff !important;
+    border: 0.1em solid #ddd !important;
+    border-radius: 0.4em !important;
+    box-shadow: 0 0.3em 0.8em rgba(0, 0, 0, 0.15) !important;
+    z-index: 1000 !important;
+    max-height: 20em !important;
+    overflow-y: auto !important;
+}
+
+/* Items du menu */
+.facet-dropdown .dropdown-menu .select-list {
+    display: block !important;
+    padding: 0.7em 1em !important;
+    font-family: 'Helvetica', sans-serif !important;
+    font-size: 0.9em !important;
+    color: var(--cafe-noir) !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+    border-left: 0.2em solid transparent !important;
+}
+
+/* Hover sur les items */
+.facet-dropdown .dropdown-menu .select-list:hover {
+    background: var(--chocolat-lait) !important;
+    border-left-color: var(--chocolat-noir) !important;
+    padding-left: 1.2em !important;
+    font-weight: 600 !important;
+}
+
+/* Focus sur les items (accessibilité) */
+.facet-dropdown .dropdown-menu .select-list:focus {
+    outline: none !important;
+    background: rgba(234, 179, 142, 0.5) !important;
+    border-left-color: var(--chocolat-noir) !important;
+}
+
+/* Scrollbar personnalisée pour le dropdown */
+.facet-dropdown .dropdown-menu::-webkit-scrollbar {
+    width: 0.4em !important;
+}
+
+.facet-dropdown .dropdown-menu::-webkit-scrollbar-track {
+    background: #f1f1f1 !important;
+    border-radius: 0.4em !important;
+}
+
+.facet-dropdown .dropdown-menu::-webkit-scrollbar-thumb {
+    background: var(--chocolat-noir) !important;
+    border-radius: 0.4em !important;
+}
+
+.facet-dropdown .dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: var(--chocolat-lait) !important;
+}
+
+/* État "no filter" (texte par défaut) */
+.facet-dropdown .select-title span:empty::before {
+    color: #999 !important;
+    font-style: italic !important;
+}
+
+/* Responsive - Mobile */
+@media (max-width: 48em) {
+    .facet-dropdown .select-title {
+        padding: 1em 1.2em !important;
+        font-size: 1em !important;
+    }
+
+    .facet-dropdown .dropdown-menu {
+        max-height: 15em !important;
+    }
+
+    .facet-dropdown .dropdown-menu .select-list {
+        padding: 0.9em 1.2em !important;
+        font-size: 0.95em !important;
+    }
+}
+
+/* Bouton Clear All */
+
+/* Conteneur du bouton */
+.clear-all-wrapper {
+    padding: 0.5em 0 1em 0 !important;
+    text-align: center !important;
+}
+
+/* Bouton Clear All */
+.js-search-filters-clear-all,
+.btn.js-search-filters-clear-all {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5em !important;
+    padding: 0.7em 1em !important;
+    background: #fff !important;
+    border: 0.15em solid var(--chocolat-lait) !important;
+    border-radius: 0.4em !important;
+    font-family: 'Helvetica', sans-serif !important;
+    font-size: 0.9em !important;
+    font-weight: 600 !important;
+    color: var(--chocolat-lait) !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    white-space: nowrap !important;
+}
+
+/* Icône Material Icons dans le bouton */
+.js-search-filters-clear-all .material-icons {
+    font-size: 1.2em !important;
+    line-height: 1 !important;
+    vertical-align: middle !important;
+    transition: transform 0.3s ease !important;
+}
+
+/* Hover sur le bouton */
+.js-search-filters-clear-all:hover,
+.btn.js-search-filters-clear-all:hover {
+    background: var(--chocolat-lait) !important;
+    border-color: var(--chocolat-lait) !important;
+    color: #fff !important;
+    box-shadow: 0 0.2em 0.6em rgba(154, 115, 85, 0.3) !important;
+    transform: translateY(-0.1em) !important;
+}
+
+/* Rotation de l'icône au hover */
+.js-search-filters-clear-all:hover .material-icons {
+    transform: rotate(90deg) !important;
+}
+
+/* Focus sur le bouton (accessibilité) */
+.js-search-filters-clear-all:focus,
+.btn.js-search-filters-clear-all:focus {
+    outline: none !important;
+    border-color: var(--chocolat-noir) !important;
+    box-shadow: 0 0 0 0.3em rgba(154, 115, 85, 0.4) !important;
+}
+
+/* Active (lors du clic) */
+.js-search-filters-clear-all:active,
+.btn.js-search-filters-clear-all:active {
+    background: #8a6344 !important;
+    border-color: #8a6344 !important;
+    transform: translateY(0) !important;
+    box-shadow: 0 0.1em 0.3em rgba(154, 115, 85, 0.2) !important;
+}
+
+/* État disabled (si nécessaire) */
+.js-search-filters-clear-all:disabled,
+.btn.js-search-filters-clear-all:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+/* Responsive - Mobile */
+@media (max-width: 48em) {
+    .clear-all-wrapper {
+        padding: 0.8em 0 1.2em 0 !important;
+    }
+
+    .js-search-filters-clear-all,
+    .btn.js-search-filters-clear-all {
+        width: 100% !important;
+        padding: 1em 1.5em !important;
+        font-size: 1em !important;
+    }
+}
