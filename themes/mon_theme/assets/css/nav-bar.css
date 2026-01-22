@@ -127,6 +127,7 @@ body {
     display: flex !important;
     align-items: center;
     margin-left: 10px !important;
+    background-color: transparent !important;
 }
 
 .header-nav .user-info,
