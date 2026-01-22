@@ -33,3 +33,6 @@ assets:
       - id: register-style
         path: assets/css/register.css
         priority: 200
+      - id: machine_support-style
+        path: assets/css/machine_support.css
+        priority: 200
