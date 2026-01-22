@@ -78,11 +78,6 @@
 {block name='stylesheets'}
   {include file="_partials/stylesheets.tpl" stylesheets=$stylesheets}
 {/block}
-<link rel="stylesheet" href="{$urls.theme_assets}css/header.css">
-<link rel="stylesheet" href="{$urls.theme_assets}css/layout.css">
-<link rel="stylesheet" href="{$urls.theme_assets}css/profile.css">
-<link rel="stylesheet" href="{$urls.theme_assets}css/footer.css">
-<link rel="stylesheet" href="{$urls.theme_assets}css/categories-achats.css">
 
 {block name='javascript_head'}
   {include file="_partials/javascript.tpl" javascript=$javascript.head vars=$js_custom_vars}
