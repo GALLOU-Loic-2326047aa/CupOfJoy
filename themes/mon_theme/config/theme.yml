@@ -23,7 +23,13 @@ assets:
         priority: 200
       - id: nav-bar-style
         path: assets/css/nav-bar.css
-        priority: 200 
+        priority: 200
       - id: my-account-style
         path: assets/css/my-account.css
+        priority: 200
+      - id: login-style
+        path: assets/css/login.css
+        priority: 200
+      - id: register-style
+        path: assets/css/register.css
         priority: 200
