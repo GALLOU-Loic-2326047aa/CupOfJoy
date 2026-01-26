@@ -48,10 +48,12 @@ class Ps_Stripe_Subscriptions extends PaymentModule
      */
     public function install()
     {
+        // 1. Installation de base de PrestaShop
         if (!parent::install()) {
             return false;
         }
 
+        // 2. Enregistrement des hooks
         $hooks = [
             'displayAdminProductsExtra',
             'displayAdminProductsCombinationsForm',
@@ -63,7 +65,8 @@ class Ps_Stripe_Subscriptions extends PaymentModule
             'paymentOptions',
             'actionAuthentication',
             'actionCustomerAccountAdd',
-            'displayCustomerAccount'
+            'displayCustomerAccount',
+            'actionPaymentOptionsAfter'
         ];
 
         foreach ($hooks as $hook) {
@@ -72,7 +75,7 @@ class Ps_Stripe_Subscriptions extends PaymentModule
             }
         }
 
-        // Table pour lier les produits/déclinaisons PrestaShop aux IDs Stripe
+        // 3. Création des tables SQL
         $sqlPrice = "CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . "stripe_price_link` (
             `id_product_ps` INT(10) UNSIGNED NOT NULL,
             `id_product_attribute` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -81,14 +84,35 @@ class Ps_Stripe_Subscriptions extends PaymentModule
             PRIMARY KEY (`id_product_ps`, `id_product_attribute`)
         ) ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8;";
 
-        // Table pour lier les comptes clients PrestaShop aux clients Stripe
         $sqlCustomer = "CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . "stripe_customer_link` (
             `id_customer_ps` INT(10) UNSIGNED NOT NULL PRIMARY KEY,
             `id_customer_stripe` VARCHAR(255) NOT NULL,
             UNIQUE KEY `id_customer_stripe_unique` (`id_customer_stripe`)
         ) ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8;";
 
-        return Db::getInstance()->execute($sqlPrice) && Db::getInstance()->execute($sqlCustomer);
+        if (!Db::getInstance()->execute($sqlPrice) || !Db::getInstance()->execute($sqlCustomer)) {
+            return false;
+        }
+
+        if (!$this->installTab('AdminStripe', 'Suivi Expéditions Abonnés', 'AdminParentOrders')) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function installTab($class_name, $name, $parent)
+    {
+        $tab = new Tab();
+        $tab->active = 1;
+        $tab->class_name = $class_name;
+        $tab->name = array();
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = $name;
+        }
+        $tab->id_parent = (int)Tab::getIdFromClassName($parent);
+        $tab->module = $this->name;
+        return $tab->add();
     }
 
     /**
@@ -393,12 +417,32 @@ class Ps_Stripe_Subscriptions extends PaymentModule
      */
     public function hookPaymentOptions($params)
     {
-        if (!$this->active) return [];
-        $option = new \PrestaShop\PrestaShop\Core\Payment\PaymentOption();
-        $option->setModuleName($this->name)
-            ->setCallToActionText($this->l('Payer par Carte (Stripe Subscriptions)'))
-            ->setAction($this->context->link->getModuleLink($this->name, 'checkout', [], true));
-        return [$option];
+        if (!$this->active) {
+            return [];
+        }
+
+        $this->loadModuleClasses();
+        $cart = $this->context->cart;
+        $products = $cart->getProducts();
+
+        $has_subscription = false;
+
+        foreach ($products as $p) {
+            if (StripePriceLink::getStripePriceIdByPsId($p['id_product'], $p['id_product_attribute'])) {
+                $has_subscription = true;
+                break;
+            }
+        }
+
+        if ($has_subscription) {
+            $option = new \PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+            $option->setModuleName($this->name)
+                ->setCallToActionText($this->l('Payer mon abonnement par Carte'))
+                ->setAction($this->context->link->getModuleLink($this->name, 'checkout', [], true));
+
+            return [$option];
+        }
+        return [];
     }
 
     /**
@@ -441,6 +485,35 @@ class Ps_Stripe_Subscriptions extends PaymentModule
 
     public function hookUpdateOrderStatus($params)
     {
+    }
+
+    public function hookActionPaymentOptionsAfter($params)
+    {
+        if (!$this->active || !isset($params['payment_options'])) {
+            return;
+        }
+
+        $this->loadModuleClasses();
+        $cart = $this->context->cart;
+
+        $has_subscription = false;
+        foreach ($cart->getProducts() as $p) {
+            if (class_exists('StripePriceLink') && StripePriceLink::getStripePriceIdByPsId($p['id_product'], $p['id_product_attribute'])) {
+                $has_subscription = true;
+                break;
+            }
+        }
+
+        if ($has_subscription) {
+            $payment_options = &$params['payment_options'];
+
+            foreach (array_keys($payment_options) as $module_name) {
+                // On supprime TOUT ce qui n'est pas ton module
+                if ($module_name !== $this->name) {
+                    unset($payment_options[$module_name]);
+                }
+            }
+        }
     }
 
 }
